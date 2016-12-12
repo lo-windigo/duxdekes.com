@@ -1,0 +1,52 @@
+
+#################
+# Common values #
+#################
+
+DOMAIN = 'example.com'
+WEBROOT = '/path/to/webroot'
+
+#################
+
+
+# Debug: should be False in production
+DEBUG = True
+
+# Site administrators
+ADMINS = (
+     ('Administrator', 'admin@{}'.format(DOMAIN)),
+)
+
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY="""
+"""
+
+# Database
+# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+
+    # MySQL/MariaDB
+#    "default": {
+#        "ENGINE": "django.db.backends.mysql",
+#        "NAME": "database_name",
+#        "USER": "database_user",
+#        "PASSWORD": "password",
+#        "HOST": "", # Set to empty string for localhost.
+#        "PORT": "", # Set to empty string for default.
+#    },
+}
+
+
+# Domains for public site
+ALLOWED_HOSTS += [
+	DOMAIN,
+	".{}".format(DOMAIN)
+]
+
+# Timezones
+TIME_ZONE = 'UTC'
