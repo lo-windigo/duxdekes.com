@@ -1,7 +1,7 @@
 # Git ignore; I can't believe it's not butter.
 
 # Database, if SQLite is used
-db.sqlite
+db.sqlite*
 
 # No need to commit vim temp files or compiled python files!
 *.pyc
