@@ -11,6 +11,7 @@ class ProductCategory(models.Model):
             default = False)
     explanation = models.TextField('Extra category information',
             blank=True)
+    slug = models.SlugField()
 
 
     def __str__(self):
@@ -34,7 +35,8 @@ class Product(models.Model):
     description = models.CharField('Description',
             max_length=300)
     product_id = models.CharField('ID',
-            max_length=30)
+            max_length=30,
+            unique=True)
     base_price = models.DecimalField('Price',
             max_digits=9,
             decimal_places=2)
@@ -68,9 +70,11 @@ class FinishedDecoy(Decoy):
 
 
 class UnfinishedDecoy(Decoy):
+    OAK = 'o'
+    PINE = 'p'
     MATERIALS = (
-            ('OAK', 'Oak'),
-            ('PINE', 'Pine')
+            (OAK, 'Oak'),
+            (PINE, 'Pine')
             )
 
     materials = models.CharField('Material',
