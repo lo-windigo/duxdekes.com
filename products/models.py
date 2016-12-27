@@ -9,15 +9,22 @@ class ProductCategory(models.Model):
             max_length=300)
     hidden = models.BooleanField('Hide category?',
             default = False)
-    explanation = model.TextField('Extra category information',
+    explanation = models.TextField('Extra category information',
             blank=True)
+
+
+    def __str__(self):
+        return self.description
+
 
 
 class ProductType(ProductCategory):
     """
     A sub-category of products
     """
-    parent = models.ForeignKey(ProductCategory)
+    parent = models.ForeignKey(ProductCategory,
+            related_name='+')
+
 
 
 class Product(models.Model):
@@ -29,10 +36,23 @@ class Product(models.Model):
     product_id = models.CharField('ID',
             max_length=30)
     base_price = models.DecimalField('Price',
+            max_digits=9,
             decimal_places=2)
     hidden = models.BooleanField('Hide product?',
             default = False)
     category = models.ForeignKey(ProductType)
+
+    class Meta:
+        default_related_name = "products"
+
+
+    def __str__(self):
+        return self.description
+
+
+    def get_absolute_url(self):
+        pass
+
 
 
 class Decoy(Product):
@@ -49,10 +69,11 @@ class FinishedDecoy(Decoy):
 
 class UnfinishedDecoy(Decoy):
     MATERIALS = (
-            (OAK, 'Oak')
-            (PINE, 'Pine')
+            ('OAK', 'Oak'),
+            ('PINE', 'Pine')
             )
 
-    materials = model.CharField('Material',
+    materials = models.CharField('Material',
+            max_length=10,
             choices=MATERIALS)
 
