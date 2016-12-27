@@ -21,6 +21,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = False
 ALLOWED_HOSTS = ['127.0.0.1']
+SITE_ID = 1
 
 
 ##################
@@ -45,8 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.redirects',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'duxdekes',
     'products',
@@ -60,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'duxdekes.urls'
