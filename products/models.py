@@ -2,6 +2,9 @@ from django.db import models
 
 
 class ProductCategory(models.Model):
+    """
+    A top-level product category
+    """
     description = models.CharField('Name',
             max_length=300)
     hidden = models.BooleanField('Hide category?',
@@ -11,10 +14,16 @@ class ProductCategory(models.Model):
 
 
 class ProductType(ProductCategory):
+    """
+    A sub-category of products
+    """
     parent = models.ForeignKey(ProductCategory)
 
 
 class Product(models.Model):
+    """
+    A generic product model that others can build on
+    """
     description = models.CharField('Description',
             max_length=300)
     product_id = models.CharField('ID',
@@ -34,6 +43,16 @@ class Instruction(Product):
     pass
 
 
-class Decoy(Product):
+class FinishedDecoy(Decoy):
     pass
+
+
+class UnfinishedDecoy(Decoy):
+    MATERIALS = (
+            (OAK, 'Oak')
+            (PINE, 'Pine')
+            )
+
+    materials = model.CharField('Material',
+            choices=MATERIALS)
 
