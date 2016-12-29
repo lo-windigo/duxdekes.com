@@ -21,6 +21,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = False
 ALLOWED_HOSTS = ['127.0.0.1']
+# Required for sites framework
 SITE_ID = 1
 
 
