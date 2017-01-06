@@ -15,7 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.shortcuts import render_to_response
+from . import views
 
 urlpatterns = [
+    url(r'^$', views.home, name='home')
+    url(r'^about$',
+        render_to_response('duxdekes/about.html'),
+        name='about')
+    url(r'^about-the-artist$',
+        render_to_response('duxdekes/about-artist.html'),
+        name='about-artist')
     url(r'^admin/', admin.site.urls),
+    url(r'^products/', include('products.urls'))
+    #url(r'^cart/', include('products.urls'))
 ]
