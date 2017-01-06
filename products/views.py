@@ -8,10 +8,8 @@ def listing(category_slug, type_slug):
     """
 
     prod_category = get_object_or_404(ProductCategory, slug=category_slug)
-    prod_type = get_object_or_404(ProductType, slug=type_slug)
 
-    #TODO: Figure out how to properly chain filters
-    #products = Product.objects.filter().filter()
-    products = {}
+    #TODO: get the proper syntax for get_list_or_404
+    products = Product.objects.filter(category=prod_category)
 
     return render('products/page-listing.html', {'products': products})

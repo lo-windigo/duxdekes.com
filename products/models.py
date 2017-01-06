@@ -1,10 +1,25 @@
 from django.db import models
+from django.shortcuts import reverse
 
 
 class ProductCategory(models.Model):
     """
-    A top-level product category
+    A category of similar products that are displayed together in a product
+    listing
     """
+    UNFINISHED = 'u'
+    FINISHED = 'f'
+    INSTRUCTION = 'i'
+    MATERIAL = 'm'
+    PRODUCT_TYPE = (
+            (UNFINISHED, 'Unfinished Decoys'),
+            (FINISHED, 'Finished Decoys'),
+            (INSTRUCTION, 'Instructions'),
+            (MATERIAL, 'Materials'),
+            )
+
+    category_type = models.CharField('Type',
+            max_length=1)
     description = models.CharField('Name',
             max_length=300)
     hidden = models.BooleanField('Hide category?',
@@ -12,19 +27,17 @@ class ProductCategory(models.Model):
     explanation = models.TextField('Extra category information',
             blank=True)
     slug = models.SlugField()
+    #TODO: Would this be better as a file upload field?
+    template = models.CharField('Custom template',
+            blank=True)
 
 
     def __str__(self):
         return self.description
 
 
-
-class ProductType(ProductCategory):
-    """
-    A sub-category of products
-    """
-    parent = models.ForeignKey(ProductCategory,
-            related_name='+')
+    def get_absolute_url(self):
+        return reverse('listing', self.slug)
 
 
 

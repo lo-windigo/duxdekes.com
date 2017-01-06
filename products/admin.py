@@ -3,7 +3,6 @@ from .models import ProductCategory, ProductType, Instruction, UnfinishedDecoy, 
 
 # Register your models here.
 admin.site.register(ProductCategory)
-admin.site.register(ProductType)
 admin.site.register(Instruction)
 admin.site.register(UnfinishedDecoy)
 admin.site.register(FinishedDecoy)
