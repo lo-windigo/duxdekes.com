@@ -55,7 +55,7 @@ class Product(models.Model):
             decimal_places=2)
     hidden = models.BooleanField('Hide product?',
             default = False)
-    category = models.ForeignKey(ProductType)
+    category = models.ForeignKey(ProductCategory)
 
     class Meta:
         default_related_name = "products"

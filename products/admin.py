@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ProductCategory, ProductType, Instruction, UnfinishedDecoy, FinishedDecoy
+from .models import ProductCategory, Instruction, UnfinishedDecoy, FinishedDecoy
 
 # Register your models here.
 admin.site.register(ProductCategory)
