@@ -4,14 +4,21 @@
 # Debian Jessie
 read -r -d '' DEBIAN_PACKAGES <<-'PACKAGES'
 	libjpeg62-turbo-dev libopenjpeg-dev libfreetype6-dev libtiff5-dev
-	liblcms2-dev libwebp-dev tk8.6-dev python3-tk
+	liblcms2-dev libwebp-dev tk8.6-dev python3-tk python3-dev
 PACKAGES
 
+
+# MySQL dependencies:
+# libmysqlclient-dev
+
+# Postgres dependencies:
+# libpq-dev
 
 # Python package requirements
 read -r -d '' PIP_PACKAGES <<-'PACKAGES'
 	Django
 	pillow
+	mysqlclient
 PACKAGES
 
 
