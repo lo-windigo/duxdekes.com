@@ -13,20 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.contrib import admin
-from django.shortcuts import render_to_response
+from django.views.generic import TemplateView
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.home, name='home')
+    url(r'^$', views.home, name='home'),
     url(r'^about$',
-        render_to_response('duxdekes/about.html'),
-        name='about')
+        TemplateView.as_view(template_name='duxdekes/page-about.html'),
+        name='about'),
     url(r'^about-the-artist$',
-        render_to_response('duxdekes/about-artist.html'),
-        name='about-artist')
+        TemplateView.as_view(template_name='duxdekes/page-about-artist.html'),
+        name='about-artist'),
     url(r'^admin/', admin.site.urls),
-    url(r'^products/', include('products.urls'))
-    #url(r'^cart/', include('products.urls'))
+    url(r'^products/', include('products.urls')),
+    #url(r'^cart/', include('products.urls')),
 ]
