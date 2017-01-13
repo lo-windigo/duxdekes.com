@@ -19,17 +19,22 @@ class ProductCategory(models.Model):
             )
 
     category_type = models.CharField('Type',
+            choices=PRODUCT_TYPE,
+            default=UNFINISHED,
             max_length=1)
     description = models.CharField('Name',
             max_length=300)
     hidden = models.BooleanField('Hide category?',
             default = False)
     explanation = models.TextField('Extra category information',
-            blank=True)
+            blank=True,
+            null=True)
     slug = models.SlugField()
     #TODO: Would this be better as a file upload field?
     template = models.CharField('Custom template',
-            blank=True)
+            max_length=300,
+            blank=True,
+            null=True)
 
 
     def __str__(self):
@@ -67,30 +72,4 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         pass
-
-
-
-class Decoy(Product):
-    pass
-
-
-class Instruction(Product):
-    pass
-
-
-class FinishedDecoy(Decoy):
-    pass
-
-
-class UnfinishedDecoy(Decoy):
-    OAK = 'o'
-    PINE = 'p'
-    MATERIALS = (
-            (OAK, 'Oak'),
-            (PINE, 'Pine')
-            )
-
-    materials = models.CharField('Material',
-            max_length=10,
-            choices=MATERIALS)
 

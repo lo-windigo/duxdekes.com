@@ -1,0 +1,15 @@
+ {% regroup categorys.all|dictsort:"category.type" by category.type as cateoriesByType %}
+<ul>
+	{% for type in cateoriesByType %}
+	<li>
+		{{ type.grouper }}
+		<ul>
+			{% for category in type.list %}
+			<li>
+				<a href="{% reverse category %}">{{ category }}</a>
+			</li>
+			{% endfor %}
+		</ul>
+	</li>
+	{% endfor %}
+</ul>
