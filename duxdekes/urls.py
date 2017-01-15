@@ -15,17 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.views.generic import TemplateView
 from . import views
+admin.autodiscover()
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
-    url(r'^about$',
-        TemplateView.as_view(template_name='duxdekes/page-about.html'),
-        name='about'),
-    url(r'^about-the-artist$',
-        TemplateView.as_view(template_name='duxdekes/page-about-artist.html'),
-        name='about-artist'),
+    url(r'^about$', views.about, name='about'),
+    url(r'^about-the-artist$', views.about_artist, name='about-artist'),
     url(r'^admin/', admin.site.urls),
     url(r'^products/', include('products.urls')),
     #url(r'^cart/', include('products.urls')),

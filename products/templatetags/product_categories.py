@@ -11,5 +11,6 @@ def product_categories():
     by major type
     """
 
-    products = ProductCategory.objects.exclude(hidden=True)
+    categories = ProductCategory.objects.exclude(hidden=True)
+    return {"categories": categories}
 

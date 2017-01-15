@@ -1,15 +1,13 @@
- {% regroup categorys.all|dictsort:"category.type" by category.type as cateoriesByType %}
-<ul>
-	{% for type in cateoriesByType %}
-	<li>
-		{{ type.grouper }}
-		<ul>
-			{% for category in type.list %}
-			<li>
-				<a href="{% reverse category %}">{{ category }}</a>
-			</li>
-			{% endfor %}
-		</ul>
-	</li>
-	{% endfor %}
-</ul>
+{% regroup categories by get_category_type_display as types %}
+{% for type in types %}
+<li class="nav-item">
+	{{ type.grouper }}
+	<ul>
+		{% for category in type.list %}
+		<li>
+			<a href="{#% url category %#}">{{ category }}</a>
+		</li>
+		{% endfor %}
+	</ul>
+</li>
+{% endfor %}
