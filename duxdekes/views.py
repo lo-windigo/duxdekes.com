@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from products.util import live_categories
+from .util.contact import ContactForm
 
 
 def about(request):
@@ -12,6 +13,13 @@ def about(request):
 def about_artist(request):
     """
     About Jeff Duxbury
+    """
+    return render(request, 'duxdekes/page-about-artist.html')
+
+
+def contact(request):
+    """
+    Send Jeff a message
     """
     return render(request, 'duxdekes/page-about-artist.html')
 

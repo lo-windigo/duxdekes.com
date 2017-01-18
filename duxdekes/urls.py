@@ -20,9 +20,10 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
-    url(r'^about$', views.about, name='about'),
-    url(r'^about-the-artist$', views.about_artist, name='about-artist'),
-    url(r'^admin/', admin.site.urls),
+    url(r'^about/?$', views.about, name='about'),
+    url(r'^about-the-artist/?$', views.about_artist, name='about-artist'),
+    url(r'^contact/?$', views.contact, name='contact'),
     url(r'^products/', include('products.urls')),
+    url(r'^admin/', admin.site.urls),
     #url(r'^cart/', include('products.urls')),
 ]
