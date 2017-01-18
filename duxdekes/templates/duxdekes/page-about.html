@@ -1,4 +1,5 @@
 {% extends "duxdekes/base.html" %}
+{% load static %}
 
 {% block "title" %}
 Wood Carving at Dux' Dekes
@@ -7,10 +8,10 @@ Wood Carving at Dux' Dekes
 {% block "content" %}
 		<h1>Wood Carving at Dux' Dekes</h1>
 		<p class="in-content">
-			<img src="/img/pic1.gif" alt="Test image">
+			<img src="{% static "/duxdekes/img/pic1.gif" %}" alt="Test image">
 		</p>
 		<p class="in-content">
-			<img src="/img/pic2.gif" alt="Test image">
+			<img src="{% static "/duxdekes/img/pic2.gif" %}" alt="Test image">
 		</p>
 		<p>
 			Thank you for your interest in Dux' Dekes. Our family business has
@@ -37,7 +38,7 @@ Wood Carving at Dux' Dekes
 			more attitude. 
 		</p>
 		<p class="in-content">
-			<img src="/img/pic3.gif" alt="Test image">
+			<img src="{% static "/duxdekes/img/pic3.gif" %}" alt="Test image">
 		</p>
 		<p>
 			We will be offering quality wood carving supplies
