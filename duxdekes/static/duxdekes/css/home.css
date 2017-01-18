@@ -1,0 +1,120 @@
+/*
+	Dux' Dekes: Homepage
+
+	Layout created by Jacob Hume
+	©2017, Jeff Duxbury, Dux' Dekes
+	Licensed AGPLv3, Rock on.
+*/
+
+
+/*= Homepage Styles ========*/
+
+main {
+	padding: 0;
+}
+
+section {
+	background-image: linear-gradient(to top, #bbb, #fefefe);
+	min-height: 100vh;
+	padding: 0 1em;
+}
+
+section>h2 {
+	font-size: 1.1em;
+}
+
+.header {
+	min-height: 20em;
+}
+
+/*
+ * BETTER DISTRIBUTE SPACE IN LONG LISTINGS
+.long-listing {
+	float: left;
+	display: block;
+}
+
+.long-listing h2 {
+	font-size: 1.1em;
+	padding-top: .75em;
+}
+*/
+.main-categories {
+	font-family: 'Site-Title', serif;
+	padding: 0;
+}
+
+.product-categories {
+	columns: auto 10em;
+	padding-left: .5em;
+}
+
+/* Fix for Chrome multi-column list marker bug */
+.product-categories>li {
+	list-style: none;
+}
+
+.product-categories>li::before {
+	content: "• ";
+}
+
+.product-categories>li>a {
+	font-size: 1.1em;
+	display: inline-block;
+	padding: .5em 0;
+}
+
+.site-title {
+	font-size: 3em;
+}
+
+.site-subtitle {
+	font-size: 1.2em;
+	letter-spacing: .125em;
+}
+
+.site-subtitle::after,
+.site-subtitle::before {
+	content: "•";
+}
+
+.title-group {
+	font-family: 'Site-Title', serif;
+	font-variant: small-caps;
+}
+
+.top-tile {
+	list-style: none;
+	margin: 1em;
+}
+
+.top-tile a {
+	border: 2px solid #fff;
+	border-radius: .25em;
+	color: #fff;
+	display: block;
+	font-weight: bold;
+	padding: 1em;
+}
+
+
+/*= Responsive =================*/
+
+@media screen and (min-width: 800px) {
+
+	.product-categories {
+		columns: auto 15em;
+	}
+
+}
+
+@media screen and (max-width: 450px) {
+
+	.header {
+		padding: .5em;
+	}
+
+	.product-categories>li>a {
+		font-size: 1em;
+	}
+}

@@ -1,0 +1,307 @@
+/*
+	Dux' Dekes: Basic Styles
+
+	Layout © 2017, Jeff Duxbury, Dux' Dekes
+	Licensed AGPLv3, Rock on.
+*/
+
+
+/*= Font Styles ============*/
+
+@font-face {
+	font-family: 'Site-Title';
+	font-style: normal;
+	font-weight: bold;
+	src: local('Aleo'),
+		url('/static/duxdekes/fonts/aleo.woff') format('woff'),
+		url('/static/duxdekes/fonts/aleo.ttf') format('truetype');
+}
+
+
+/*= Base Styles ============*/
+
+:root {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	font-size: 1.2em;
+}
+
+*,
+*:after,
+*:before {
+	-moz-box-sizing: inherit;
+	-webkit-box-sizing: inherit;
+	box-sizing: inherit;
+}
+
+a {
+	color: #061;
+	-webkit-text-decoration-skip: ink;
+	text-decoration-skip: ink;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	color: #000;
+	font-family: serif;
+}
+
+footer {
+	background-color: #222;
+	clear: both;
+	color: #bbb;
+	padding: 1em;
+	text-align: center;
+}
+
+footer>*,
+main {
+	max-width: 52em;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+html {
+	background: #fefefe;
+}
+
+h1,h2,h3,h4 {
+	font-family: 'Site-Title', serif;
+}
+
+main {
+	padding: 1em;
+}
+
+section>h1 {
+	margin-top: 0;
+}
+
+
+
+/*= Modules ================*/
+
+.a11y-link {
+	background: #fff;
+	position: fixed;
+	top: -10em;
+}
+
+.header {
+	background-color: #111;
+	background-image: url('/static/duxdekes/img/splash.jpg');
+	background-position: center;
+	background-size: cover;
+	color: #fff;
+	display: flex;
+	padding: 1em;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.header>* {
+	margin: 0 2em;
+	flex 1 0 15em;
+	align-self: center;
+}
+
+.in-content {
+	float: left;
+	margin: 0 .5em .25em 0;
+}
+
+.in-content:nth-of-type(2n) {
+	float: right;
+	margin: 0 0 .25em .5em;
+}
+
+.foot-nav {
+	columns: auto 12em;
+	margin: -.5em;
+	text-align: left;
+}
+
+.foot-nav,
+.foot-nav a {
+	color: #ccc;
+}
+
+.foot-nav-item {
+	font-weight: bold;
+}
+
+.foot-nav>.nav-item>ul {
+	margin-left: 1em;
+	padding-left: 0;
+	font-weight: normal;
+	font-size: .8em;
+}
+
+.header {
+	text-align: center;
+}
+
+.main-categories {
+	font-family: 'Site-Title', serif;
+	padding: 0;
+}
+
+/* Single product listing */
+.product {
+	background-color: #fefefe;
+	border: 2px solid #ccc;
+	border-radius: .25em;
+	font-size: .75em;
+	margin-bottom: 1em;
+	padding: .5em;
+	width: 24em;
+}
+
+.product::after {
+	content: " ";
+	display: block;
+	clear: both;
+}
+
+.product>h1 {
+	font-size: 1.2em;
+	margin-top: 0;
+	margin-bottom: .5em;
+}
+
+.product-pricing {
+/*
+	border-collapse: collapse;
+	*/
+	width: 12em;
+}
+
+.product-pricing>caption {
+	text-align: left;
+	border: 1px solid transparent;
+}
+
+.product-pricing>caption::after {
+	content: ":";
+}
+
+.product-pricing td {
+	padding: .1em 0;
+}
+
+.product-pricing tr+tr>td {
+	border: 0 solid #999;
+	border-width: 1px 0 0 0;
+}
+
+.product-pricing>thead {
+	position: fixed;
+	top: -500em;
+}
+
+/* Product preview image */
+.product-preview {
+	border: 1px solid #000;
+	border-radius: .25em;
+	max-width: 8em;
+	max-height: 8em;
+	float: left;
+	margin-right: 1em;
+	overflow: hidden;
+}
+
+.product-preview>img {
+	min-height: 8em;
+	min-width: 8em;
+	width: 100%;
+	height: 100%;
+}
+
+/* List of products */
+.products {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+.site-title {
+	font-size: 3em;
+}
+
+.site-subtitle {
+	font-size: 1.2em;
+	letter-spacing: .125em;
+}
+
+.site-subtitle::after,
+.site-subtitle::before {
+	content: "•";
+}
+
+.title-group {
+	font-family: 'Site-Title', serif;
+	font-variant: small-caps;
+}
+
+.top-tile {
+	border-radius: .25em;
+	list-style: none;
+	/*margin: 1em;*/
+	padding: 0;
+}
+
+.top-tile+.top-tile {
+	margin-top: 1em;
+}
+
+.top-tile a {
+	border: 0 solid #fff;
+	border-radius: .25em;
+	border-width: 2px;
+	background-color: rgba(0,0,0,0);
+	color: #fff;
+	display: block;
+	margin-left: 2px;
+	margin-right: 2px;
+	font-weight: bold;
+	padding: 1em;
+	transition: background-color .25s ease;
+}
+
+
+/*= State ==================*/
+
+.a11y-link:active,
+.a11y-link:focus {
+	top: 1em;
+}
+
+.top-tile a:active,
+.top-tile a:focus,
+.top-tile a:hover {
+	background-color: rgba(0,0,0,.5);
+}
+
+
+/*= Responsive =================*/
+
+@media screen and (max-width: 450px) {
+
+	:root {
+		font-size: 1em;
+	}
+
+	.in-content,
+	.in-content:nth-of-type(2n) {
+		text-align: center;
+		float: none;
+	}
+
+	.main-categories,
+	.title-group {
+		margin-left: 0;
+		margin-right: 0;
+	}
+}
