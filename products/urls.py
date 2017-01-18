@@ -2,6 +2,6 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^(?P<cat>.+)/?$', views.listing, name='listing'),
+    url(r'^(?P<category_slug>.+)/?$', views.listing, name='listing'),
 ]
 

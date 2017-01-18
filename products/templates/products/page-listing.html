@@ -1,0 +1,54 @@
+{% extends "duxdekes/base.html" %}
+{% load product_categories static %}
+
+{% block "title" %}
+{{ category.description }}
+{% endblock %}
+
+{% block "content" %}
+	<h1>{{ category.description }}</h1>
+	{% if products|length %}
+	<div class="products">
+		{% for product in products %}
+		<article class="product" itemscope itemtype="http://schema.org/Product">
+			<div class="product-preview">
+				{% if False %}
+				<img src="/img/product.jpg" alt="A preview of product"
+					itemprop="image">
+				{% else %}
+				<img src="{% static "/products/img/placeholder.svg" %}" alt=" ">
+				{% endif %}
+			</div>
+			<h1 itemprop="name"></h1>
+			<table class="product-pricing">
+				<caption>Materials</caption>
+				<thead>
+					<tr>
+						<th scope="col">Material</th>
+						<th scope="col">Price</th>
+						<th scope="col">Cart</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr itemscope itemtype="http://schema.org/Offer">
+						<td>Pine</td>
+						<td itemprop="price">$35.45</td>
+						<td>
+							<a href="#" class="cart">Add</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</article>
+		{% endfor %}
+	</div>
+	{% else %}
+	<p>
+		We're sorry, there are no products available in this category right now.
+		Please try one of our other product categories:
+	</p>
+	<ul>
+		{% product_categories %}
+	</ul>
+	{% endif %}
+{% endblock %}
