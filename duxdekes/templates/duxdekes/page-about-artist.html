@@ -1,5 +1,50 @@
-{% block "title" %}
-{% endblock %}
+{% extends "duxdekes/base.html" %}
+{% load static %}
+
+
+{% block "title" %}About the Artist{% endblock %}
 
 {% block "content" %}
+	<h1>About the Artist</h1>
+	<p class="in-content">
+		<img src="{% static "/duxdekes/img/jeff.jpg" %}"
+			alt="Jeff Duxbury of Dux Dekes" width="250" height="389">
+	</p>
+	<p>
+		Jeff Duxbury, an avid conservationist, has a deep rooted love of the
+		outdoors. Raised in upstate New York, he developed a reverence for
+		nature through hunting, fishing and hiking in the vast Adirondack
+		Park. Jeff went on to develop his technical knowledge of Biology
+		and the Arts at Susquehanna University. While in college, he
+		discovered his interest in <a href="blank.html">duck decoys</a>
+		while waterfowling on the local river. Jeff's
+		first decoys were carved for family and friends. After eight
+		years of developing his craft, Jeff opened <a href="aboutus.html">Dux'
+		Dekes decoy company</a> in 1987. Since then , Jeff's <a
+		href="fullsize.html">wood carvings</a> have been sold throughout North
+		America and internationally.
+	</p>
+	<p>
+		Jeff uses his field experience and carving abilities to work with
+		various organizations on conservation projects. He is a member of
+		Ducks Unlimited, and is the current president of the nationally
+		recognized Waterfowl Improvement Association. Along with the
+		membership of the WIA he implemented the State and Federal woodduck
+		population monitoring program in his area of New York state. Jeff has
+		been asked by such prestigious organizations as the US Fish and
+		Wildlife Service and the National Audubon Society to develop and carve
+		decoys for their waterbird restoration projects. These projects
+		involved re-establishment of black terns in New York state, common
+		murres in Maine and California, and Layson albatross chicks in
+		Hawaii.
+	</p>
+	<p>
+		Dux' Dekes decoy company is a small, family operated workshop in
+		the Adirondack Region of New York State. All of the duck decoys are
+		carved from Northern White Pine obtained from local managed forests. Since
+		proper drying procedure is crucial to ensure the integrity of the
+		finished carving, we purchase pine "green" from area sawmills and dry
+		it in our own kiln. When the wood is dry, each piece is then cut and
+		carved in the shop using turn of the century tools and techniques.
+	</p>
 {% endblock %}
