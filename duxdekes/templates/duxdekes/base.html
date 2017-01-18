@@ -1,12 +1,12 @@
-{% load product_categories %}
 <!doctype html>
 <html>
-
+{% load product_categories %}
+{% load static %}
 <head>
 	<title>{% block "title" %}Dux’ Dekes{% endblock %}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<link rel="stylesheet" type="text/css" href="/css/layout.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'duxdekes/css/layout.css' %}">
 </head>
 
 <body>
@@ -36,9 +36,9 @@
 	<footer>
 		<nav>
 			<ul class="foot-nav">
-				<li class="nav-item"><a href="#">About Us</a></li>
-				<li class="nav-item"><a href="#">About the Artist</a></li>
-				<li class="nav-item"><a href="#">Contact</a></li>
+				<li class="nav-item"><a href="{% url "about" %}">About Us</a></li>
+				<li class="nav-item"><a href="{% url "about-artist" %}">About the Artist</a></li>
+				<li class="nav-item"><a href="{% url "contact" %}">Contact</a></li>
 				{% product_categories %}
 			</ul>
 		</nav>
