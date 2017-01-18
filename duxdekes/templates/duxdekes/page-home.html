@@ -1,0 +1,465 @@
+<!doctype html>
+<html>
+{% load product_categories static %}
+<head>
+	<title>{% block "title" %}Dux’ Dekes{% endblock %}</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="{% static 'duxdekes/css/layout.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'duxdekes/css/home.css' %}">
+</head>
+
+<body>
+	<a class="a11y-link" href="#content">Content</a>
+	<a class="a11y-link" href="#fullnav">Full site navigation</a>
+	<header class="header">
+		<div class="title-group">
+			<div class="site-title">Dux’ Dekes</div>
+			<div class="site-subtitle">Handcrafted decoys</div>
+		</div>
+		<ul class="main-categories">
+			<li class="top-tile">
+				<a href="#unfinished">Unfinished Blanks</a>
+			</li>
+			<li class="top-tile">
+				<a href="#finished">Finished Carvings</a>
+			</li>
+			<li class="top-tile">
+				<a href="#instructions">Instructions</a>
+			</li>
+		</ul>
+	</header>
+	<main class="content" id="content">
+		<section id="unfinished">
+			<header>
+				<h1 class="content-title">Unfinished Blanks</h1>
+			</header>
+			<ul class="product-categories">
+				<li><a href="#">Premier Blanks</a></li>
+				<li><a href="#">Full Size Ducks</a></li>
+				<li><a href="#">Loons</a></li>
+				<li><a href="#">Shorebirds</a></li>
+				<li><a href="#">Swans</a></li>
+				<li><a href="#">Miniatures</a></li>
+				<li><a href="#">Songbirds</a></li>
+				<li><a href="#">Raptors</a></li>
+				<li><a href="#">Herons</a></li>
+				<li><a href="#">Standing Full Size Ducks</a></li>
+				<li><a href="#">Miscellaneous</a></li>
+				<li><a href="#">Upland Game Birds</a></li>
+				<li><a href="#">Two Thirds Size Ducks </a></li>
+				<li><a href="#">Gunning Decoys</a></li>
+				<li><a href="#">Geese</a></li>
+				<li><a href="#">Decorative Artists</a></li>
+			</ul>
+			<h2>What's new</h2>
+			<div class="products">
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product2.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product3.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Cherry</td>
+								<td itemprop="price">$45.30</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Ash</td>
+								<td itemprop="price">$45.30</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+			</div>
+		</section>
+		<section id="finished">
+			<header>
+				<h1 class="content-title">Finished Carvings</h1>
+			</header>
+			<p>
+				The details in all of our decoys are fine-tuned, accurate, and
+				precise. The
+				high quality and attention to detail make them a work of art to add
+				to your home.
+			</p>
+			<ul class="product-categories">
+				<li><a href="#">Ducks</a></li>
+				<li><a href="#">Swan &amp; Goose</a></li>
+				<li><a href="#">Loon</a></li>
+				<li><a href="#">Cats</a></li>
+			</ul>
+			<h2>What's new</h2>
+			<div class="products">
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product3.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test product with a long name</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Oak</td>
+								<td itemprop="price">$50.00</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product2.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product4.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product3.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Cherry</td>
+								<td itemprop="price">$45.30</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Ash</td>
+								<td itemprop="price">$45.30</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+			</div>
+		</section>
+		<section id="instructions">
+			<header>
+				<h1 class="content-title">Instructions</h1>
+			</header>
+			<p>
+				Our wood carving supplies will directly supplement your decoy painting and carving needs, and our Nancy Baur's easy to follow instruction packets are used by beginners, as well as advanced painters. Bruce Burk ranks among the master bird carvers in the country and is responsible for getting thousands of other carvers started.
+			</p>
+			<ul class="product-categories">
+				<li><a href="#">Instructional Books</a></li>
+				<li><a href="#">Bauer Paintings</a></li>
+				<li><a href="#">Carving Materials</a></li>
+			</ul>
+			<h2>What's new</h2>
+			<div class="products">
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product3.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test product with a long name</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Oak</td>
+								<td itemprop="price">$50.00</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product2.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+				<article class="product" itemscope itemtype="http://schema.org/Product">
+					<div class="product-preview">
+						<img src="/img/product4.jpg" alt="A preview of product"
+							itemprop="image">
+					</div>
+					<h1 itemprop="name">Test Product</h1>
+					<table class="product-pricing">
+						<caption>Materials</caption>
+						<thead>
+							<tr>
+								<th scope="col">Material</th>
+								<th scope="col">Price</th>
+								<th scope="col">Cart</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr itemscope itemtype="http://schema.org/Offer">
+								<td>Pine</td>
+								<td itemprop="price">$35.45</td>
+								<td>
+									<a href="#" class="cart">Add</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</article>
+			</div>
+		</section>
+	</main>
+	<footer id="fullnav">
+		<nav>
+			<ul class="foot-nav">
+				<li class="nav-item"><a href="{% url "about" %}">About Us</a></li>
+				<li class="nav-item"><a href="{% url "about-artist" %}">About the Artist</a></li>
+				<li class="nav-item"><a href="{% url "contact" %}">Contact</a></li>
+				{% product_categories %}
+			</ul>
+		</nav>
+		<p>
+			©2017 Dux' Dekes 
+		</p>
+	</footer>
+</body>
+
+</html>
