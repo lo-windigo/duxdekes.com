@@ -1,0 +1,41 @@
+{% extends "duxdekes/base.html" %}
+{% load static %}
+
+{% block "title" %}
+Contact Us
+{% endblock %}
+
+{% block "content" %}
+		<h1>Contact Dux' Dekes</h1>
+		<form method="post">
+			{% csrf_token %}
+			{% if form.non_field_errors|length %}
+			<ul class="errors">
+				{% for error in form.non_field_errors %}
+				<li>{{ error }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+			<p>
+				{{ form.name.errors }}
+				<label for="id_name">
+					{{ form.name.label }}:<br>
+					{{ form.name }}
+				</label>
+			</p>
+			<p>
+				{{ form.email.errors }}
+				<label for="id_email">
+					{{ form.email.label }}:<br>
+					{{ form.email }}
+				</label>
+			</p>
+			<p>
+				{{ form.message.errors }}
+				<label for="id_message">
+					{{ form.message.label }}:<br>
+					{{ form.message }}
+				</label>
+			</p>
+		</form>
+{% endblock %}
