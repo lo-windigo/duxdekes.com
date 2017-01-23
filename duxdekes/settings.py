@@ -42,6 +42,13 @@ if os.path.exists(f):
     exec(open(f, "rb").read())
 
 
+# Append Domains defined in local settings
+ALLOWED_HOSTS += [
+	DOMAIN,
+	"." + DOMAIN
+]
+
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
