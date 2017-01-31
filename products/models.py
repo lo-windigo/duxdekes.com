@@ -54,13 +54,16 @@ class Product(models.Model):
             max_length=300)
     product_id = models.CharField('ID',
             max_length=30,
-            unique=True)
+            blank = True,
+            null = True)
     base_price = models.DecimalField('Price',
             max_digits=9,
             decimal_places=2)
     hidden = models.BooleanField('Hide product?',
             default = False)
-    category = models.ForeignKey(ProductCategory)
+    category = models.ForeignKey(ProductCategory,
+            blank = True,
+            null = True)
 
     class Meta:
         default_related_name = "products"
