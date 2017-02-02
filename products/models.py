@@ -12,10 +12,11 @@ class ProductCategory(models.Model):
     INSTRUCTION = 'i'
     MATERIAL = 'm'
     PRODUCT_TYPE = (
-            (UNFINISHED, 'Unfinished Decoys'),
+            (UNFINISHED, 'Unfinished Blanks'),
             (FINISHED, 'Finished Decoys'),
             (INSTRUCTION, 'Instructions'),
             (MATERIAL, 'Materials'),
+            (None, 'Unset'),
             )
 
     category_type = models.CharField('Type',
@@ -29,12 +30,17 @@ class ProductCategory(models.Model):
     explanation = models.TextField('Extra category information',
             blank=True,
             null=True)
-    slug = models.SlugField()
+    slug = models.SlugField(
+            unique=True)
     #TODO: Would this be better as a file upload field?
     template = models.CharField('Custom template',
             max_length=300,
             blank=True,
             null=True)
+
+
+    class Meta:
+        verbose_name_plural = "Product Categories"
 
 
     def __str__(self):
