@@ -1,5 +1,5 @@
 from .util.contact import ContactForm
-from products.util import live_categories
+from products.models import Product, ProductCategory
 from django.shortcuts import redirect, render
 from django.core.mail import send_mail
 from django.conf import settings
@@ -70,8 +70,36 @@ def home(request):
     selection of the newest products.
     """
 
-    #TODO: Get latest products for each type of category
+    # Set up the dicts that will be sent in as context
+    categories = {}
+    new_products = {}
 
-    #TODO: create template
-    return render(request, 'duxdekes/page-home.html')
+    # Get some QueryManagers for use in retrieving type-related objects
+    category_qm = ProductCategory.objects.exclude(hidden=True)
+    product_qm = Product.objects.exclude(hidden=True).order_by('-updated')
+
+    for category_type in (ProductCategory.UNFINISHED,
+            ProductCategory.FINISHED,
+            ProductCategory.INSTRUCTION,
+            ProductCategory.MATERIAL):
+
+        category_filter = 'category_type={}'.format(category_type)
+        product_filter = 'category_type={}'.format(category_type)
+
+        # Get all categories
+        # TODO: This doesn't work.
+        categories.update({
+                    category_type: list(category_qm.filter(category_filter))
+                })
+
+        # Get the latest 4 products from this category type
+        # TODO
+        new_products[category_type] = product_qm.filter(product_filter)[-4]
+    
+    return render(request,
+            'duxdekes/page-home.html',
+            {
+                'categories': categories,
+                'new_products': new_products,
+            })
 

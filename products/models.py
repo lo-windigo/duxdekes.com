@@ -70,6 +70,8 @@ class Product(models.Model):
     category = models.ForeignKey(ProductCategory,
             blank = True,
             null = True)
+    updated = models.DateTimeField(auto_now=True)
+
 
     class Meta:
         default_related_name = "products"
