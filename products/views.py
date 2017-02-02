@@ -10,7 +10,7 @@ def listing(request, category_slug):
     prod_category = get_object_or_404(ProductCategory,
             slug=category_slug,
             hidden=False)
-    products = Product.objects.filter(category=prod_category)
+    products = Product.objects.exclude(hidden=True).filter(category=prod_category)
     context = {
             'products': products,
             'category': prod_category,
