@@ -75,7 +75,7 @@ def home(request):
     new_products = {}
 
     # Get some QueryManagers for use in retrieving type-related objects
-    category_qm = ProductCategory.objects.exclude(hidden=True)
+    category_qm = ProductCategory.objects.exclude(hidden=True).order_by('description')
     product_qm = Product.objects.exclude(hidden=True).order_by('-updated')
 
     for category_type in (ProductCategory.UNFINISHED,
@@ -83,18 +83,16 @@ def home(request):
             ProductCategory.INSTRUCTION,
             ProductCategory.MATERIAL):
 
-        category_filter = 'category_type={}'.format(category_type)
-        product_filter = 'category_type={}'.format(category_type)
+        type_categories = category_qm.filter(category_type=category_type)
+        type_products = product_qm.filter(category__category_type=category_type)
 
         # Get all categories
         # TODO: This doesn't work.
-        categories.update({
-                    category_type: list(category_qm.filter(category_filter))
-                })
+        categories[category_type] = list(type_categories)
 
         # Get the latest 4 products from this category type
         # TODO
-        new_products[category_type] = product_qm.filter(product_filter)[-4]
+        new_products[category_type] = type_products[:4]
     
     return render(request,
             'duxdekes/page-home.html',
