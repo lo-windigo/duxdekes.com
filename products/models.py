@@ -2,6 +2,15 @@ from django.db import models
 from django.shortcuts import reverse
 
 
+class ProductCategoryManager(models.Manager):
+    """
+    Allow filtering on numbers of products
+    """
+    def get_queryset(self):
+        return ProductCategory.objects.annotate(num_products=models.Count('product'))
+
+
+
 class ProductCategory(models.Model):
     """
     A category of similar products that are displayed together in a product
@@ -18,6 +27,9 @@ class ProductCategory(models.Model):
             (MATERIAL, 'Materials'),
             (None, 'Unset'),
             )
+
+    # Set a custom manager
+    objects = ProductCategoryManager()
 
     category_type = models.CharField('Type',
             choices=PRODUCT_TYPE,
