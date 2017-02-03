@@ -66,3 +66,9 @@ DATABASES = {
 # Timezones
 TIME_ZONE = 'UTC'
 
+
+################
+# Static Files #
+################
+
+STATIC_ROOT = "/var/www/example.com/static/"
