@@ -6,7 +6,19 @@
 DOMAIN = 'example.com'
 WEBROOT = '/path/to/webroot'
 
-#################
+
+################
+# Contact page #
+################
+
+CONTACT_SUBJECT = "Dux' Dekes website message"
+CONTACT_SENDER = "duxdekes@example.com"
+CONTACT_RECIPIENTS = [ "example@example.com", ]
+
+
+####################
+# General settings #
+####################
 
 
 # Debug: should be False in production
@@ -23,7 +35,7 @@ SECRET_KEY="""
 """
 
 # Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -39,14 +51,18 @@ DATABASES = {
 #        "HOST": "", # Set to empty string for localhost.
 #        "PORT": "", # Set to empty string for default.
 #    },
+
+    # Postgresql 
+#    "default": {
+#        "ENGINE": "django.db.backends.postgresql_psycopg2",
+#        "NAME": "database_name",
+#        "USER": "database_user",
+#        "PASSWORD": "password",
+#        "HOST": "", # Set to empty string for localhost.
+#        "PORT": "", # Set to empty string for default.
+#    },
 }
-
-
-# Domains for public site
-ALLOWED_HOSTS += [
-	DOMAIN,
-	".{}".format(DOMAIN)
-]
 
 # Timezones
 TIME_ZONE = 'UTC'
+
