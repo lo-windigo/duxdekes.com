@@ -18,9 +18,11 @@ PACKAGES
 read -r -d '' PIP_PACKAGES <<-'PACKAGES'
 	Django
 	pillow
-	mysqlclient
+	psycopg2
 PACKAGES
 
+# DB-dependent pip packages
+#	mysqlclient
 
 # Try installing the debian requirements
 if [ "$USER" == "root" ]; then
