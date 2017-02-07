@@ -2,15 +2,6 @@ from django.db import models
 from django.shortcuts import reverse
 
 
-class ProductCategoryManager(models.Manager):
-    """
-    Allow filtering on numbers of products
-    """
-    def get_queryset(self):
-        return ProductCategory.objects.annotate(num_products=models.Count('product'))
-
-
-
 class ProductCategory(models.Model):
     """
     A category of similar products that are displayed together in a product
@@ -28,9 +19,6 @@ class ProductCategory(models.Model):
             (None, 'Unset'),
             )
 
-    # Set a custom manager
-    objects = ProductCategoryManager()
-
     category_type = models.CharField('Type',
             choices=PRODUCT_TYPE,
             default=UNFINISHED,
@@ -44,6 +32,7 @@ class ProductCategory(models.Model):
             null=True)
     slug = models.SlugField(
             unique=True)
+    products = models.ManyToManyField('Product')
     #TODO: Would this be better as a file upload field?
     template = models.CharField('Custom template',
             max_length=300,
@@ -79,9 +68,6 @@ class Product(models.Model):
             decimal_places=2)
     hidden = models.BooleanField('Hide product?',
             default = False)
-    category = models.ForeignKey(ProductCategory,
-            blank = True,
-            null = True)
     updated = models.DateTimeField(auto_now=True)
 
 

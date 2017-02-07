@@ -1,4 +1,5 @@
 from .util.contact import ContactForm
+from django.db.models import Count
 from products.models import Product, ProductCategory
 from django.shortcuts import redirect, render
 from django.core.mail import send_mail
@@ -76,7 +77,6 @@ def home(request):
 
     # Get some QueryManagers for use in retrieving type-related objects
     category_qm = ProductCategory.objects.exclude(hidden=True).order_by('description')
-    product_qm = Product.objects.exclude(hidden=True).order_by('-updated')
 
     for category_type in (ProductCategory.UNFINISHED,
             ProductCategory.FINISHED,
@@ -84,15 +84,17 @@ def home(request):
             ProductCategory.MATERIAL):
 
         type_categories = category_qm.filter(category_type=category_type)
-        type_products = product_qm.filter(category__category_type=category_type)
 
         # Get all categories
-        # TODO: This doesn't work.
-        categories[category_type] = list(type_categories)
+        categories[category_type] = []
+
+        # Append a category if there are products available
+        for category in type_categories.all():
+            if len(category.products.all()) > 0:
+                categories[category_type].append(category)
 
         # Get the latest 4 products from this category type
-        # TODO
-        new_products[category_type] = type_products[:4]
+        new_products[category_type] = type_categories.products.all().order('-updated')[:4]
     
     return render(request,
             'duxdekes/page-home.html',

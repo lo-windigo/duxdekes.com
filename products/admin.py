@@ -13,6 +13,5 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     ordering = ['description']
-    list_filter = ('category__category_type',)
     view_on_site = False
 
