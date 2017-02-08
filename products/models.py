@@ -1,14 +1,6 @@
 from django.db import models
 from django.shortcuts import reverse
-
-
-class ProductCategoryManager(models.Manager):
-    """
-    Allow filtering on numbers of products
-    """
-    def get_queryset(self):
-        return ProductCategory.objects.annotate(num_products=models.Count('product'))
-
+from django.template.defaultfilters import slugify
 
 
 class ProductCategory(models.Model):
@@ -27,9 +19,6 @@ class ProductCategory(models.Model):
             (MATERIAL, 'Materials'),
             (None, 'Unset'),
             )
-
-    # Set a custom manager
-    objects = ProductCategoryManager()
 
     category_type = models.CharField('Type',
             choices=PRODUCT_TYPE,
@@ -61,6 +50,15 @@ class ProductCategory(models.Model):
 
     def get_absolute_url(self):
         return reverse('listing', args=[self.slug])
+
+
+    def save(self, *args, **kwargs):
+
+        # Create a slug field if none is present
+        if not self.id and not self.slug:
+            self.slug = slugify(self.description)
+
+        super(ProductCategory, self).save(*args, **kwargs)
 
 
 
