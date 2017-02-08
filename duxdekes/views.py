@@ -83,15 +83,13 @@ def home(request):
             ProductCategory.INSTRUCTION,
             ProductCategory.MATERIAL):
 
-        type_categories = category_qm.filter(category_type=category_type)
+        type_categories = list(category_qm.filter(category_type=category_type))
         type_products = product_qm.filter(category__category_type=category_type)
 
         # Get all categories
-        # TODO: This doesn't work.
-        categories[category_type] = list(type_categories)
+        categories[category_type] = type_categories
 
         # Get the latest 4 products from this category type
-        # TODO
         new_products[category_type] = type_products[:4]
     
     return render(request,
