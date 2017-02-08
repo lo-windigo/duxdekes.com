@@ -1,24 +1,36 @@
 import csv, re
-from products.models import Product
+from products.models import Product, ProductCategory
+
+
+__all__ = ['import_data',]
 
 
 class MapException(Exception):
     pass
 
 
-#def save_category(data):
-#    """
-#    Map a CSV line to a category
-#    """
-#    map = {
-#            'categoryid': '',
-#            'category': '',
-#            }
-#
-#    try:
-#        map_csv_to_object(data, mapping)
-#    except MapException e:
-#        pass
+def save_category(data):
+    """
+    Map a CSV line to a category
+    """
+    col_map = {
+            'category_type': 0, 
+            'description': 1,
+            }
+
+    try:
+        category = map_csv_to_object(data, ProductCategory(), col_map)
+
+        # Add product to this category
+        for connected_id in data[2].split(', '):
+            product = Product.objects.get(product_id=connected_id)
+
+            if product:
+                product.category = category
+                product.save()
+
+    except (MapException, Exception) as e:
+        print('Ran into a category exception: {}'.format(e))
     
 
 def save_product(data):
@@ -64,7 +76,7 @@ def save_product(data):
         map_csv_to_object(data, Product(), col_map)
 
     except (MapException, Exception) as e:
-        print('Ran into an exception: {}'.format(e))
+        print('Ran into a product exception: {}'.format(e))
 
 
 def map_csv_to_object(data, model, mapping):
@@ -75,6 +87,7 @@ def map_csv_to_object(data, model, mapping):
         setattr(model, member, data[index])
 
     model.save()
+    return model
 
 
 def import_data():
@@ -90,6 +103,15 @@ def import_data():
         
         for product_data in product_import:
             save_product(product_data)
+
+    # Categories
+    category_file_path = '/home/windigo/code/duxdekes/resources/categories.csv'
+
+    with open(category_file_path) as category_file:
+        category_import = csv.reader(category_file)
+        
+        for category_data in category_import:
+            save_category(category_data)
 
 
 if __name__ == "__main__":
