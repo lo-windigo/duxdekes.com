@@ -45,13 +45,19 @@ section>h2 {
 }
 
 .product-categories {
+	-moz-columns: auto 10em;
+	-webkit-columns: auto 10em;
 	columns: auto 10em;
 	padding-left: .5em;
 }
 
 /* Fix for Chrome multi-column list marker bug */
 .product-categories>li {
+	background-color: transparent;
 	list-style: none;
+	padding: .5em 0;
+	text-indent: -1em;
+	margin-left: 1em;
 }
 
 .product-categories>li::before {
@@ -60,8 +66,6 @@ section>h2 {
 
 .product-categories>li>a {
 	font-size: 1.1em;
-	display: inline-block;
-	padding: .5em 0;
 }
 
 .site-title {
