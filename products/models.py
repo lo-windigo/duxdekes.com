@@ -3,6 +3,13 @@ from django.shortcuts import reverse
 from django.template.defaultfilters import slugify
 
 
+class Material(models.Model):
+    """
+    A material that products are made of
+    """
+    pass
+
+
 class ProductCategory(models.Model):
     """
     A category of similar products that are displayed together in a product
@@ -45,7 +52,7 @@ class ProductCategory(models.Model):
 
 
     def __str__(self):
-        return self.description
+        return "({}) {}".format(self.get_category_type_display(), self.description)
 
 
     def get_absolute_url(self):
@@ -93,4 +100,25 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         pass
+
+
+
+class Picture(models.Model):
+    """
+    A picture of a product
+    """
+    description = models.CharField('Name',
+            blank=True,
+            max_length=300)
+#    height = models.IntegerField('Height')
+#    width = models.IntegerField('Width')
+    image = models.ImageField('Picture',
+            upload_to='products/')
+            #height_field=height,
+            #width_field=width)
+    product = models.ForeignKey(Product,
+            on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        return self.image.url
 

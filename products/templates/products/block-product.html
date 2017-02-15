@@ -1,9 +1,9 @@
 {% load static %}
 <article class="product" itemscope itemtype="http://schema.org/Product">
 	<div class="product-preview">
-		{% if False %}
-		<img src="/img/product.jpg" alt="A preview of product"
-			itemprop="image">
+		{% if product.picture_set.first %}
+		<img src="{{ product.picture_set.first.get_absolute_url }}"
+	   		alt="{{ product.picture_set.first.description }}" itemprop="image">
 		{% else %}
 		<img src="{% static "/products/img/no-image.svg" %}" alt=" "
 			width="8em" height="8em">
