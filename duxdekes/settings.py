@@ -25,30 +25,6 @@ ALLOWED_HOSTS = ['127.0.0.1']
 SITE_ID = 1
 
 
-##################
-# Local settings #
-##################
-
-# Import the local settings file (borrowed from Mezzanine)
-PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
-f = os.path.join(PROJECT_APP_PATH, "local_settings.py")
-if os.path.exists(f):
-    import sys
-    import imp
-    module_name = "local_settings"
-    module = imp.new_module(module_name)
-    module.__file__ = f
-    sys.modules[module_name] = module
-    exec(open(f, "rb").read())
-
-
-# Append Domains defined in local settings
-ALLOWED_HOSTS += [
-	DOMAIN,
-	"." + DOMAIN
-]
-
-
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -120,7 +96,35 @@ USE_I18N = False
 USE_L10N = True
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 STATIC_URL = '/static/'
+
+# User-uploaded media files
+# https://docs.djangoproject.com/en/1.10/ref/settings/#media-url
+MEDIA_URL = '/media/'
+
+##################
+# Local settings #
+##################
+
+# Import the local settings file (borrowed from Mezzanine)
+PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
+f = os.path.join(PROJECT_APP_PATH, "local_settings.py")
+if os.path.exists(f):
+    import sys
+    import imp
+    module_name = "local_settings"
+    module = imp.new_module(module_name)
+    module.__file__ = f
+    sys.modules[module_name] = module
+    exec(open(f, "rb").read())
+
+
+# Append Domains defined in local settings
+ALLOWED_HOSTS += [
+	DOMAIN,
+	"." + DOMAIN
+]
+
+
