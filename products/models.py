@@ -3,13 +3,6 @@ from django.shortcuts import reverse
 from django.template.defaultfilters import slugify
 
 
-class Material(models.Model):
-    """
-    A material that products are made of
-    """
-    pass
-
-
 class ProductCategory(models.Model):
     """
     A category of similar products that are displayed together in a product
@@ -79,9 +72,6 @@ class Product(models.Model):
             max_length=30,
             blank = True,
             null = True)
-    base_price = models.DecimalField('Price',
-            max_digits=9,
-            decimal_places=2)
     hidden = models.BooleanField('Hide product?',
             default = False)
     category = models.ForeignKey(ProductCategory,
@@ -98,27 +88,79 @@ class Product(models.Model):
         return self.description
 
 
-    def get_absolute_url(self):
-        pass
-
-
 
 class Picture(models.Model):
     """
-    A picture of a product
+    A product image
     """
     description = models.CharField('Name',
             blank=True,
             max_length=300)
-#    height = models.IntegerField('Height')
-#    width = models.IntegerField('Width')
     image = models.ImageField('Picture',
             upload_to='products/')
-            #height_field=height,
-            #width_field=width)
     product = models.ForeignKey(Product,
             on_delete=models.CASCADE)
 
     def get_absolute_url(self):
         return self.image.url
+
+
+
+class UnfinishedDecoy(Product):
+    """
+    An unfinished decoy, which can be available in multiple materials
+    """
+    pine_price = models.DecimalField('Price of Pine',
+            max_digits=9,
+            decimal_places=2,
+            blank=True,
+            null=True)
+    feet_price = models.BooleanField('Optional Feet Fee',
+            max_digits=9,
+            decimal_places=2,
+            blank=True,
+            null=True)
+    tupelo_price = models.BooleanField('Price of Tupelo',
+            max_digits=9,
+            decimal_places=2,
+            blank=True,
+            null=True)
+
+
+
+class Instructions(Product):
+    """
+    A set of instructions for painting your own decoy
+    """
+    price = models.DecimalField('Instructions only price',
+            max_digits=9,
+            decimal_places=2)
+    blank_price = models.BooleanField('Price with Blank',
+            max_digits=9,
+            decimal_places=2,
+            blank=True,
+            null=True)
+    matching_blank = models.ForeignKey(Product)
+
+
+
+class FinishedDecoy(Product):
+    """
+    An unfinished decoy, which can be available in multiple materials
+    """
+    pine_price = models.DecimalField('Price of Pine',
+            max_digits=9,
+            decimal_places=2,
+            blank=True,
+            null=True)
+    feet_price = models.BooleanField('Optional Feet Fee',
+            max_digits=9,
+            decimal_places=2,
+            blank=True,
+            null=True)
+    tupelo_price = models.BooleanField('Price of Tupelo',
+            max_digits=9,
+            decimal_places=2,
+            blank=True,
+            null=True)
 
