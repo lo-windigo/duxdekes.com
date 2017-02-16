@@ -146,21 +146,9 @@ class Instructions(Product):
 
 class FinishedDecoy(Product):
     """
-    An unfinished decoy, which can be available in multiple materials
+    A painted decoy
     """
-    pine_price = models.DecimalField('Price of Pine',
+    price = models.DecimalField('Price',
             max_digits=9,
-            decimal_places=2,
-            blank=True,
-            null=True)
-    feet_price = models.BooleanField('Optional Feet Fee',
-            max_digits=9,
-            decimal_places=2,
-            blank=True,
-            null=True)
-    tupelo_price = models.BooleanField('Price of Tupelo',
-            max_digits=9,
-            decimal_places=2,
-            blank=True,
-            null=True)
+            decimal_places=2)
 
