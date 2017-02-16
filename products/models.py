@@ -115,12 +115,12 @@ class UnfinishedDecoy(Product):
             decimal_places=2,
             blank=True,
             null=True)
-    feet_price = models.BooleanField('Optional Feet Fee',
+    feet_price = models.DecimalField('Optional Feet Fee',
             max_digits=9,
             decimal_places=2,
             blank=True,
             null=True)
-    tupelo_price = models.BooleanField('Price of Tupelo',
+    tupelo_price = models.DecimalField('Price of Tupelo',
             max_digits=9,
             decimal_places=2,
             blank=True,
@@ -135,7 +135,7 @@ class Instructions(Product):
     price = models.DecimalField('Instructions only price',
             max_digits=9,
             decimal_places=2)
-    blank_price = models.BooleanField('Price with Blank',
+    blank_price = models.DecimalField('Price with Blank',
             max_digits=9,
             decimal_places=2,
             blank=True,
