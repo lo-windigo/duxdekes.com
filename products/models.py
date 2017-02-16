@@ -140,7 +140,7 @@ class Instructions(Product):
             decimal_places=2,
             blank=True,
             null=True)
-    matching_blank = models.ForeignKey(Product)
+    matching_blank = models.ForeignKey(UnfinishedDecoy)
 
 
 
