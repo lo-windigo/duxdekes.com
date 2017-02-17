@@ -11,42 +11,22 @@
 	</div>
 	<h1 itemprop="name">{{ product.description }}</h1>
 	<table class="product-pricing">
-		<caption>Options</caption>
+		<caption>Materials</caption>
 		<thead>
 			<tr>
-				<th scope="col">Option</th>
+				<th scope="col">Material</th>
 				<th scope="col">Price</th>
 				<th scope="col">Cart</th>
 			</tr>
 		</thead>
 		<tbody>
-			{% if product.pine_price %}
 			<tr itemscope itemtype="http://schema.org/Offer">
-				<td>Pine</td>
-				<td itemprop="price">${{ product.pine_price|floatformat:2 }}</td>
+				<td></td>
+				<td itemprop="price">${{ product.price|floatformat:2 }}</td>
 				<td>
 					<a href="#" class="cart">Add</a>
 				</td>
 			</tr>
-			{% endif %}
-			{% if product.tuplo_price %}
-			<tr itemscope itemtype="http://schema.org/Offer">
-				<td>Tuplo</td>
-				<td itemprop="price">${{ product.tuplo_price|floatformat:2 }}</td>
-				<td>
-					<a href="#" class="cart">Add</a>
-				</td>
-			</tr>
-			{% endif %}
-			{% if product.tuplo_price %}
-			<tr itemscope itemtype="http://schema.org/Offer">
-				<td>Add Feet</td>
-				<td itemprop="price">Add ${{ product.feet_price|floatformat:2 }}</td>
-				<td>
-					<a href="#" class="cart">Add</a>
-				</td>
-			</tr>
-			{% endif %}
 		</tbody>
 	</table>
 </article>
