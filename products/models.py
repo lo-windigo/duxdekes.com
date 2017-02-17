@@ -143,6 +143,10 @@ class Instructions(Product):
     matching_blank = models.ForeignKey(UnfinishedDecoy)
 
 
+    class Meta:
+        verbose_name_plural = "Instructions"
+
+
 
 class FinishedDecoy(Product):
     """

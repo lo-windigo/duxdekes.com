@@ -14,13 +14,20 @@ class PictureInline(admin.TabularInline):
     model = models.Picture
 
 
-@admin.register(models.Product)
+#@admin.register(models.Product)
+#class ProductAdmin(admin.ModelAdmin):
+#    inlines = [PictureInline,]
+#    ordering = ['description']
+#    list_filter = ('category__category_type',)
+#    view_on_site = False
+
+
 class ProductAdmin(admin.ModelAdmin):
     inlines = [PictureInline,]
     ordering = ['description']
-    list_filter = ('category__category_type',)
-    view_on_site = False
 
+admin.site.register(models.Instructions, ProductAdmin)
+admin.site.register(models.FinishedDecoy, ProductAdmin)
+admin.site.register(models.UnfinishedDecoy, ProductAdmin)
 
-admin.register(models.Picture)
 
