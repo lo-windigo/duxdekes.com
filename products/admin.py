@@ -10,6 +10,28 @@ class ProductCategoryAdmin(admin.ModelAdmin):
     radio_fields = {"category_type": admin.HORIZONTAL}
 
 
+    def convert_to_finished(self, request, queryset):
+        for product in queryset:
+            models.FinishedDecoy.convert_from_product(product)
+
+    convert_to_finished.short_description = 'Convert to "Finished Decoy"'
+
+
+    def convert_to_instructions(self, request, queryset):
+        for product in queryset:
+            models.Instructions.convert_from_product(product)
+
+    convert_to_unfinished.short_description = 'Convert to "Unfinished Decoy"'
+
+
+    def convert_to_unfinished(self, request, queryset):
+        for product in queryset:
+            models.UnfinishedDecoy.convert_from_product(product)
+
+    convert_to_unfinished.short_description = 'Convert to "Unfinished Decoy"'
+
+
+
 class PictureInline(admin.TabularInline):
     model = models.Picture
 

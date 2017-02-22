@@ -49,7 +49,10 @@ def save_product(data):
 
     try:
         # Conver the hidden field to a boolean value
-        data[col_map['hidden']] = data[col_map['hidden']] == 'True'
+        #data[col_map['hidden']] = data[col_map['hidden']] == 'True'
+
+        # Just kidding - don't show freshly imported products!
+        data[col_map['hidden']] = True
 
         # Clean up the product description
         if data[col_map['description']]:
