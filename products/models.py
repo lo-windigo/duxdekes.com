@@ -95,9 +95,9 @@ class Product(models.Model):
         attributes[parent_link_field.name] = product
 
         for field in product._meta.fields:
-            new_attrs[field.name] = getattr(product, field.name)
+            attributes[field.name] = getattr(product, field.name)
 
-        new_object = cls(new_attrs**)
+        new_object = cls(**attributes)
         new_object.save()
 
 
