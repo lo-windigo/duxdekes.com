@@ -1,7 +1,7 @@
 from django.db import models
 from django.shortcuts import reverse
 from django.template.defaultfilters import slugify
-
+from sorl.thumbnail import ImageField
 
 class ProductCategory(models.Model):
     """
@@ -88,6 +88,19 @@ class Product(models.Model):
         return self.description
 
 
+    @classmethod
+    def convert_from_product(cls, product):
+        attributes = {}
+        parent_link_field = cls._meta.parents.get(product.__class__, None)
+        attributes[parent_link_field.name] = product
+
+        for field in product._meta.fields:
+            new_attrs[field.name] = getattr(product, field.name)
+
+        new_object = cls(new_attrs**)
+        new_object.save()
+
+
 
 class Picture(models.Model):
     """
@@ -96,7 +109,7 @@ class Picture(models.Model):
     description = models.CharField('Name',
             blank=True,
             max_length=300)
-    image = models.ImageField('Picture',
+    image = ImageField('Picture',
             upload_to='products/')
     product = models.ForeignKey(Product,
             on_delete=models.CASCADE)
@@ -140,7 +153,9 @@ class Instructions(Product):
             decimal_places=2,
             blank=True,
             null=True)
-    matching_blank = models.ForeignKey(UnfinishedDecoy)
+    matching_blank = models.ForeignKey(UnfinishedDecoy,
+            blank=True,
+            null=True)
 
 
     class Meta:
@@ -154,5 +169,7 @@ class FinishedDecoy(Product):
     """
     price = models.DecimalField('Price',
             max_digits=9,
-            decimal_places=2)
+            decimal_places=2,
+            blank=True,
+            null=True)
 

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'duxdekes',
     'products',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
