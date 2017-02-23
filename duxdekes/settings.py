@@ -21,9 +21,10 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = False
 ALLOWED_HOSTS = ['127.0.0.1']
+ROOT_URLCONF = 'duxdekes.urls'
+WSGI_APPLICATION = 'duxdekes.wsgi.application'
 # Required for sites framework
 SITE_ID = 1
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -51,25 +52,6 @@ MIDDLEWARE = [
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
 
-ROOT_URLCONF = 'duxdekes.urls'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = 'duxdekes.wsgi.application'
 
 
 # Password validation
@@ -110,8 +92,7 @@ MEDIA_URL = '/media/'
 ##################
 
 # Import the local settings file (borrowed from Mezzanine)
-PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
-f = os.path.join(PROJECT_APP_PATH, "local_settings.py")
+f = os.path.join(BASE_DIR, "duxdekes/local_settings.py")
 if os.path.exists(f):
     import sys
     import imp
@@ -122,10 +103,45 @@ if os.path.exists(f):
     exec(open(f, "rb").read())
 
 
+##
+## Settings that extend local settings
+##
+
 # Append Domains defined in local settings
 ALLOWED_HOSTS += [
 	DOMAIN,
 	"." + DOMAIN
 ]
 
+# Template details
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+
+##
+## Sorl thumbnails
+##
+
+THUMBNAIL_DEBUG = DEBUG
+# Old template value, required by sorl
+#TEMPLATE_DEBUG = DEBUG
+
+#import logging
+#from sorl.thumbnail.log import ThumbnailLogHandler
+#handler = ThumbnailLogHandler()
+#handler.setLevel(logging.ERROR)
+#logging.getLogger('sorl.thumbnail').addHandler(handler)
 
