@@ -14,7 +14,7 @@ class ProductCategory(models.Model):
     MATERIAL = 'm'
     PRODUCT_TYPE = (
             (UNFINISHED, 'Unfinished Blanks'),
-            (FINISHED, 'Finished Decoys'),
+            (FINISHED, 'Finished Carving'),
             (INSTRUCTION, 'Instructions'),
             (MATERIAL, 'Materials'),
             (None, 'Unset'),
@@ -72,7 +72,7 @@ class Product(models.Model):
             max_length=30,
             blank = True,
             null = True)
-    hidden = models.BooleanField('Hide product?',
+    hidden = models.BooleanField('Hidden',
             default = False)
     category = models.ForeignKey(ProductCategory,
             blank = True,
@@ -99,6 +99,8 @@ class Product(models.Model):
 
         new_object = cls(**attributes)
         new_object.save()
+        # Don't delete old object - turns out it gets linked to. o_O
+        #product.delete()
 
 
 
@@ -119,7 +121,7 @@ class Picture(models.Model):
 
 
 
-class UnfinishedDecoy(Product):
+class UnfinishedBlank(Product):
     """
     An unfinished decoy, which can be available in multiple materials
     """
@@ -147,13 +149,15 @@ class Instructions(Product):
     """
     price = models.DecimalField('Instructions only price',
             max_digits=9,
-            decimal_places=2)
+            decimal_places=2,
+            blank=True,
+            null=True)
     blank_price = models.DecimalField('Price with Blank',
             max_digits=9,
             decimal_places=2,
             blank=True,
             null=True)
-    matching_blank = models.ForeignKey(UnfinishedDecoy,
+    matching_blank = models.ForeignKey(UnfinishedBlank,
             blank=True,
             null=True)
 
@@ -163,7 +167,7 @@ class Instructions(Product):
 
 
 
-class FinishedDecoy(Product):
+class FinishedCarving(Product):
     """
     A painted decoy
     """

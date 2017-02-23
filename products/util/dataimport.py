@@ -27,6 +27,7 @@ def save_category(data):
 
             if product:
                 product.category = category
+                product.hidden = False
                 product.save()
 
     except (MapException, Exception) as e:

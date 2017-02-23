@@ -25,7 +25,8 @@ class PictureInline(admin.TabularInline):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [PictureInline,]
+    list_filter = ('hidden', 'category', )
+    inlines = [ PictureInline, ]
     ordering = ['description']
     actions = [
             'convert_to_finished',
@@ -36,9 +37,9 @@ class ProductAdmin(admin.ModelAdmin):
 
     def convert_to_finished(self, request, queryset):
         for product in queryset:
-            models.FinishedDecoy.convert_from_product(product)
+            models.FinishedCarving.convert_from_product(product)
 
-    convert_to_finished.short_description = 'Convert to "Finished Decoy"'
+    convert_to_finished.short_description = 'Convert to "Finished Carving"'
 
 
     def convert_to_instructions(self, request, queryset):
@@ -50,12 +51,11 @@ class ProductAdmin(admin.ModelAdmin):
 
     def convert_to_unfinished(self, request, queryset):
         for product in queryset:
-            models.UnfinishedDecoy.convert_from_product(product)
+            models.UnfinishedBlank.convert_from_product(product)
 
-    convert_to_unfinished.short_description = 'Convert to "Unfinished Decoy"'
+    convert_to_unfinished.short_description = 'Convert to "Unfinished Blank"'
 
 admin.site.register(models.Instructions, ProductAdmin)
-admin.site.register(models.FinishedDecoy, ProductAdmin)
-admin.site.register(models.UnfinishedDecoy, ProductAdmin)
-
+admin.site.register(models.FinishedCarving, ProductAdmin)
+admin.site.register(models.UnfinishedBlank, ProductAdmin)
 

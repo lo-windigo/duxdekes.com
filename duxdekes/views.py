@@ -1,5 +1,5 @@
 from .util.contact import ContactForm
-from products.models import FinishedDecoy, Instructions, UnfinishedDecoy, Product, ProductCategory
+from products.models import FinishedCarving, Instructions, UnfinishedBlank, Product, ProductCategory
 from django.shortcuts import redirect, render
 from django.core.mail import send_mail
 from django.conf import settings
@@ -76,9 +76,9 @@ def home(request):
 
     # Get some QueryManagers for use in retrieving type-related objects
     category_qm = ProductCategory.objects.exclude(hidden=True).order_by('description')
-    new_products[ProductCategory.FINISHED] = FinishedDecoy.objects.exclude(hidden=True).order_by('-updated')[:4]
+    new_products[ProductCategory.FINISHED] = FinishedCarving.objects.exclude(hidden=True).order_by('-updated')[:4]
     new_products[ProductCategory.INSTRUCTION] = Instructions.objects.exclude(hidden=True).order_by('-updated')[:4]
-    new_products[ProductCategory.UNFINISHED] = UnfinishedDecoy.objects.exclude(hidden=True).order_by('-updated')[:4]
+    new_products[ProductCategory.UNFINISHED] = UnfinishedBlank.objects.exclude(hidden=True).order_by('-updated')[:4]
 
     for category_type in (ProductCategory.UNFINISHED,
             ProductCategory.FINISHED,
