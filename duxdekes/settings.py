@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from oscar import get_core_apps, OSCAR_MAIN_TEMPLATE_DIR
+from oscar.defaults import *
 
 
 ####################
@@ -38,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'duxdekes',
     'products',
-    'sorl.thumbnail',
-]
+    #'sorl.thumbnail',
+    'django.contrib.flatpages',
+] + get_core_apps()
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'oscar.apps.basket.middleware.BasketMiddleware',
 ]
 
 
@@ -69,7 +74,23 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME': 'oscar.apps.customer.auth_backends.EmailBackend',
+    },
+    {
+        'NAME': 'django.contrib.auth.backends.ModelBackend',
+    },
 ]
+
+
+##################
+# Oscar settings #
+##################
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
 
 
 # Internationalization
