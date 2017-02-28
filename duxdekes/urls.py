@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from oscar.app import application
 from . import views
 admin.autodiscover()
 
@@ -27,7 +28,7 @@ urlpatterns = [
     url(r'^contact/?$', views.contact, name='contact'),
     url(r'^products/', include('products.urls')),
     url(r'^admin/', admin.site.urls),
-    #url(r'^cart/', include('products.urls')),
+    url(r'', include(application.urls)),
 ]
 
 if settings.DEBUG:
