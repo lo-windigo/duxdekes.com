@@ -82,17 +82,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-##################
-# Oscar settings #
-##################
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-    },
-}
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 LANGUAGE_CODE = 'en-us'
@@ -107,6 +96,25 @@ STATIC_URL = '/static/'
 # User-uploaded media files
 # https://docs.djangoproject.com/en/1.10/ref/settings/#media-url
 MEDIA_URL = '/media/'
+
+
+##################
+# Oscar settings #
+##################
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
+
+OSCAR_INITIAL_ORDER_STATUS = 'Pending'
+OSCAR_INITIAL_LINE_STATUS = 'Pending'
+OSCAR_ORDER_STATUS_PIPELINE = {
+    'Pending': ('Being processed', 'Cancelled',),
+    'Being processed': ('Processed', 'Cancelled',),
+    'Cancelled': (),
+}
+
 
 ##################
 # Local settings #
