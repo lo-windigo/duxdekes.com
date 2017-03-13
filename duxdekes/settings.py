@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'compressor',
     'widget_tweaks',
-] + get_core_apps()
+] + get_core_apps( ['cart.shipping'], )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
