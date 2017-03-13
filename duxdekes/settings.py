@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'products',
     #'sorl.thumbnail',
     'django.contrib.flatpages',
+    'compressor',
+    'widget_tweaks',
 ] + get_core_apps()
 
 MIDDLEWARE = [
