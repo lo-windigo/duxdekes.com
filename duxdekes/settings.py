@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 from oscar import get_core_apps, OSCAR_MAIN_TEMPLATE_DIR
 from oscar.defaults import *
+from django.urls import reverse_lazy
 
 
 ####################
@@ -44,7 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'compressor',
     'widget_tweaks',
-] + get_core_apps( ['cart.shipping'], )
+] + get_core_apps( [
+    'cart.shipping',
+    'cart.catalogue'
+], )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -118,6 +122,7 @@ OSCAR_ORDER_STATUS_PIPELINE = {
     'Being processed': ('Processed', 'Cancelled',),
     'Cancelled': (),
 }
+OSCAR_HOMEPAGE = reverse_lazy('duxdekes:home')
 
 
 ##################
