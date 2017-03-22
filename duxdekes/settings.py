@@ -122,7 +122,7 @@ OSCAR_ORDER_STATUS_PIPELINE = {
     'Being processed': ('Processed', 'Cancelled',),
     'Cancelled': (),
 }
-OSCAR_HOMEPAGE = reverse_lazy('duxdekes:home')
+OSCAR_HOMEPAGE = reverse_lazy('home')
 
 
 ##################
