@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'duxdekes',
-    'products',
+    #'products',
     #'sorl.thumbnail',
     'django.contrib.flatpages',
     'compressor',
