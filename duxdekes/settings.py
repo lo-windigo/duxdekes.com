@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'duxdekes',
-    #'products',
+    'products',
     #'sorl.thumbnail',
     'django.contrib.flatpages',
     'compressor',
@@ -123,6 +123,8 @@ OSCAR_ORDER_STATUS_PIPELINE = {
     'Cancelled': (),
 }
 OSCAR_HOMEPAGE = reverse_lazy('home')
+OSCAR_ALLOW_ANON_CHECKOUT = True
+OSCAR_ALLOW_ANON_REVIEWS = False
 
 
 ##################
