@@ -3,17 +3,7 @@
 from __future__ import unicode_literals
 from django.db import migrations
 from django.apps import apps as global_apps
-
-def migrate_data(apps, schema_editor):
-    
-    try:
-       unfinished = apps.get_model('products', 'UnfinishedBlank') 
-       finished = apps.get_model('products', 'FinishedCarving') 
-       instructions = apps.get_model('products', 'Instructions') 
-
-    except LookupError:
-        return
-
+from duxdekes.util import dataimport
 
 
 class Migration(migrations.Migration):
@@ -22,5 +12,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_data, migrations.RunPython.noop)
+        migrations.RunPython(dataimport.import_data, migrations.RunPython.noop)
     ]

@@ -1,5 +1,5 @@
 import csv, re
-from products.models import Product, ProductCategory
+from oscar.core.loading import get_model
 
 
 __all__ = ['import_data',]
@@ -9,92 +9,112 @@ class MapException(Exception):
     pass
 
 
-def save_category(data):
+def save_category(data, parents):
     """
     Map a CSV line to a category
     """
-    col_map = {
-            'category_type': 0, 
-            'description': 1,
-            }
+    CATEGORY_TYPE = 0
+    DESCRIPTION = 1
+    CATEGORY_PRODUCTS = 2
+
+    Category = get_model('catalogue', 'Category')
+    Product = get_model('catalogue', 'Product')
 
     try:
-        category = map_csv_to_object(data, ProductCategory(), col_map)
+        category = Category(name=data[DESCRIPTION])
+        category.update_slug()
+        category.save()
 
-        # Add product to this category
-        for connected_id in data[2].split(', '):
+    except Exception as e:
+        print('Ran into a category exception: {}'.format(e))
+        return
+
+    # Add this category to its parent category
+    if parents[data[CATEGORY_TYPE]]:
+        parents[data[CATEGORY_TYPE]].add_child(instance=category)
+
+    # Add product to this category
+    for connected_id in data[CATEGORY_PRODUCTS].split(', '):
+        try:
             product = Product.objects.get(product_id=connected_id)
 
             if product:
-                product.category = category
-                product.hidden = False
+                product.category.add(category)
                 product.save()
 
-    except (MapException, Exception) as e:
-        print('Ran into a category exception: {}'.format(e))
+        except Exception as e:
+            print('Could not add product to category: {}'.format(e))
+
     
 
-def save_product(data):
+def save_product(data, categories, provider):
     """
     Map a CSV line to a product
     """
 
-    col_map = {
-            'product_id': 0,
-            'description': 1,
-            'base_price': 3,
-            'hidden': 6,
-            }
-    id_in_description = re.compile(r"([A-Z0-9 ]+)\s+-\s+")
+    PRODUCT_ID = 0
+    DESCRIPTION = 1
+    BASE_PRICE = 3
 
+    id_in_description = re.compile(r"([A-Z0-9 ]+)\s+-\s+")
+    Product = get_model('catalogue', 'Product')
+    Product = get_model('catalogue', 'StockRecord')
 
     try:
-        # Conver the hidden field to a boolean value
-        #data[col_map['hidden']] = data[col_map['hidden']] == 'True'
-
-        # Just kidding - don't show freshly imported products!
-        data[col_map['hidden']] = True
-
         # Clean up the product description
-        if data[col_map['description']]:
+        if not data[DESCRIPTION]:
+            return
 
-            # Trim any leading or trailing whitespace
-            desc = data[col_map['description']].strip()
-            
-            # Pull the product ID out of the description, if present
-            id_match = id_in_description.match(desc)
-            
-            if id_match:
-                product_id = id_match.group(1)
-                full_match = id_match.group(0)
+        # Trim any leading or trailing whitespace
+        desc = data[DESCRIPTION].strip()
+        
+        # Pull the product ID out of the description, if present
+        id_match = id_in_description.match(desc)
+        
+        if id_match:
+            product_id = id_match.group(1)
+            full_match = id_match.group(0)
 
-                # Trim off ID from the description
-                desc = desc[len(full_match):]
+            # Trim off ID from the description
+            desc = desc[len(full_match):]
 
-                # Save the product ID if it isn't present yet
-                if not data[col_map['product_id']]:
-                    data[col_map['product_id']] = product_id
+            # Save the product ID if it isn't present yet
+            if not data[PRODUCT_ID]:
+                data[PRODUCT_ID] = product_id
 
-            data[col_map['description']] = desc.title()
+        data[DESCRIPTION] = desc.title()
 
-        map_csv_to_object(data, Product(), col_map)
+        # Create a product, assuming its an unfinished blank
+        product = Product(
+            title=data[DESCRIPTION],
+            structure=Product.PARENT,
+        )
+        product.save()
 
-    except (MapException, Exception) as e:
+        pine = Product(
+            title='Pine',
+            structure=Product.CHILD,
+            parent=product,
+        )
+        pine.save()
+
+        stock = StockRecord(
+            product=pine,
+            partner=provider,
+            partner_sku=data[PRODUCT_ID],
+            price_excl_tax=data[BASE_PRICE],
+        )
+        stock.save()
+
+    except Exception as e:
         print('Ran into a product exception: {}'.format(e))
 
 
-def map_csv_to_object(data, model, mapping):
-    """
-    Take a line of input from a CSV file, and map it to a Django model
-    """
-    for member, index in mapping.items():
-        setattr(model, member, data[index])
-
-    model.save()
-    return model
-
-
 def import_data():
+    import_csv_data(*import_static_data())
+
+
+def import_csv_data(provider, base_categories):
     """
     Import data from the various CSV files
     """
@@ -106,7 +126,7 @@ def import_data():
         product_import = csv.reader(product_file)
         
         for product_data in product_import:
-            save_product(product_data)
+            save_product(product_data, base_categories, provider)
 
     # Categories
     category_file_path = '/home/windigo/code/duxdekes/resources/categories.csv'
@@ -115,7 +135,30 @@ def import_data():
         category_import = csv.reader(category_file)
         
         for category_data in category_import:
-            save_category(category_data)
+            save_category(category_data, base_categories)
+
+
+def import_static_data():
+
+    Category = get_model('catalogue', 'Category')
+    Partner = get_model('partner', 'Partner')
+
+    # Set up Jeff as a provider
+    jeff = Partner(name="Dux Dekes")
+    jeff.save()
+
+    # Set up the main four (three) categories, and save them to a dict
+    categories = {
+        'u': Category(name='Unfinished Blanks'),
+        'f': Category(name='Finished Decoys'),
+        'i': Category(name='Instructions'),
+        'x': Category(name='Raw Import'),
+    }
+
+    for category in categories:
+        category.save()
+
+    return jeff, categories
 
 
 if __name__ == "__main__":
