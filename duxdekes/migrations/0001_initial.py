@@ -6,11 +6,17 @@ from django.apps import apps as global_apps
 from duxdekes.util import dataimport
 
 
+def import_data(x,y):
+    # Just run it
+    dataimport.import_data()
+
 class Migration(migrations.Migration):
+
+    atomic = False
 
     dependencies = [
     ]
 
     operations = [
-        migrations.RunPython(dataimport.import_data, migrations.RunPython.noop)
+        migrations.RunPython(import_data, migrations.RunPython.noop)
     ]
