@@ -81,12 +81,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-    {
-        'NAME': 'oscar.apps.customer.auth_backends.EmailBackend',
-    },
-    {
-        'NAME': 'django.contrib.auth.backends.ModelBackend',
-    },
+#    {
+#        'NAME': 'oscar.apps.customer.auth_backends.EmailBackend',
+#    },
+#    {
+#        'NAME': 'django.contrib.auth.backends.ModelBackend',
+#    },
 ]
 
 # Internationalization

@@ -161,7 +161,8 @@ def import_static_data():
     # Set up a default product class
     product_class = ProductClass()
     product_class.name = 'Product'
-    product_class.requires_shipping = False
+    product_class.requires_shipping = True
+    product_class.track_stock = False
     product_class.save()
 
     unfinished = Category.add_root(name='Unfinished Blanks')
