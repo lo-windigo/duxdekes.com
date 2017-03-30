@@ -157,7 +157,10 @@ ALLOWED_HOSTS += [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ OSCAR_MAIN_TEMPLATE_DIR, ],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'duxdekes/templates'),
+            OSCAR_MAIN_TEMPLATE_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

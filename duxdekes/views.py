@@ -1,8 +1,8 @@
 from .util.contact import ContactForm
-from products.models import FinishedCarving, Instructions, UnfinishedBlank, Product, ProductCategory
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.core.mail import send_mail
 from django.conf import settings
+from oscar.core.loading import get_model
 
 
 def about(request):
@@ -70,10 +70,14 @@ def home(request):
     selection of the newest products.
     """
 
+    Category = get_model('catalogue', 'Category')
+    Product = get_model('catalogue', 'Product')
+
     # Set up the dicts that will be sent in as context
     categories = {}
     new_products = {}
 
+    """
     # Get some QueryManagers for use in retrieving type-related objects
     category_qm = ProductCategory.objects.exclude(hidden=True).order_by('description')
     new_products[ProductCategory.FINISHED] = FinishedCarving.objects.exclude(hidden=True).order_by('-updated')[:4]
@@ -89,7 +93,8 @@ def home(request):
 
         # Get all categories
         categories[category_type] = type_categories
-    
+    """ 
+
     return render(request,
             'duxdekes/page-home.html',
             {
