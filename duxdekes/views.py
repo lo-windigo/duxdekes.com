@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.core.mail import send_mail
 from django.conf import settings
 from oscar.core.loading import get_model
+from .util.homepage import homepage_data
 
 
 def about(request):
@@ -70,12 +71,31 @@ def home(request):
     selection of the newest products.
     """
 
-    Category = get_model('catalogue', 'Category')
-    Product = get_model('catalogue', 'Product')
+    # Get all the categories (and subcategories)
+    try:
+        unfinished = homepage_data('Unfinished Blanks')
+    except Exception as e:
+        unfinished = {
+            'categories': [],
+            'products': [],
+        }
 
-    # Set up the dicts that will be sent in as context
-    categories = {}
-    new_products = {}
+    try:
+        finished = homepage_data('Finished Carvings')
+    except:
+        finished = {
+            'categories': [],
+            'products': [],
+        }
+
+    try:
+        instructions = homepage_data('Instructions')
+    except:
+        instructions = {
+            'categories': [],
+            'products': [],
+        }
+
 
     """
     # Get some QueryManagers for use in retrieving type-related objects
@@ -96,9 +116,10 @@ def home(request):
     """ 
 
     return render(request,
-            'duxdekes/page-home.html',
-            {
-                'categories': categories,
-                'new_products': new_products,
-            })
+        'duxdekes/page-home.html',
+        {
+            'unfinished': unfinished,
+            'finished': finished,
+            'instructions': instructions,
+        })
 
