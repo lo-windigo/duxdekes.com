@@ -37,7 +37,7 @@ def save_category(data, parents):
         try:
             for stock in StockRecord.objects.filter(partner_sku=connected_id):
                 productCategoryRelation = ProductCategory()
-                productCategoryRelation.product = stock.product
+                productCategoryRelation.product = stock.product.parent
                 productCategoryRelation.category = category
                 productCategoryRelation.save()
 
@@ -168,14 +168,12 @@ def import_static_data():
     unfinished = Category.add_root(name='Unfinished Blanks')
     finished = get(unfinished.pk).add_sibling(name='Finished Decoys')
     instructions = get(unfinished.pk).add_sibling(name='Instructions')
-    default_import = get(unfinished.pk).add_sibling(name='Imported Data')
 
     # Set up the main four (three) categories, and save them to a dict
     categories = {
         'u': unfinished.pk,
         'f': finished.pk,
         'i': instructions.pk,
-        'x': default_import.pk,
     }
 
     return jeff, product_class, categories
