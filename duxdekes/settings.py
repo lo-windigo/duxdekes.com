@@ -46,8 +46,9 @@ INSTALLED_APPS = [
     'compressor',
     'widget_tweaks',
 ] + get_core_apps( [
+    'cart.catalogue',
+    'cart.partner',
     'cart.shipping',
-    'cart.catalogue'
 ], )
 
 MIDDLEWARE = [
@@ -114,6 +115,8 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
+OSCAR_SHOP_NAME="Dux' Dekes"
+OSCAR_SHOP_TAGLINE="Handcrafted decoys"
 OSCAR_DEFAULT_CURRENCY = 'USD'
 OSCAR_INITIAL_ORDER_STATUS = 'Pending'
 OSCAR_INITIAL_LINE_STATUS = 'Pending'
