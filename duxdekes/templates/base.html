@@ -1,0 +1,61 @@
+{% load i18n %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+
+<head>
+	<title>{% if display_version %}[{% trans "Build" %} {{ version }}] {% endif %}{% block title %}{{ shop_name }} - {{ shop_tagline }}{% endblock %}</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="{% block viewport %}width=device-width{% endblock %}" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="{% static 'duxdekes/css/layout.css' %}">
+	<meta name="created" content="{% now "jS M Y h:i" %}" />
+	<meta name="description" content="{% block description %}{% endblock %}" />
+	{% block favicon %}
+	<link rel="shortcut icon" href="{% static "oscar/favicon.ico" %}" />
+	{% endblock %}
+	{# Block where global CSS will go. #}
+	{% block styles %}
+	{% endblock %}
+
+	{# Additional CSS - specific to certain pages #}
+	{% block extrastyles %}{% endblock %}
+
+	{% block extrahead %}{% endblock %}
+
+	{% block tracking %}
+		{# Default to using Google analytics #}
+		{# {% include "partials/google_analytics.html" %}#}
+
+	{% endblock %}
+</head>
+
+<body id="{% block body_id %}default{% endblock %}" class="{% block body_class %}default{% endblock %}">
+        {# Main content goes in this 'layout' block #}
+        {% block layout %}{% endblock %}
+
+        {# Scripts loaded from a CDN. #}
+        {% block cdn_scripts %}
+            <!-- jQuery -->
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script>window.jQuery || document.write('<script src="{% static "oscar/js/jquery/jquery-1.9.1.min.js" %}"><\/script>')</script>
+        {% endblock %}
+
+        {# Local scripts #}
+        {% block scripts %}
+        {% endblock %}
+
+        {# Additional JS scripts #}
+        {% block extrascripts %}{% endblock %}
+
+        {# Block for body onload functions #}
+        <script type="text/javascript">
+            $(function() {
+                {% block onbodyload %}{% endblock %}
+            });
+        </script>
+
+        {# Page meta-data - this is populated by the 'metadata' template context processor #}
+        <!-- {% trans "Version:" %} {{ version }} -->
+    </body>
+</html>

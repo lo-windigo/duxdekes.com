@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from oscar import get_core_apps, OSCAR_MAIN_TEMPLATE_DIR
+from oscar.defaults import *
+from django.urls import reverse_lazy
 
 
 ####################
@@ -38,8 +41,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'duxdekes',
     'products',
-    'sorl.thumbnail',
-]
+    #'sorl.thumbnail',
+    'django.contrib.flatpages',
+    'compressor',
+    'widget_tweaks',
+] + get_core_apps( [
+    'cart.catalogue',
+    'cart.partner',
+    'cart.shipping',
+], )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +60,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'oscar.apps.basket.middleware.BasketMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
 
 
@@ -69,8 +82,13 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+#    {
+#        'NAME': 'oscar.apps.customer.auth_backends.EmailBackend',
+#    },
+#    {
+#        'NAME': 'django.contrib.auth.backends.ModelBackend',
+#    },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -86,6 +104,31 @@ STATIC_URL = '/static/'
 # User-uploaded media files
 # https://docs.djangoproject.com/en/1.10/ref/settings/#media-url
 MEDIA_URL = '/media/'
+
+
+##################
+# Oscar settings #
+##################
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
+
+OSCAR_SHOP_NAME="Dux' Dekes"
+OSCAR_SHOP_TAGLINE="Handcrafted decoys"
+OSCAR_DEFAULT_CURRENCY = 'USD'
+OSCAR_INITIAL_ORDER_STATUS = 'Pending'
+OSCAR_INITIAL_LINE_STATUS = 'Pending'
+OSCAR_ORDER_STATUS_PIPELINE = {
+    'Pending': ('Being processed', 'Cancelled',),
+    'Being processed': ('Processed', 'Cancelled',),
+    'Cancelled': (),
+}
+OSCAR_HOMEPAGE = reverse_lazy('home')
+OSCAR_ALLOW_ANON_CHECKOUT = True
+OSCAR_ALLOW_ANON_REVIEWS = False
+
 
 ##################
 # Local settings #
@@ -117,7 +160,10 @@ ALLOWED_HOSTS += [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'duxdekes/templates'),
+            OSCAR_MAIN_TEMPLATE_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,6 +171,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'oscar.apps.search.context_processors.search_form',
+                'oscar.apps.promotions.context_processors.promotions',
+                'oscar.apps.checkout.context_processors.checkout',
+                'oscar.apps.customer.notifications.context_processors.notifications',
+                'oscar.core.context_processors.metadata',
             ],
         },
     },

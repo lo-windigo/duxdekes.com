@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-{% load product_categories unfinished_tile instructions_tile finished_tile static %}
+{% load product_categories product_tags static %}
 <head>
 	<title>{% block "title" %}Dux’ Dekes{% endblock %}</title>
 	<meta charset="UTF-8">
@@ -35,17 +35,17 @@
 				<h1 class="content-title">Unfinished Blanks</h1>
 			</header>
 			<ul class="product-categories">
-				{% for category in categories.u %}
+				{% for category in unfinished.categories %}
 				<li>
-					<a href="{% url 'listing' category.slug %}">
-						{{ category.description }}</a>
+					<a href="X{# % url 'listing' category.slug % #}">
+						{{ category.name }}</a>
 				</li>
 				{% endfor %}
 			</ul>
 			<h2>What's new</h2>
 			<div class="products">
-				{% for product in new_products.u %}
-				{% unfinished_tile product %}
+				{% for product in unfinished.products %}
+				{% render_product product %}
 				{% endfor %}
 			</div>
 		</section>
@@ -60,17 +60,17 @@
 				to your home.
 			</p>
 			<ul class="product-categories">
-				{% for category in categories.f %}
+				{% for category in finished.categories %}
 				<li>
-					<a href="{% url 'listing' category.slug %}">
-						{{ category.description }}</a>
+					<a href="{# % url 'listing' category.slug % #}">
+						{{ category.name }}</a>
 				</li>
 				{% endfor %}
 			</ul>
 			<h2>What's new</h2>
 			<div class="products">
-				{% for product in new_products.f %}
-				{% finished_tile product %}
+				{% for product in finished.products %}
+				{% render_product product %}
 				{% endfor %}
 			</div>
 		</section>
@@ -87,17 +87,17 @@
 				started.
 			</p>
 			<ul class="product-categories">
-				{% for category in categories.i %}
+				{% for category in instructions.categories %}
 				<li>
-					<a href="{% url 'listing' category.slug %}">
-						{{ category.description }}</a>
+					<a href="{# % url 'listing' category.slug % #}">
+						{{ category.name }}</a>
 				</li>
 				{% endfor %}
 			</ul>
 			<h2>What's new</h2>
 			<div class="products">
-				{% for product in new_products.i %}
-				{% instructions_tile product %}
+				{% for product in instructions.products %}
+				{% render_product product %}
 				{% endfor %}
 			</div>
 		</section>

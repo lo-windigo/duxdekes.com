@@ -2,3 +2,7 @@ Django
 pillow
 psycopg2
 sorl-thumbnail
+pycountry
+django-compressor
+django-widget-tweaks
+django-oscar

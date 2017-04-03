@@ -17,8 +17,12 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from oscar.app import application
+from oscar.core.loading import get_class
 from . import views
-admin.autodiscover()
+#admin.autodiscover()
+
+listing = get_class('catalogue.views', 'CatalogueView')
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
@@ -26,8 +30,9 @@ urlpatterns = [
     url(r'^about-the-artist/?$', views.about_artist, name='about-artist'),
     url(r'^contact/?$', views.contact, name='contact'),
     url(r'^products/', include('products.urls')),
-    url(r'^admin/', admin.site.urls),
-    #url(r'^cart/', include('products.urls')),
+    #url(r'^admin/', admin.site.urls),
+    url(r'^listing/', listing.as_view()),
+    url(r'', include(application.urls)),
 ]
 
 if settings.DEBUG:
