@@ -13,7 +13,7 @@ fi
 # Debian Jessie
 read -r -d '' DEBIAN_PACKAGES <<-'PACKAGES'
 	libjpeg62-turbo-dev libopenjpeg-dev libfreetype6-dev libtiff5-dev
-	liblcms2-dev libwebp-dev tk8.6-dev python3-tk python3-dev
+	liblcms2-dev libwebp-dev python3-dev
 PACKAGES
 
 # MySQL dependencies
@@ -50,8 +50,8 @@ echo -e "> "
 
 select DB in "mysql" "postgres" "none"; do
 	case $DB in
-		mysql ) PACKAGES+=MYSQL_PACKAGES; break;;
-		postgres ) PACKAGES+=PGSQL_PACKAGES; break;;
+		mysql ) PACKAGES+=' '$MYSQL_PACKAGES; break;;
+		postgres ) PACKAGES+=' '$PGSQL_PACKAGES; break;;
 		none|* ) break;;
 	esac
 done
@@ -62,4 +62,4 @@ echo "Installing requested dependencies..."
 set -x
 
 # Try installing the debian requirements
-apt install $PACKAGES
+apt --no-install-recommends install $PACKAGES
