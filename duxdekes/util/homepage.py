@@ -13,13 +13,15 @@ def homepage_data(category_name):
     products = []
     for this_category in categories:
         #products.append(this_category.product_set.browsable.order_by('-date_updated')[:4])
-        products.extend(Product.objects.filter(categories__in=[this_category,])[:4])
+        products.extend(Product.objects.filter(
+            categories__in=[this_category,]
+        ).order_by('-date_updated')[:4])
 
-    sorted(products,
+    latest_products = sorted(products,
         key=lambda product: product.date_updated,
         reverse=True)
 
     return {
-        'products': products[:4],
+        'products': latest_products[:4],
         'categories': categories,
     }
