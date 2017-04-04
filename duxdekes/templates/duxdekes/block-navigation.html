@@ -5,7 +5,7 @@
 	<ul>
 		{% for category in type.list %}
 		<li>
-			<a href="{% url "listing" category.slug %}">{{ category.description }}</a>
+			<a href="{% url "category" category.slug %}">{{ category.description }}</a>
 		</li>
 		{% endfor %}
 	</ul>

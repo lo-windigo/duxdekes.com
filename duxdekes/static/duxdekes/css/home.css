@@ -27,18 +27,6 @@ section>h2 {
 	min-height: 20em;
 }
 
-/*
- * BETTER DISTRIBUTE SPACE IN LONG LISTINGS
-.long-listing {
-	float: left;
-	display: block;
-}
-
-.long-listing h2 {
-	font-size: 1.1em;
-	padding-top: .75em;
-}
-*/
 .main-categories {
 	font-family: 'Site-Title', serif;
 	padding: 0;
@@ -58,6 +46,9 @@ section>h2 {
 	padding: .5em 0;
 	text-indent: -1em;
 	margin-left: 1em;
+	-webkit-column-break-inside: avoid;
+	break-inside: avoid;
+	display: table; /* Hack to prevent FF line breaks within li */
 }
 
 .product-categories>li::before {
