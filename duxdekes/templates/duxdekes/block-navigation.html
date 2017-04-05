@@ -1,13 +1,19 @@
-{% regroup categories by get_category_type_display as types %}
-{% for type in types %}
-<li class="nav-item">
-	{{ type.grouper }}
-	<ul>
-		{% for category in type.list %}
-		<li>
-			<a href="{% url "category" category.slug %}">{{ category.description }}</a>
-		</li>
+{% category_tree depth=1 as tree_categories %}
+{% if tree_categories %}
+		{% for tree_category, info in tree_categories %}
+			{% if info.has_children %}
+				<li class="nav-item">
+					<a href="{{ tree_category.get_absolute_url }}">{{ tree_category.name }}</a>
+					<ul class="dropdown-menu">
+				{% else %}
+				<li class="nav-item">
+					<a href="{{ tree_category.get_absolute_url }}">{{ tree_category.name }}</a>
+				</li>
+				{% endif %}
+
+				{% for close in info.num_to_close %}
+					</ul></li>
+				{% endfor %}
 		{% endfor %}
-	</ul>
-</li>
-{% endfor %}
+	{% endif %}
+{% endif %}
