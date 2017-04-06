@@ -128,6 +128,7 @@ OSCAR_ORDER_STATUS_PIPELINE = {
 OSCAR_HOMEPAGE = reverse_lazy('home')
 OSCAR_ALLOW_ANON_CHECKOUT = True
 OSCAR_ALLOW_ANON_REVIEWS = False
+OSCAR_HIDDEN_FEATURES = [ 'reviews', ]
 
 
 ##################
