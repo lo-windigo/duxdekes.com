@@ -3,7 +3,20 @@ from oscar.core import prices
 from decimal import Decimal as D
 
 
-class UPS(methods.Base):
+class DomesticShipping(methods.Base):
+    code = 'USPS'
+    name = 'International'
+    description = 'US Postal Service priority shipping'
+
+    def calculate(self, basket):
+
+	# TODO: International? Gaaaaaaaah
+        return prices.Price(
+            currency=basket.currency,
+            excl_tax=D('10.00'), incl_tax=D('10.00'))
+
+
+class InternationalShipping(methods.Base):
     code = 'UPS'
     name = 'UPS'
     description = 'UPS priority shipping'
