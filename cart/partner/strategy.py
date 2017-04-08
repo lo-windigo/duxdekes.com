@@ -46,5 +46,5 @@ class Selector(object):
 
 
 class NYStrategy(strategy.UseFirstStockRecord, strategy.DeferredTax,
-            strategy.StockRequired, strategy.Structured)
+        strategy.StockRequired, strategy.Structured):
     pass
