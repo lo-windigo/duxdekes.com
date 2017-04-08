@@ -1,4 +1,4 @@
-Django
+Django==10.*
 pillow
 psycopg2
 sorl-thumbnail
