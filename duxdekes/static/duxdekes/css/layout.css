@@ -24,7 +24,6 @@
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-	font-size: 1em;
 }
 
 *,
@@ -37,6 +36,7 @@
 
 a {
 	color: #061;
+	text-decoration: underline;
 	-webkit-text-decoration-skip: ink;
 	text-decoration-skip: ink;
 }
@@ -46,13 +46,9 @@ body {
 	padding: 0;
 	color: #000;
 	font-family: serif;
-}
-
-footer>*,
-main {
-	max-width: 52em;
-	margin-left: auto;
-	margin-right: auto;
+	/* Override the default Oscar font size */
+	font-size: 16px;
+	line-height: 1.42857143;
 }
 
 html {
@@ -80,22 +76,15 @@ section>h1 {
 	top: -10em;
 }
 
-.header {
-	background-color: #111;
-	background-image: url('/static/duxdekes/img/splash.jpg');
-	background-position: center;
-	background-size: cover;
-	color: #fff;
-	display: flex;
-	padding: 1em;
-	justify-content: center;
-	flex-wrap: wrap;
+.content,
+.footer>* {
+	max-width: 52em;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-.header>* {
-	margin: 0 2em;
-	flex 1 0 15em;
-	align-self: center;
+.copyright {
+	margin-top: 1em;
 }
 
 .footer {
@@ -113,7 +102,7 @@ section>h1 {
 }
 
 .foot-nav,
-.foot-nav a {
+.foot-nav .nav-item>a {
 	color: #ccc;
 }
 
@@ -129,7 +118,22 @@ section>h1 {
 }
 
 .header {
+	background-color: #111;
+	background-image: url('/static/duxdekes/img/splash.jpg');
+	background-position: center;
+	background-size: cover;
+	color: #fff;
+	display: flex;
+	padding: 1em;
+	justify-content: center;
 	text-align: center;
+	flex-wrap: wrap;
+}
+
+.header>* {
+	margin: 0 2em;
+	flex 1 0 15em;
+	align-self: center;
 }
 
 .in-content {
@@ -231,6 +235,7 @@ section>h1 {
 
 .site-title>a {
 	color: #fff;
+	text-decoration: none;
 }
 
 .site-subtitle {
@@ -293,7 +298,7 @@ section>h1 {
 @media screen and (max-width: 450px) {
 
 	:root {
-		font-size: 1em;
+		font-size: .9em;
 	}
 
 	.in-content,
