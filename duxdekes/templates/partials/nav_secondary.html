@@ -1,0 +1,29 @@
+{% load currency_filters %}
+{% load category_tags %}
+{% load flatpages %}
+{% load i18n %}
+		{% get_flatpages as flatpages %}
+		{% for page in flatpages %}
+					<li class="nav-item">
+						<a href="{{ page.url }}">{{ page.title }}</a>
+					</li>
+		{% endfor %}
+					<li class="nav-item"><a href="{% url "contact" %}">Contact</a></li>
+		{% category_tree depth=2 as tree_categories %}
+		{% if tree_categories %}
+			{% for tree_category, info in tree_categories %}
+				{% if info.has_children %}
+					<li class="nav-item">
+						<a href="{{ tree_category.get_absolute_url }}">{{ tree_category.name }}</a>
+						<ul>
+					{% else %}
+					<li class="nav-item">
+						<a href="{{ tree_category.get_absolute_url }}">{{ tree_category.name }}</a>
+					</li>
+					{% endif %}
+
+					{% for close in info.num_to_close %}
+						</ul></li>
+					{% endfor %}
+			{% endfor %}
+		{% endif %}

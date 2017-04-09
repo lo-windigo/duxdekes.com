@@ -1,6 +1,11 @@
 {% load i18n %}
-<footer class="footer container-fluid">
+<footer id="fullnav" class="footer">
     {% block footer %}
+	<nav>
+		<ul class="foot-nav">
+		{% include "partials/nav_secondary.html" %}
+		</ul>
+	</nav>
         {% comment %}
             Could be used for displaying links to privacy policy, terms of service, etc.
             We have a CSS class defined:
@@ -8,5 +13,8 @@
                     ...
                 </ul>
          {% endcomment %}
+	<p class="copyright">
+		©2017 Dux' Dekes 
+	</p>
     {% endblock %}
 </footer>
