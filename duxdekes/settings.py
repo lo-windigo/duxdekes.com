@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'compressor',
     'widget_tweaks',
 ] + get_core_apps( [
+    'cart.basket',
     'cart.catalogue',
     'cart.partner',
     'cart.shipping',
