@@ -1,28 +1,24 @@
+############################################################
+#
+# LOCAL SETTINGS
+#
+# A place to store settings that can be changed based on
+# which host the site is running on, or whether we are in
+# development, staging, or production.
+#
+############################################################
 
-#################
-# Common values #
-#################
-
-DOMAIN = 'example.com'
-WEBROOT = '/path/to/webroot'
-
-
-################
-# Contact page #
-################
-
-CONTACT_SUBJECT = "Dux' Dekes website message"
-CONTACT_SENDER = "duxdekes@example.com"
-CONTACT_RECIPIENTS = [ "example@example.com", ]
+from os.path import join
 
 
 ####################
 # General settings #
 ####################
-
-
-# Debug: should be False in production
-DEBUG = True
+DOMAIN = 'example.com'
+DEBUG = True	# Should be False in production
+SECRET_KEY="""
+"""
+TIME_ZONE = 'UTC'
 
 # Site administrators
 ADMINS = (
@@ -30,16 +26,21 @@ ADMINS = (
 )
 
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY="""
-"""
+########################
+# Filesystem locations #
+########################
+WEB_ROOT = '/path/to/webroot'
+MEDIA_ROOT = join(WEB_ROOT, 'srv/media')
+STATIC_ROOT = join(WEB_ROOT, 'srv/static')
 
-# Database
-# https://docs.djangoproject.com/en/dev/ref/settings/#databases
+
+#############
+# Databases #
+#############
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(WEB_ROOT, 'db.sqlite3'),
     },
 
     # MySQL/MariaDB
@@ -63,12 +64,18 @@ DATABASES = {
 #    },
 }
 
-# Timezones
-TIME_ZONE = 'UTC'
-
 
 ################
-# Static Files #
+# Contact page #
 ################
+CONTACT_SUBJECT = "Dux' Dekes website message"
+CONTACT_SENDER = "duxdekes@example.com"
+CONTACT_RECIPIENTS = [ "example@example.com", ]
 
-STATIC_ROOT = "/var/www/example.com/static/"
+
+###################
+# Square Settings #
+###################
+SQUARE_ACCESS_TOKEN = ''
+SQUARE_LOCATION_ID = ''
+
