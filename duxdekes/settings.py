@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 ] + get_core_apps( [
     'cart.basket',
     'cart.catalogue',
+    'cart.checkout',
     'cart.partner',
     'cart.shipping',
 ], )
