@@ -18,11 +18,11 @@ def apply_to(submission):
         line_tax = calculate_tax(
             line.line_price_excl_tax_incl_discounts, rate)
         unit_tax = (line_tax / line.quantity).quantize(D('0.01'))
-        line.purchase_info = unit_tax
+        line.purchase_info.price.tax = unit_tax
 
     # Note, we change the submission in place - we don't need to
     # return anything from this function
-    shipping_method = submission['shipping_method']
-    shipping_method.tax = calculate_tax(
-        shipping_method.charge_incl_tax, rate)
+    #shipping_method = submission['shipping_method']
+    #shipping_method.tax = calculate_tax(
+    #    shipping_method.charge_incl_tax, rate)
 

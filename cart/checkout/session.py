@@ -9,13 +9,13 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         submission = super(CheckoutSessionMixin, self).build_submission(
             **kwargs)
 
-        if submission['shipping_address']:
+        if submission['shipping_address'] and submission['shipping_method']:
             tax.apply_to(submission)
 
             # Recalculate order total to ensure we have a tax-inclusive total
             submission['order_total'] = self.get_order_totals(
                 submission['basket'],
-                shipping_method=submission['shipping_method'])
+                shipping_charge=submission['shipping_charge'])
 
         return submission
 
