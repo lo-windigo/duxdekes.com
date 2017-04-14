@@ -20,7 +20,7 @@ def apply_to(submission):
     shipping_method.tax = calculate_tax(
         shipping_method.charge_incl_tax, rate)
 
-    def calculate_tax(price, rate):
-        tax = price * rate
-        return tax.quantize(D('0.01'))
+def calculate_tax(price, rate):
+    tax = price * rate
+    return tax.quantize(D('0.01'))
 
