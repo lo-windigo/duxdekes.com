@@ -1,5 +1,11 @@
 from decimal import Decimal as D
 
+
+def calculate_tax(price, rate):
+    tax = price * rate
+    return tax.quantize(D('0.01'))
+
+
 def apply_to(submission):
     # Apply 7% tax to New York residents
     STATE_TAX_RATES = {
@@ -19,8 +25,4 @@ def apply_to(submission):
     shipping_method = submission['shipping_method']
     shipping_method.tax = calculate_tax(
         shipping_method.charge_incl_tax, rate)
-
-def calculate_tax(price, rate):
-    tax = price * rate
-    return tax.quantize(D('0.01'))
 
