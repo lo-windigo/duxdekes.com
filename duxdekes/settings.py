@@ -166,7 +166,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'duxdekes/templates'),
+            os.path.join(BASE_DIR, 'templates'),
             OSCAR_MAIN_TEMPLATE_DIR,
         ],
         'APP_DIRS': True,
@@ -190,14 +190,5 @@ TEMPLATES = [
 ##
 ## Sorl thumbnails
 ##
-
 THUMBNAIL_DEBUG = DEBUG
-# Old template value, required by sorl
-#TEMPLATE_DEBUG = DEBUG
-
-#import logging
-#from sorl.thumbnail.log import ThumbnailLogHandler
-#handler = ThumbnailLogHandler()
-#handler.setLevel(logging.ERROR)
-#logging.getLogger('sorl.thumbnail').addHandler(handler)
 
