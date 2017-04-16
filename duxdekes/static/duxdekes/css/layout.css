@@ -142,6 +142,15 @@ section>h1 {
 	border: 0 solid #080808;
 	border-width: 1px 0;
 	color: #fff;
+	font-size: .8em;
+}
+
+.horizontal-nav>ul {
+	float: none;
+}
+
+.horizontal-nav>ul>li {
+	display: inline-block;
 }
 
 .horizontal-nav::after {
