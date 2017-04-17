@@ -84,6 +84,10 @@ section>h1 {
 	margin-right: auto;
 }
 
+.content.admin-content {
+	max-width: 100%;
+}
+
 .copyright {
 	margin-top: 1em;
 }
