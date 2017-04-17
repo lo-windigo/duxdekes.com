@@ -42,14 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'duxdekes',
     'products',
-    #'sorl.thumbnail',
     'django.contrib.flatpages',
     'compressor',
     'widget_tweaks',
 ] + get_core_apps( [
     'cart.catalogue',
     'cart.checkout',
-    'cart.dashboard',
+    #'cart.dashboard',
+    #'cart.dashboard.catalogue',
     'cart.partner',
     'cart.shipping',
 ], )
