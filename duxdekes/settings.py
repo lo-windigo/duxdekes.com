@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 ] + get_core_apps( [
     'cart.catalogue',
     'cart.checkout',
-    #'cart.dashboard',
+    'cart.dashboard',
     #'cart.dashboard.catalogue',
     'cart.partner',
     'cart.shipping',
@@ -137,19 +137,19 @@ OSCAR_HIDDEN_FEATURES = [
 ]
 
 OSCAR_DASHBOARD_NAVIGATION = [
-#    {
-#        'label': _('Dashboard'),
-#        'icon': 'icon-th-list',
-#        'url_name': 'dashboard:index',
-#    },
+    {
+        'label': _('Dashboard'),
+        'icon': 'icon-th-list',
+        'url_name': 'dashboard:index',
+    },
     {
         'label': _('Catalogue'),
         'icon': 'icon-sitemap',
         'children': [
-            {
-                'label': _('Products'),
-                'url_name': 'dashboard:catalogue-product-list',
-            },
+#            {
+#                'label': _('Products'),
+#                'url_name': 'dashboard:catalogue-product-list',
+#            },
 #            {
 #                'label': _('Product Types'),
 #                'url_name': 'dashboard:catalogue-class-list',
@@ -166,6 +166,22 @@ OSCAR_DASHBOARD_NAVIGATION = [
 #                'label': _('Low stock alerts'),
 #                'url_name': 'dashboard:stock-alert-list',
 #            },
+#            {
+#                'label': _('Bauer Instructions'),
+#                'url_name': 'dashboard:bauer',
+#            },
+#            {
+#                'label': _('Other Instructions'),
+#                'url_name': 'dashboard:instructions',
+#            },
+#            {
+#                'label': _('Finished Carvings'),
+#                'url_name': 'dashboard:finished',
+#            },
+            {
+                'label': _('Unfinished Blanks'),
+                'url_name': 'dashboard:catalogue-unfinished',
+            },
         ]
     },
     {

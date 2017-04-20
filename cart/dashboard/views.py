@@ -25,4 +25,5 @@ class UnfinishedListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_list.html'
     table_class = ProductTable
     context_table_name = 'products'
+    queryset = Product.browsable.filter(product_class__name='Unfinished Blanks')
 

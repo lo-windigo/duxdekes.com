@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.views.generic.base import RedirectView
 from oscar.core.loading import get_class
 from oscar.apps.dashboard.app import DashboardApplication
 from . import views
