@@ -182,6 +182,10 @@ OSCAR_DASHBOARD_NAVIGATION = [
                 'label': _('Unfinished Blanks'),
                 'url_name': 'dashboard:catalogue-unfinished',
             },
+            {
+                'label': _('Finished Decoys'),
+                'url_name': 'dashboard:catalogue-finished',
+            },
         ]
     },
     {
