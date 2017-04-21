@@ -5,6 +5,7 @@
 	<title>{% block "title" %}Dux’ Dekes{% endblock %}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="{% static 'oscar/css/styles.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'duxdekes/css/layout.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'duxdekes/css/home.css' %}">
 </head>
@@ -44,9 +45,13 @@
 			</ul>
 			<h2>What's new</h2>
 			<div class="products">
-				{% for product in unfinished.products %}
-				{% render_product product %}
-				{% endfor %}
+				<ol class="row">
+					{% for product in unfinished.products %}
+					<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+					{% render_product product %}
+					</li>
+					{% endfor %}
+				</ol>
 			</div>
 		</section>
 		<section id="finished">
@@ -69,9 +74,13 @@
 			</ul>
 			<h2>What's new</h2>
 			<div class="products">
-				{% for product in finished.products %}
-				{% render_product product %}
-				{% endfor %}
+				<ol class="row">
+					{% for product in finished.products %}
+					<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+					{% render_product product %}
+					</li>
+					{% endfor %}
+				</ol>
 			</div>
 		</section>
 		<section id="instructions">
@@ -96,9 +105,13 @@
 			</ul>
 			<h2>What's new</h2>
 			<div class="products">
-				{% for product in instructions.products %}
-				{% render_product product %}
-				{% endfor %}
+				<ol class="row">
+					{% for product in instructions.products %}
+					<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+					{% render_product product %}
+					</li>
+					{% endfor %}
+				</ol>
 			</div>
 		</section>
 	</main>

@@ -179,7 +179,7 @@ section>h1 {
 }
 
 .product_pod {
-	/*height: auto;*/
+	height: auto;
 }
 
 .product_pod>.product_price {
