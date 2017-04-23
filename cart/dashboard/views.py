@@ -1,24 +1,35 @@
 from django.core.urlresolvers import reverse
 from django.views import generic
+from django.views.generic import base, edit
 from django_tables2 import SingleTableMixin, SingleTableView
 from oscar.core.loading import get_classes, get_model
+from . import forms
 
 
-# Dynamically get the Product class
+# Dynamically get any oscar models/classes in use
+ProductClass = get_model('catalogue', 'ProductClass')
 Product = get_model('catalogue', 'Product')
 ProductTable, CategoryTable \
     = get_classes('dashboard.catalogue.tables',
                   ('ProductTable', 'CategoryTable'))
-(ProductForm,
-ProductCategoryFormSet,
-ProductImageFormSet,) = get_classes('dashboard.catalogue.forms',
+ProductCategoryFormSet, ProductImageFormSet \
+    = get_classes('dashboard.catalogue.forms',
         (
-            'ProductForm',
             'ProductCategoryFormSet',
             'ProductImageFormSet',
         ))
-(ProductCreateUpdateView,) = get_classes('dashboard.catalogue.views',
-        ( 'ProductCreateUpdateView', ))
+
+
+class CustomCreateUpdateMixin(generic.TemplateView):
+    """
+    """
+    def get(self):
+        pass
+
+
+    def post(self):
+        pass
+
 
 
 class BauerListView(SingleTableView):
@@ -46,36 +57,40 @@ class UnfinishedListView(SingleTableView):
     queryset = Product.browsable.filter(product_class__name='Unfinished Blanks')
 
 
-class UnfinishedCreateRedirectView(generic.RedirectView):
-    permanent = True
-    query_string = False
 
-    def get_redirect_url(self, **kwargs):
-        return reverse('dashboard:catalogue-unfinished-create',
-            kwargs={'product_class_slug': 'unfinished-blanks'})
-
-
-class UnfinishedCreateUpdateView(ProductCreateUpdateView):
+class UnfinishedCreateUpdateView(edit.FormMixin, base.TemplateView):
     """
-    Dashboard view that is can both create and update products of all kinds.
-    It can be used in three different ways, each of them with a unique URL
-    pattern:
-    - When creating a new standalone product, this view is called with the
-      desired product class
-    - When editing an existing product, this view is called with the product's
-      primary key. If the product is a child product, the template considerably
-      reduces the available form fields.
-    - When creating a new child product, this view is called with the parent's
-      primary key.
-
-    Supports the permission-based dashboard.
+    Create/update an unfinished blank
     """
-
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
-    model = Product
-    context_object_name = 'product'
+    form_class = forms.UnfinishedForm
+    success_url = 'catalogue-unfinished'
 
-    form_class = ProductForm
-    category_formset = ProductCategoryFormSet
-    image_formset = ProductImageFormSet
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.product_class = ProductClass.objects.get(name='Unfinished Blanks')
+
+
+    def form_valid(self):
+        """
+        Save updates to, or create, the product
+        """
+        pass
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Create the product formsets
+        categories = ProductCategoryFormSet(
+            self.request.user,
+            self.product_class)
+        image = ProductImageFormSet(
+            self.request.user,
+            self.product_class)
+        context['title'] = 'Add Unfinished Blank'
+        context['category_formset'] = categories
+        context['image_formset'] = image
+        return context
 

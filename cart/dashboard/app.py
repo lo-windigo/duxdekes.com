@@ -17,9 +17,6 @@ class DuxDashboardApplication(DashboardApplication):
                 views.UnfinishedListView.as_view(),
                 name='catalogue-unfinished'),
             url(r'unfinished/create/$',
-                views.UnfinishedCreateRedirectView.as_view(),
-                name='catalogue-unfinished-create'),
-            url(r'unfinished/create/(?P<product_class_slug>[\w-]+)/$',
                 views.UnfinishedCreateUpdateView.as_view(),
                 name='catalogue-unfinished-create'),
         ]
