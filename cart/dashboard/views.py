@@ -65,7 +65,7 @@ class UnfinishedCreateUpdateView(edit.FormView):
     """
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
     form_class = forms.UnfinishedForm
-    success_url = '/dashboard/unfinished/'
+    #success_url = '/dashboard/unfinished/'
     category_formset = ProductCategoryFormSet
     image_formset = ProductImageFormSet
 
@@ -76,6 +76,15 @@ class UnfinishedCreateUpdateView(edit.FormView):
                 'image_formset': self.image_formset}
         self.product_class = ProductClass.objects.get(name='Unfinished Blanks')
 
+        # If there has been a product sent in, get its values and pre-populate
+        # the form
+        # TODO
+        if kwargs['unfinished_pk']:
+            self.initial = {}
+
+
+    def form_valid(self, form):
+        pass
 
     def form_valid(self, form):
         """
@@ -98,5 +107,10 @@ class UnfinishedCreateUpdateView(edit.FormView):
         context['title'] = 'Add Unfinished Blank'
         context['category_formset'] = categories
         context['image_formset'] = image
+
         return context
+
+
+    def get_success_url(self):
+        return reverse('dashboard:catalogue-unfinished-create')
 
