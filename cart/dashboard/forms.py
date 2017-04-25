@@ -1,4 +1,8 @@
 from django import forms
+from duxdekes.util import products
+from oscar.core.loading import get_classes, get_model
+
+Product = get_model('catalogue', 'Product')
 
 
 class ProductForm(forms.Form):
@@ -12,7 +16,7 @@ class UnfinishedForm(ProductForm):
     """
     A form specifically tailored to creating an Unfinished Blank product
     """
-    pine_id = forms.CharField(label="Pine ID",
+    pine_sku = forms.CharField(label="Pine ID",
             max_length=64,
             required=False)
     pine_price = forms.DecimalField(label="Pine Price",
@@ -20,7 +24,7 @@ class UnfinishedForm(ProductForm):
             decimal_places=2,
             max_digits=12,
             required=False)
-    tupelo_id = forms.CharField(label="Tupelo ID",
+    tupelo_sku = forms.CharField(label="Tupelo ID",
             max_length=64,
             required=False)
     tupelo_price = forms.DecimalField(label="Tupelo Price",
@@ -33,6 +37,16 @@ class UnfinishedForm(ProductForm):
             decimal_places=2,
             max_digits=12,
             required=False)
+
+
+    def save_product(self):
+        """
+        Create/update a product object based on form data
+        """
+        if not self.is_valid():
+            raise Exception('save_product() called on invalid form')
+
+        products.add_unfinished(**self.cleaned_data)
 
 
 

@@ -4,11 +4,10 @@ from django.views.generic import base, edit
 from django_tables2 import SingleTableMixin, SingleTableView
 from oscar.core.loading import get_classes, get_model
 from . import forms
+from duxdekes.util import products
 
 
 # Dynamically get any oscar models/classes in use
-ProductClass = get_model('catalogue', 'ProductClass')
-Product = get_model('catalogue', 'Product')
 ProductTable, CategoryTable \
     = get_classes('dashboard.catalogue.tables',
                   ('ProductTable', 'CategoryTable'))
@@ -18,6 +17,8 @@ ProductCategoryFormSet, ProductImageFormSet \
             'ProductCategoryFormSet',
             'ProductImageFormSet',
         ))
+Product = get_model('catalogue', 'Product')
+ProductClass = get_model('catalogue', 'ProductClass')
 
 
 class CustomCreateUpdateMixin(generic.TemplateView):
@@ -58,25 +59,30 @@ class UnfinishedListView(SingleTableView):
 
 
 
-class UnfinishedCreateUpdateView(edit.FormMixin, base.TemplateView):
+class UnfinishedCreateUpdateView(edit.FormView):
     """
     Create/update an unfinished blank
     """
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
     form_class = forms.UnfinishedForm
-    success_url = 'catalogue-unfinished'
+    success_url = '/dashboard/unfinished/'
+    category_formset = ProductCategoryFormSet
+    image_formset = ProductImageFormSet
 
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.formsets = {'category_formset': self.category_formset,
+                'image_formset': self.image_formset}
         self.product_class = ProductClass.objects.get(name='Unfinished Blanks')
 
 
-    def form_valid(self):
+    def form_valid(self, form):
         """
         Save updates to, or create, the product
         """
-        pass
+        form.save_product()
+        super().form_valid(form)
 
 
     def get_context_data(self, **kwargs):
