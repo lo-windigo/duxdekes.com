@@ -19,6 +19,9 @@ class DuxDashboardApplication(DashboardApplication):
             url(r'unfinished/create/$',
                 views.UnfinishedCreateUpdateView.as_view(),
                 name='catalogue-unfinished-create'),
+            url(r'unfinished/create/(?P<product_class_slug>[\w-]+)/$',
+                views.UnfinishedCreateUpdateView.as_view(),
+                name='catalogue-unfinished-create'),
         ]
 
         urls.extend(custom_urls)

@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django_tables2 import SingleTableMixin, SingleTableView
 from oscar.core.loading import get_classes, get_model
-from . import forms
+from . import forms, tables
 from duxdekes.util import products
 
 
@@ -55,7 +55,7 @@ class UnfinishedListView(SingleTableView):
     Dashboard view that lists existing unfinished blanks
     """
     template_name = 'dashboard/catalogue/product_unfinished.html'
-    table_class = ProductTable
+    table_class = tables.UnfinishedTable
     context_table_name = 'products'
     queryset = Product.browsable.filter(product_class__name='Unfinished Blanks')
 
@@ -67,7 +67,6 @@ class UnfinishedCreateUpdateView(generic.FormView):
     """
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
     form_class = forms.UnfinishedForm
-    #success_url = '/dashboard/unfinished/'
     category_formset = ProductCategoryFormSet
     image_formset = ProductImageFormSet
 
