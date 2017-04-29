@@ -180,7 +180,7 @@ OSCAR_DASHBOARD_NAVIGATION = [
 #            },
             {
                 'label': _('Unfinished Blanks'),
-                'url_name': 'dashboard:catalogue-unfinished',
+                'url_name': 'dashboard:catalogue-unfinished-list',
             },
             {
                 'label': _('Finished Decoys'),

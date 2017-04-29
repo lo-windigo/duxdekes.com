@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.views import generic
 from django_tables2 import SingleTableMixin, SingleTableView
@@ -18,6 +19,8 @@ ProductCategoryFormSet, ProductImageFormSet \
         ))
 Product = get_model('catalogue', 'Product')
 ProductClass = get_model('catalogue', 'ProductClass')
+StockRecord = get_model('partner', 'StockRecord')
+
 
 
 class CustomCreateUpdateMixin(generic.TemplateView):
@@ -71,17 +74,11 @@ class UnfinishedCreateUpdateView(generic.FormView):
     image_formset = ProductImageFormSet
 
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.formsets = {'category_formset': self.category_formset,
                 'image_formset': self.image_formset}
         self.product_class = ProductClass.objects.get(name='Unfinished Blanks')
-
-        # If there has been a product sent in, get its values and pre-populate
-        # the form
-        # TODO
-        if 'unfinished_pk' in kwargs:
-            self.initial = {}
 
 
     def form_valid(self, form):
@@ -90,6 +87,12 @@ class UnfinishedCreateUpdateView(generic.FormView):
         """
         form.save_product()
         super().form_valid(form)
+
+
+    def get(self, request, *args, **kwargs):
+        self.populate_initial_form_data(self.kwargs.get('pk'))
+
+        return super().get(request, *args, **kwargs)
 
 
     def get_context_data(self, **kwargs):
@@ -115,13 +118,45 @@ class UnfinishedCreateUpdateView(generic.FormView):
         return reverse('dashboard:catalogue-unfinished-create')
 
 
+    def populate_initial_form_data(self, product_pk):
+        """
+        If there has been a product sent in, get its values and pre-populate
+        the form
+        """
+        if not product_pk:
+            return
+
+        product = Product.objects.get(pk=product_pk)
+        variants = product.children.all()
+        self.initial = {
+            'title': product.title,
+        }
+
+        for variant in variants:
+            if variant.title:
+                material = variant.title[:4]
+                record = StockRecord.objects.get(product=variant)
+
+                if material == 'Pine':
+                    self.initial['pine_sku'] = record.partner_sku
+                    self.initial['pine_price'] = record.price_excl_tax
+                elif material == 'Tupe':
+                    self.initial['tupelo_sku'] = record.partner_sku
+                    self.initial['tupelo_price'] = record.price_excl_tax
+        #TODO: implement feet pricing
+
+
     def post(self, request, *arg, **kwargs):
         """
         Override post method to check the formsets' validity
         """
 
+        # If there has been a product sent in, get its values and pre-populate
+        # the form
+        #self.populate_initial_form_data(self.kwargs.get('pk'))
+
         # Check the formsets for validity
-        for formset in self.formsets:
+        for fs_name, formset in self.formsets:
             if not formset.is_valid():
                 self.form_invalid(self, self.form)
 

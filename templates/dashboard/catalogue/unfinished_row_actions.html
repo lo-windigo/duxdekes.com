@@ -8,7 +8,7 @@
         </button>
         <ul class="dropdown-menu pull-right">
             <li>
-                <a href="{% url 'dashboard:catalogue-unfinished-create' pk=record.id %}{% querystring %}">{% trans "Edit" %}</a>
+                <a href="{% url 'dashboard:catalogue-unfinished' pk=record.id %}{% querystring %}">{% trans "Edit" %}</a>
             </li>
             <li>
                 <a href="{{ record.get_absolute_url }}"> {% trans "View on site" %}</a>
