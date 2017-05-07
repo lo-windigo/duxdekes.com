@@ -1,9 +1,8 @@
 from django_tables2 import TemplateColumn
 from django.utils.translation import ugettext_lazy as _
-from oscar.core.loading import get_class, get_model
+from oscar.core.loading import get_class
 
 ProductTable = get_class('dashboard.catalogue.tables', 'ProductTable')
-
 
 class UnfinishedTable(ProductTable):
     actions = TemplateColumn(

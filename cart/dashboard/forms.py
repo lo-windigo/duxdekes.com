@@ -5,11 +5,13 @@ from oscar.core.loading import get_classes, get_model
 Product = get_model('catalogue', 'Product')
 
 
-class ProductForm(forms.Form):
+class ProductForm(forms.ModelForm):
     """
     A generic product form, containing common fields
     """
-    title = forms.CharField(label="Title", max_length=200)
+    class Meta:
+        model = Product
+        fields = ['title']
 
 
 class UnfinishedForm(ProductForm):
@@ -39,14 +41,19 @@ class UnfinishedForm(ProductForm):
             required=False)
 
 
-    def save_product(self):
+    def save(self):
         """
         Create/update a product object based on form data
         """
         if not self.is_valid():
             raise Exception('save_product() called on invalid form')
 
-        products.add_unfinished(**self.cleaned_data)
+        product_data = self.cleaned_data
+
+        if self.instance:
+            product_data['instance'] = self.instance
+
+        return products.save_unfinished(**product_data)
 
 
 
