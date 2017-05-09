@@ -76,34 +76,27 @@ class UnfinishedMixin():
     image_formset = ProductImageFormSet
 
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.formsets = {
+            'category_formset': self.category_formset,
+            'image_formset': self.image_formset,
+        }
 
-class UnfinishedCreateView(generic.CreateView, UnfinishedMixin):
+
+
+
+
+class UnfinishedCreateView(UnfinishedMixin, generic.CreateView):
     """
     Create an unfinished blank
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.formsets = {
-            'category_formset': self.category_formset,
-            'image_formset': self.image_formset,
-        }
-        self.product_class = ProductClass.objects.get(name='Unfinished Blanks')
 
 
-
-class UnfinishedUpdateView(generic.UpdateView, UnfinishedMixin):
+class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
     """
     Update an unfinished blank
     """
-
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.formsets = {
-            'category_formset': self.category_formset,
-            'image_formset': self.image_formset,
-        }
-        self.product_class = ProductClass.objects.get(name='Unfinished Blanks')
 
 
     def form_valid(self, form):
@@ -144,8 +137,16 @@ class UnfinishedUpdateView(generic.UpdateView, UnfinishedMixin):
         }
 
         # Get the material variant pricing/sku details
-        initial['pine_sku'], initial['pine_price'] = get_pine(self.object)
-        initial['tupelo_sku'], initial['tupelo_price'] = get_tupelo(self.object)
+        pine = products.get_pine(self.object)
+        tupelo = products.get_tupelo(self.object)
+
+        if pine:
+            initial['pine_sku'] = pine.partner_sku
+            initial['pine_price'] = pine.price_excl_tax
+
+        if tupelo:
+            initial['tupelo_sku'] = tupelo.partner_sku
+            initial['tupelo_price'] = tupelo.price_excl_tax
 
         #TODO: implement feet pricing
 

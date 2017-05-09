@@ -3,6 +3,7 @@ from duxdekes.util import products
 from oscar.core.loading import get_classes, get_model
 
 Product = get_model('catalogue', 'Product')
+ProductClass = get_model('catalogue', 'ProductClass')
 
 
 class ProductForm(forms.ModelForm):
@@ -39,6 +40,14 @@ class UnfinishedForm(ProductForm):
             decimal_places=2,
             max_digits=12,
             required=False)
+
+
+    # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.structure = Product.PARENT
+        self.instance.product_class = \
+                ProductClass.objects.get(name='Unfinished Blanks')
 
 
     def save(self):

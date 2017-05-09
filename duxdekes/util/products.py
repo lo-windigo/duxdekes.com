@@ -1,4 +1,4 @@
-from django.core.exceptions import DoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from oscar.core.loading import get_classes, get_model
 
 
@@ -8,6 +8,7 @@ Product = get_model('catalogue', 'Product')
 Partner = get_model('partner', 'Partner')
 StockRecord = get_model('partner', 'StockRecord')
 
+# Get the prerequisite related objects
 PARTNER=Partner.objects.get(name='Dux Dekes')
 UNFINISHED_CLASS=ProductClass.objects.get(name='Unfinished Blanks')
 
@@ -18,13 +19,17 @@ def get_pine(unfinished_blank):
 
 def get_material(unfinished_blank, material):
 
-    variants = unfinished_blank.children.all()
+    try:
+        variants = unfinished_blank.children.all()
 
-    # Load material values based on child products
-    for variant in variants:
-        if variant.title and variant.title[:4] == material[:4]:
-            record = StockRecord.objects.get(product=variant)
-            return record
+        # Load material values from child products
+        for variant in variants:
+            if variant.title and variant.title[:4] == material[:4]:
+                record = StockRecord.objects.get(product=variant)
+                return record
+
+    except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
+        pass
 
     # Default: material not present, return a bunch of none
     return None
@@ -58,18 +63,14 @@ def save_unfinished(**kwargs):
     product.title = kwargs['title']
     product.save()
 
-    # Set up the data to create child products with
-    data = {'parent': product}
-    data.update(kwargs)
-
     # If there are pine or Tupelo values, add them as sub-products
-    if data['pine_sku'] and data['pine_price']:
-        save_pine(product, **data)
+    if kwargs['pine_sku'] and kwargs['pine_price']:
+        save_pine(product, **kwargs)
     elif updating:
         remove_pine(product)
 
-    if data['tupelo_sku'] and data['tupelo_price']:
-        save_tupelo(product, **data)
+    if kwargs['tupelo_sku'] and kwargs['tupelo_price']:
+        save_tupelo(product, **kwargs)
     elif updating:
         remove_tupelo(product)
 
@@ -77,14 +78,17 @@ def save_unfinished(**kwargs):
 
 
 def save_unfinished_material(product, **kwargs):
-
+    """
+    xxx
+    """
     try:
-        product.children.get(partner_sku=kwargs['sku'])
-        stock = StockRecord()
-    except DoesNotExist, MultipleObjectsReturned as e:
+        variant = product.children.get(title__startswith=kwargs['name'])
+        stock = StockRecord.objects.get(product=variant)
+
+    except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
         variant = Product()
         variant.structure = Product.CHILD
-        variant.title = '{} - {}'.format(kwargs['name'], kwargs['parent'].title)
+        variant.title = '{} - {}'.format(kwargs['name'], product.title)
         variant.parent = product
         variant.save()
 
