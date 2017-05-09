@@ -97,8 +97,6 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
     """
     Update an unfinished blank
     """
-
-
     def form_valid(self, form):
         """
         Save updates to, or create, the product
@@ -106,7 +104,7 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
 
         #TODO: process formsets!
 
-        super().form_valid(form)
+        return super().form_valid(form)
 
 
     def get_context_data(self, *args, **kwargs):
@@ -185,5 +183,5 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
 #                self.form_invalid(self, self.form)
 
         # Call the parent method to validate the main form
-        super().post(request, *arg, **kwargs)
+        return super().post(request, *arg, **kwargs)
 
