@@ -14,7 +14,7 @@
                 <a href="{{ record.get_absolute_url }}"> {% trans "View on site" %}</a>
             </li>
             <li>
-                <a href="{# % url 'dashboard:catalogue-product-delete' pk=record.id % #}">{% trans "Delete" %}</a>
+                <a href="{% url 'dashboard:catalogue-unfinished-delete' pk=record.id %}">{% trans "Delete" %}</a>
             </li>
         </ul>
     </div>

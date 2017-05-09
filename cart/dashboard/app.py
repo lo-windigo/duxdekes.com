@@ -8,7 +8,7 @@ from . import views
 class DuxDashboardApplication(DashboardApplication):
 
     def get_urls(self):
-        urls = super(DuxDashboardApplication, self).get_urls()
+        urls = super().get_urls()
         custom_urls = [
 #            url(r'^finished/$',
 #                views.FinishedListView.as_view(),
@@ -22,6 +22,9 @@ class DuxDashboardApplication(DashboardApplication):
             url(r'unfinished/create/$',
                 views.UnfinishedCreateView.as_view(),
                 name='catalogue-unfinished-create'),
+            url(r'unfinished/delete/(?P<pk>\d+)/$',
+                views.UnfinishedDeleteView.as_view(),
+                name='catalogue-unfinished-delete'),
         ]
 
         urls.extend(custom_urls)

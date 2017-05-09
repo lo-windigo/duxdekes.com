@@ -1,8 +1,10 @@
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views import generic
+from django.utils.translation import ugettext_lazy as _
 from django_tables2 import SingleTableMixin, SingleTableView
-from oscar.core.loading import get_classes, get_model
+from oscar.core.loading import get_class, get_classes, get_model
 from . import forms, tables
 from duxdekes.util import products
 
@@ -17,6 +19,7 @@ ProductCategoryFormSet, ProductImageFormSet \
             'ProductCategoryFormSet',
             'ProductImageFormSet',
         ))
+ProductDeleteView = get_class('dashboard.catalogue.views', 'ProductDeleteView')
 Product = get_model('catalogue', 'Product')
 ProductClass = get_model('catalogue', 'ProductClass')
 StockRecord = get_model('partner', 'StockRecord')
@@ -184,4 +187,28 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
 
         # Call the parent method to validate the main form
         return super().post(request, *arg, **kwargs)
+
+
+
+class UnfinishedDeleteView(ProductDeleteView):
+    """
+    Override the get_success_url method of the generic ProductDeleteView to send us
+    back to the unfinished decoy section
+    """
+    def get_success_url(self):
+        """
+        When deleting child products, this view redirects to editing the
+        parent product. When deleting any other product, it redirects to the
+        product list view.
+        """
+        if self.object.is_child:
+            msg = _("Deleted product variant '%s'") % self.object.get_title()
+            messages.success(self.request, msg)
+            return reverse(
+                'dashboard:catalogue-unfinished',
+                kwargs={'pk': self.object.parent_id})
+        else:
+            msg = _("Deleted product '%s'") % self.object.title
+            messages.success(self.request, msg)
+            return reverse('dashboard:catalogue-unfinished-list')
 
