@@ -66,6 +66,15 @@ class UnfinishedListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_unfinished.html'
 
 
+    def get_table(self, **kwargs):
+        """
+        Set the table caption by overriding the parent method
+        """
+        table = super().get_table(**kwargs)
+        table.caption = 'Unfinished Blanks'
+        return table
+
+
 
 class UnfinishedMixin():
     """
