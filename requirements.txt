@@ -5,5 +5,5 @@ sorl-thumbnail
 pycountry
 django-compressor
 django-widget-tweaks
-django-oscar
+django-oscar==1.4
 squareconnect
