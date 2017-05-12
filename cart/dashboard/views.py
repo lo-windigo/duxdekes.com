@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
 from django.views import generic
 from django.utils.translation import ugettext_lazy as _
 from django_tables2 import SingleTableMixin, SingleTableView
@@ -13,7 +14,7 @@ from duxdekes.util import products
 ProductTable, CategoryTable \
     = get_classes('dashboard.catalogue.tables',
                   ('ProductTable', 'CategoryTable'))
-ProductCategoryFormSet, ProductImageFormSet \
+(ProductCategoryFormSet, ProductImageFormSet) \
     = get_classes('dashboard.catalogue.forms',
         (
             'ProductCategoryFormSet',
@@ -61,7 +62,7 @@ class UnfinishedListView(SingleTableView):
     Dashboard view that lists existing unfinished blanks
     """
     context_table_name = 'products'
-    queryset = Product.browsable.filter(product_class__name='Unfinished Blanks')
+    queryset = Product.browsable.filter(product_class=products.UNFINISHED_CLASS)
     table_class = tables.UnfinishedTable
     template_name = 'dashboard/catalogue/product_unfinished.html'
 
@@ -81,7 +82,7 @@ class UnfinishedMixin():
     Contain common functionality for create and update views
     """
     form_class = forms.UnfinishedForm
-    queryset = Product.objects.filter(product_class__name='Unfinished Blanks')
+    queryset = Product.objects.filter(product_class=products.UNFINISHED_CLASS)
     success_url = reverse_lazy('dashboard:catalogue-unfinished-list')
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
     category_formset = ProductCategoryFormSet
@@ -96,6 +97,20 @@ class UnfinishedMixin():
         }
 
 
+    def get_context_data(self, **kwargs):
+        """
+        Override get_context_data to fix the page title
+        """
+        context = super().get_context_data(**kwargs)
+
+        # Add the product formsets
+        for ctx_name, formset_class in self.formsets.items():
+            if ctx_name not in context:
+                context[ctx_name] = formset_class(products.UNFINISHED_CLASS,
+                    self.request.user,
+                    instance=self.object)
+
+        return context
 
 
 
@@ -104,20 +119,23 @@ class UnfinishedCreateView(UnfinishedMixin, generic.CreateView):
     Create an unfinished blank
     """
 
+    def get_context_data(self, **kwargs):
+        """
+        Override get_context_data to fix the page title
+        """
+        context = super().get_context_data(**kwargs)
+
+        context['title'] = 'Add Unfinished Blank'
+
+        return context
+
+
+
 
 class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
     """
     Update an unfinished blank
     """
-    def form_valid(self, form):
-        """
-        Save updates to, or create, the product
-        """
-
-        #TODO: process formsets!
-
-        return super().form_valid(form)
-
 
     def get_context_data(self, *args, **kwargs):
         """
@@ -125,14 +143,7 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
         """
         context = super().get_context_data(*args, **kwargs)
 
-        # Add the product formsets
-#        for ctx_name, formset_class in self.formsets.items():
-#            if ctx_name not in context:
-#                context[ctx_name] = formset_class(
-#                    self.request.user,
-#                    self.product_class)
-
-        context['title'] = 'Add Unfinished Blank'
+        context['title'] = 'Change Unfinished Blank'
 
         return context
 
@@ -160,18 +171,6 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
 
         #TODO: implement feet pricing
 
-#        formsets = {}
-#
-#        # Check the formsets for validity
-#        for key, formset in self.formsets.items():
-#            formsets[key] = formset(self.product_class,
-#                   self.request.user,
-#                   self.request.POST,
-#                   self.request.FILES,
-#                   instance=self.product)
-#
-#        self.formsets = formsets
-
         return initial
 
 
@@ -185,17 +184,39 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
         return None
 
 
-    def post(self, request, *arg, **kwargs):
+    def post(self, request, *args, **kwargs):
         """
-        Override post method to check the formsets' validity
+        Override post method to save formsets
         """
 
-#        for key, formset in self.formsets:
-#            if not formset.is_valid():
-#                self.form_invalid(self, self.form)
+        initial_response = super().post(request, *args, **kwargs)
 
-        # Call the parent method to validate the main form
-        return super().post(request, *arg, **kwargs)
+        # check for failure of initial form
+        if not isinstance(initial_response, HttpResponseRedirect):
+            return initial_response
+
+        # Process formsets
+        formsets = {}
+
+        for key, formset in self.formsets.items():
+            formsets[key] = formset(products.UNFINISHED_CLASS,
+                   request.user,
+                   request.POST,
+                   request.FILES,
+                   instance=self.object)
+
+        if all([formset.is_valid() for formset in formsets.values()]):
+            for formset in formsets.values():
+                formset.save()
+
+            # All is well - return success!
+            messages.success(request,
+                    'Blank successfully saved',
+                    extra_tags="safe noicon")
+            return initial_response
+
+        else:
+            return self.form_invalid(self.get_form())
 
 
 
