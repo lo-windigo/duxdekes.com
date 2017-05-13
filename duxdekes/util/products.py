@@ -5,6 +5,7 @@ from oscar.core.loading import get_classes, get_model
 # Set up some product name constants
 PINE = 'Pine'
 TUPELO = 'Tupelo'
+FEET = 'with Feet'
 
 # Get Oscar classes
 ProductClass = get_model('catalogue', 'ProductClass')
@@ -83,7 +84,8 @@ def save_unfinished(**kwargs):
 
 def save_unfinished_material(product, **kwargs):
     """
-    xxx
+    Save a child product that represents a material that this decoy can be made
+    out of
     """
     try:
         variant = product.children.get(title__startswith=kwargs['name'])
@@ -92,13 +94,14 @@ def save_unfinished_material(product, **kwargs):
     except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
         variant = Product()
         variant.structure = Product.CHILD
-        variant.title = '{} - {}'.format(kwargs['name'], product.title)
         variant.parent = product
-        variant.save()
 
         stock = StockRecord()
         stock.product = variant
         stock.partner = PARTNER
+
+    variant.title = '{} - {}'.format(kwargs['name'], product.title)
+    variant.save()
 
     stock.partner_sku = kwargs['sku'] 
     stock.price_excl_tax = kwargs['price']
@@ -112,11 +115,31 @@ def save_pine(product, **kwargs):
             price=kwargs['pine_price'])
 
 
+def save_pine_feet(product, **kwargs):
+    name_with_feet = '{} {}'.format(PINE, FEET)
+    price_with_feet = int(kwargs['pine_price']) + int(kwargs['feet_price'])
+    sku_with_feet = kwargs['pine_sku'] + '_F'
+    save_unfinished_material(product,
+            name=name_with_feet,
+            sku=sku_with_feet,
+            price=price_with_feet)
+
+
 def save_tupelo(product, **kwargs):
     save_unfinished_material(product,
             name=TUPELO,
             sku=kwargs['tupelo_sku'],
             price=kwargs['tupelo_price'])
+
+
+def save_tupelo_feet(product, **kwargs):
+    name_with_feet = '{} {}'.format(TUPELO, FEET)
+    price_with_feet = int(kwargs['tupelo_price']) + int(kwargs['feet_price'])
+    sku_with_feet = kwargs['tupelo_sku'] + '_F'
+    save_unfinished_material(product,
+            name=name_with_feet,
+            sku=sku_with_feet,
+            price=price_with_feet)
 
 
 def remove_material(product, sku, description):
