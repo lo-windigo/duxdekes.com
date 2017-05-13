@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from oscar.core.loading import get_classes, get_model
 
 
+
 # Set up some product name constants
 PINE = 'Pine'
 TUPELO = 'Tupelo'
@@ -16,6 +17,7 @@ StockRecord = get_model('partner', 'StockRecord')
 # Get the prerequisite related objects
 PARTNER=Partner.objects.get(name='Dux Dekes')
 UNFINISHED_CLASS=ProductClass.objects.get(name='Unfinished Blanks')
+
 
 
 def get_pine(unfinished_blank):
@@ -142,18 +144,20 @@ def save_tupelo_feet(product, **kwargs):
             price=price_with_feet)
 
 
-def remove_material(product, sku, description):
+def remove_material(product, description):
     """
-    Remove a child product representing an unfinished blank material
-    TODO
+    Remove a child product(s) representing an unfinished blank material
     """
-    pass
+    material_options = product.children.filter(title__startswith=material)
+
+    for material in material_options:
+        material.delete()
 
 
-def remove_pine(product, sku):
-    remove_material(product, sku, PINE)
+def remove_pine(product):
+    remove_material(product, PINE)
 
 
-def remove_tupelo(product, sku):
-    remove_material(product, sku, TUPELO)
+def remove_tupelo(product):
+    remove_material(product, TUPELO)
 
