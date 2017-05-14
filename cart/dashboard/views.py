@@ -27,18 +27,6 @@ StockRecord = get_model('partner', 'StockRecord')
 
 
 
-class CustomCreateUpdateMixin(generic.TemplateView):
-    """
-    """
-    def get(self):
-        pass
-
-
-    def post(self):
-        pass
-
-
-
 class BauerListView(SingleTableView):
     pass
 
