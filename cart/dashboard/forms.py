@@ -19,16 +19,12 @@ class UnfinishedForm(ProductForm):
     """
     A form specifically tailored to creating an Unfinished Blank product
     """
-    pine_sku = forms.CharField(label="Pine ID",
-            max_length=64,
-            required=False)
+    sku = forms.CharField(label="Product SKU",
+            max_length=64)
     pine_price = forms.DecimalField(label="Pine Price",
             min_value=0,
             decimal_places=2,
             max_digits=12,
-            required=False)
-    tupelo_sku = forms.CharField(label="Tupelo ID",
-            max_length=64,
             required=False)
     tupelo_price = forms.DecimalField(label="Tupelo Price",
             min_value=0,
