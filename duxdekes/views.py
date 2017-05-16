@@ -1,23 +1,8 @@
 from .util.contact import ContactForm
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.core.mail import send_mail
 from django.conf import settings
-from oscar.core.loading import get_model
 from .util.homepage import homepage_data
-
-
-def about(request):
-    """
-    About Dux Dekes' wood carvings
-    """
-    return render(request, 'duxdekes/page-about.html')
-
-
-def about_artist(request):
-    """
-    About Jeff Duxbury
-    """
-    return render(request, 'duxdekes/page-about-artist.html')
 
 
 def contact(request):
@@ -96,24 +81,6 @@ def home(request):
             'products': [],
         }
 
-
-    """
-    # Get some QueryManagers for use in retrieving type-related objects
-    category_qm = ProductCategory.objects.exclude(hidden=True).order_by('description')
-    new_products[ProductCategory.FINISHED] = FinishedCarving.objects.exclude(hidden=True).order_by('-updated')[:4]
-    new_products[ProductCategory.INSTRUCTION] = Instructions.objects.exclude(hidden=True).order_by('-updated')[:4]
-    new_products[ProductCategory.UNFINISHED] = UnfinishedBlank.objects.exclude(hidden=True).order_by('-updated')[:4]
-
-    for category_type in (ProductCategory.UNFINISHED,
-            ProductCategory.FINISHED,
-            ProductCategory.INSTRUCTION,
-            ProductCategory.MATERIAL):
-
-        type_categories = list(category_qm.filter(category_type=category_type))
-
-        # Get all categories
-        categories[category_type] = type_categories
-    """ 
 
     return render(request,
         'duxdekes/page-home.html',
