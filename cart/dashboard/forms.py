@@ -12,15 +12,13 @@ class ProductForm(forms.ModelForm):
     """
     class Meta:
         model = Product
-        fields = ['title']
+        fields = ['title', 'upc']
 
 
 class UnfinishedForm(ProductForm):
     """
     A form specifically tailored to creating an Unfinished Blank product
     """
-    sku = forms.CharField(label="Product SKU",
-            max_length=64)
     pine_price = forms.DecimalField(label="Pine Price",
             min_value=0,
             decimal_places=2,
