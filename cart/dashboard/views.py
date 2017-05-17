@@ -14,7 +14,7 @@ from duxdekes.util import products
 ProductTable, CategoryTable \
     = get_classes('dashboard.catalogue.tables',
                   ('ProductTable', 'CategoryTable'))
-(ProductCategoryFormSet, ProductImageFormSet) \
+ProductCategoryFormSet, ProductImageFormSet \
     = get_classes('dashboard.catalogue.forms',
         (
             'ProductCategoryFormSet',
@@ -50,7 +50,7 @@ class UnfinishedListView(SingleTableView):
     Dashboard view that lists existing unfinished blanks
     """
     context_table_name = 'products'
-    queryset = Product.browsable.filter(product_class=products.UNFINISHED_CLASS)
+    queryset = Product.browsable.filter(product_class=products.get_unfinished_class())
     table_class = tables.UnfinishedTable
     template_name = 'dashboard/catalogue/product_unfinished.html'
 
@@ -70,7 +70,7 @@ class UnfinishedMixin():
     Contain common functionality for create and update views
     """
     form_class = forms.UnfinishedForm
-    queryset = Product.objects.filter(product_class=products.UNFINISHED_CLASS)
+    queryset = Product.objects.filter(product_class=products.get_unfinished_class())
     success_url = reverse_lazy('dashboard:catalogue-unfinished-list')
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
     category_formset = ProductCategoryFormSet
@@ -94,7 +94,7 @@ class UnfinishedMixin():
         # Add the product formsets
         for ctx_name, formset_class in self.formsets.items():
             if ctx_name not in context:
-                context[ctx_name] = formset_class(products.UNFINISHED_CLASS,
+                context[ctx_name] = formset_class(products.get_unfinished_class(),
                     self.request.user,
                     instance=self.object)
 
@@ -187,7 +187,7 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
         formsets = {}
 
         for key, formset in self.formsets.items():
-            formsets[key] = formset(products.UNFINISHED_CLASS,
+            formsets[key] = formset(products.get_unfinished_class(),
                    request.user,
                    request.POST,
                    request.FILES,
