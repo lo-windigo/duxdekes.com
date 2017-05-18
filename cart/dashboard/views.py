@@ -150,11 +150,9 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
         tupelo = products.get_tupelo(self.object)
 
         if pine:
-            initial['pine_sku'] = pine.partner_sku
             initial['pine_price'] = pine.price_excl_tax
 
         if tupelo:
-            initial['tupelo_sku'] = tupelo.partner_sku
             initial['tupelo_price'] = tupelo.price_excl_tax
 
         #TODO: implement feet pricing

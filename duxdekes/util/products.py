@@ -5,7 +5,9 @@ from oscar.core.loading import get_classes, get_model
 
 # Set up some product name constants
 PINE = 'Pine'
+PINE_UPC = '{}_P'
 TUPELO = 'Tupelo'
+TUPELO_UPC = '{}_T'
 FEET = 'with Feet'
 
 # Get Oscar classes
@@ -31,19 +33,17 @@ def get_unfinished_class():
 
 
 def get_pine(unfinished_blank):
-    return get_material(unfinished_blank, 'Pine')
+    return get_material(unfinished_blank, PINE_UPC)
 
 
-def get_material(unfinished_blank, material):
+def get_material(unfinished_blank, upc_format):
+
+    upc = upc_format.format(unfinished_blank.upc)
 
     try:
-        variants = unfinished_blank.children.all()
-
-        # Load material values from child products
-        for variant in variants:
-            if variant.title and variant.title[:4] == material[:4]:
-                record = StockRecord.objects.get(product=variant)
-                return record
+        return StockRecord.objects.filter(
+                product__in=unfinished_blank.children.all()).get(
+                partner_sku=upc)
 
     except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
         pass
@@ -53,7 +53,7 @@ def get_material(unfinished_blank, material):
 
 
 def get_tupelo(unfinished_blank):
-    return get_material(unfinished_blank, TUPELO)
+    return get_material(unfinished_blank, TUPELO_UPC)
 
 
 def save_unfinished(**kwargs):
@@ -70,10 +70,11 @@ def save_unfinished(**kwargs):
     """
 
     updating = 'instance' in kwargs
+    material_args = kwargs
 
     if updating:
         product = kwargs['instance']
-        old_upc = product.upc
+        material_args.update({'original_upc': product.upc,})
     else:
         product = Product()
         product.structure = Product.PARENT
@@ -85,19 +86,24 @@ def save_unfinished(**kwargs):
 
     # If there are pine or Tupelo values, add them as sub-products
     if kwargs['pine_price']:
-        pine_args = kwargs
-        pine_args.update({'old_upc': old_upc,})
-        save_pine(product, **pine_args)
-
+        save_pine(product, **material_args)
+        if kwargs['feet_price']:
+            save_pine_feet(product, **material_args)
     elif updating:
-        remove_pine(product)
+        remove_pine(product, **material_args)
+        remove_pine_feet(product, **material_args)
 
     if kwargs['tupelo_price']:
-        tupelo_args = kwargs
-        tupelo_args.update({'old_upc': old_upc,})
-        save_tupelo(product, **tupelo_args)
+        save_tupelo(product, **material_args)
+        if kwargs['feet_price']:
+            save_tupelo_feet(product, **material_args)
     elif updating:
-        remove_tupelo(product)
+        remove_tupelo(product, **material_args)
+        remove_tupelo_feet(product, **material_args)
+
+    if not kwargs['feet_price']:
+        remove_pine_feet(product, **material_args)
+        remove_tupelo_feet(product, **material_args)
 
     return product
 
@@ -108,12 +114,12 @@ def save_unfinished_material(product, **kwargs):
     out of
     """
     try:
-        if not kwargs['old_upc']:
+        if not kwargs['original_upc']:
             raise ObjectDoesNotExist()
 
         stock = StockRecord.objects.filter(
                 product__in=product.children.all()).get(
-                partner_sku=kwargs['old_upc'])
+                partner_sku=kwargs['original_upc'])
         variant = stock.product
 
     except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
@@ -140,8 +146,8 @@ def save_pine(product, **kwargs):
     upc_format = '{}_P'
     upc = upc_format.format(kwargs['upc'])
 
-    if kwargs['old_upc']:
-        old_upc = upc_format.format(kwargs['old_upc'])
+    if kwargs['original_upc']:
+        old_upc = upc_format.format(kwargs['original_upc'])
     else:
         old_upc = None
 
@@ -165,8 +171,8 @@ def save_pine_feet(product, **kwargs):
     upc_format = '{}_PF'
     upc = upc_format.format(kwargs['upc'])
 
-    if kwargs['old_upc']:
-        old_upc = upc_format.format(kwargs['old_upc'])
+    if kwargs['original_upc']:
+        old_upc = upc_format.format(kwargs['original_upc'])
     else:
         old_upc = None
 
@@ -185,8 +191,8 @@ def save_tupelo(product, **kwargs):
     upc_format = '{}_T'
     upc = upc_format.format(kwargs['upc'])
 
-    if kwargs['old_upc']:
-        old_upc = upc_format.format(kwargs['old_upc'])
+    if kwargs['original_upc']:
+        old_upc = upc_format.format(kwargs['original_upc'])
     else:
         old_upc = None
 
@@ -210,8 +216,8 @@ def save_tupelo_feet(product, **kwargs):
     upc_format = '{}_TF'
     upc = upc_format.format(kwargs['upc'])
 
-    if kwargs['old_upc']:
-        old_upc = upc_format.format(kwargs['old_upc'])
+    if kwargs['original_upc']:
+        old_upc = upc_format.format(kwargs['original_upc'])
     else:
         old_upc = None
 
@@ -222,20 +228,32 @@ def save_tupelo_feet(product, **kwargs):
             price=price_with_feet)
 
 
-def remove_material(product, description):
+def remove_material(product, upc_format):
     """
     Remove a child product(s) representing an unfinished blank material
     """
-    material_options = product.children.filter(title__startswith=material)
+    if 'original_sku' in kwargs:
+        upc = upc_format.format(kwargs['original_sku'])
+    else:
+        upc = upc_format.format(kwargs['upc'])
 
-    for material in material_options:
-        material.delete()
+    stock = StockRecord.get(partner_sku=upc)
+    material = stock.product
+    material.delete()
 
 
-def remove_pine(product):
-    remove_material(product, PINE)
+def remove_pine(product, **kwargs):
+    remove_material(product, PINE_UPC)
 
 
-def remove_tupelo(product):
-    remove_material(product, TUPELO)
+def remove_pine_feet(product, **kwargs):
+    remove_material(product, '{}_PF')
+
+
+def remove_tupelo(product, **kwargs):
+    remove_material(product, TUPELO_UPC)
+
+
+def remove_tupelo_feet(product, **kwargs):
+    remove_material(product, '{}_TF')
 
