@@ -147,15 +147,22 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
 
         # Get the material variant pricing/sku details
         pine = products.get_pine(self.object)
+        pine_feet = products.get_pine_feet(self.object)
         tupelo = products.get_tupelo(self.object)
+        tupelo_feet = products.get_tupelo_feet(self.object)
 
+        # Populate the price fields
         if pine:
             initial['pine_price'] = pine.price_excl_tax
+
+            if pine_feet:
+                initial['feet_price'] = pine_feet.price_excl_tax - pine.price_excl_tax
 
         if tupelo:
             initial['tupelo_price'] = tupelo.price_excl_tax
 
-        #TODO: implement feet pricing
+            if tupelo_feet and 'feet_price' not in initial:
+                initial['feet_price'] = tupelo_feet.price_excl_tax - tupelo.price_excl_tax
 
         return initial
 
