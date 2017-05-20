@@ -203,7 +203,3 @@ def save_product(data, provider, product_class):
     #except Exception as e:
     #    print('Ran into a product exception: {}'.format(e))
 
-
-if __name__ == "__main__":
-    import_data()
-
