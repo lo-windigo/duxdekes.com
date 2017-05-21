@@ -130,6 +130,8 @@ def save_unfinished_material(product, **kwargs):
 
     if 'original_upc' in kwargs:
         stock = get_material(product, upc_format, kwargs['original_upc'])
+
+    if stock:
         variant = stock.product
     else:
         variant = Product()
@@ -231,7 +233,7 @@ def remove_material(product, upc_format, **kwargs):
         stock = StockRecord.objects.get(partner_sku=upc)
         material = stock.product
         material.delete()
-    except Exception e:
+    except Exception as e:
         debug = """
         Tried to delete {}, which failed; possibly no big deal.
         """
