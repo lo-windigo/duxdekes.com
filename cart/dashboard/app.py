@@ -10,9 +10,9 @@ class DuxDashboardApplication(DashboardApplication):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-#            url(r'^finished/$',
-#                views.FinishedListView.as_view(),
-#                name='catalogue-finished'),
+            url(r'^finished/$',
+                views.FinishedListView.as_view(),
+                name='catalogue-finished-list'),
             url(r'^unfinished/$',
                 views.UnfinishedListView.as_view(),
                 name='catalogue-unfinished-list'),

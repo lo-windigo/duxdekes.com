@@ -27,6 +27,13 @@ def get_partner():
         return None
 
 
+def get_finished_class():
+    try:
+        return ProductClass.objects.get(name='Finished Carvings')
+    except Exception:
+        return None
+
+
 def get_unfinished_class():
     try:
         return ProductClass.objects.get(name='Unfinished Blanks')

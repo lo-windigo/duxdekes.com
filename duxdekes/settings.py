@@ -174,17 +174,13 @@ OSCAR_DASHBOARD_NAVIGATION = [
 #                'label': _('Other Instructions'),
 #                'url_name': 'dashboard:instructions',
 #            },
-#            {
-#                'label': _('Finished Carvings'),
-#                'url_name': 'dashboard:finished',
-#            },
             {
                 'label': _('Unfinished Blanks'),
                 'url_name': 'dashboard:catalogue-unfinished-list',
             },
             {
                 'label': _('Finished Decoys'),
-                'url_name': 'dashboard:catalogue-finished',
+                'url_name': 'dashboard:catalogue-finished-list',
             },
         ]
     },

@@ -36,7 +36,7 @@ class FinishedListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_finished.html'
     table_class = ProductTable
     context_table_name = 'products'
-    queryset = Product.browsable.filter(product_class__name='Finished Carvings')
+    queryset = Product.browsable.filter(product_class=products.get_finished_class())
 
 
 
