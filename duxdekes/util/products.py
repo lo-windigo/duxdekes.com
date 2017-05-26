@@ -29,7 +29,7 @@ def get_partner():
 
 def get_finished_class():
     try:
-        return ProductClass.objects.get(name='Finished Carvings')
+        return ProductClass.objects.get(name='Finished Decoys')
     except Exception:
         return None
 
@@ -72,6 +72,42 @@ def get_tupelo(unfinished_blank, original_upc = None):
 
 def get_tupelo_feet(unfinished_blank, original_upc = None):
     return get_material(unfinished_blank, TUPELO_FEET_UPC, original_upc)
+
+
+def save_finished(**kwargs):
+    """
+    Add a Finished Decoy product
+
+    Supported Args:
+    - title: Name/Description of the product
+    - upc: Stock ID of this product
+    - original_upc: Stock ID of this product (prior to editing)
+    - price: price of a decoy
+    - instance: The object to update
+    """
+
+    updating = 'instance' in kwargs
+
+    if updating:
+        product = kwargs['instance']
+        stock = StockRecord.objects.get(product=product)
+    else:
+        product = Product()
+        product.structure = Product.PARENT
+        product.product_class = get_finished_class()
+
+        stock = StockRecord()
+        stock.partner = get_partner()
+
+    product.title = kwargs['title']
+    product.upc = kwargs['upc']
+    product.save()
+
+    # Set stock record AFTER the object's been saved
+    stock.product = product
+    stock.partner_sku = upc 
+    stock.price_excl_tax = kwargs['price']
+    stock.save()
 
 
 def save_unfinished(**kwargs):

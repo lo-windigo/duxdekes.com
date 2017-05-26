@@ -34,9 +34,158 @@ class BauerListView(SingleTableView):
 
 class FinishedListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_finished.html'
-    table_class = ProductTable
+    table_class = tables.FinishedTable
     context_table_name = 'products'
     queryset = Product.browsable.filter(product_class=products.get_finished_class())
+
+
+    def get_table(self, **kwargs):
+        """
+        Set the table caption by overriding the parent method
+        """
+        table = super().get_table(**kwargs)
+        table.caption = 'Unfinished Blanks'
+        return table
+
+
+
+class FinishedMixin():
+    """
+    Contain common functionality for create and update views
+    """
+    form_class = forms.FinishedForm
+    queryset = Product.objects.filter(product_class=products.get_finished_class())
+    success_url = reverse_lazy('dashboard:catalogue-finished-list')
+    template_name = 'dashboard/catalogue/product_finished_update.html'
+    category_formset = ProductCategoryFormSet
+    image_formset = ProductImageFormSet
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.formsets = {
+            'category_formset': self.category_formset,
+            'image_formset': self.image_formset,
+        }
+
+
+    def get_context_data(self, **kwargs):
+        """
+        Override get_context_data to fix the page title
+        """
+        context = super().get_context_data(**kwargs)
+
+        # Add the product formsets
+        for ctx_name, formset_class in self.formsets.items():
+            if ctx_name not in context:
+                context[ctx_name] = formset_class(products.get_finished_class(),
+                    self.request.user,
+                    instance=self.object)
+
+        return context
+
+
+
+class FinishedCreateView(FinishedMixin, generic.CreateView):
+    """
+    Create an finished decoy
+    """
+
+    def get_context_data(self, **kwargs):
+        """
+        Override get_context_data to fix the page title
+        """
+        context = super().get_context_data(**kwargs)
+
+        context['title'] = 'Add Finished Decoy'
+
+        return context
+
+
+
+class FinishedUpdateView(FinishedMixin, generic.UpdateView):
+    """
+    Update an finished decoy
+    """
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Override get_context_data to fix the page title
+        """
+        context = super().get_context_data(*args, **kwargs)
+
+        context['title'] = 'Change Finished Decoy'
+
+        return context
+
+
+    def get_object(self):
+        """
+        Populate the existing object if one has been sent in
+        """
+        if 'pk' in self.kwargs:
+            return Product.objects.get(pk=self.kwargs.get('pk'))
+
+        return None
+
+
+    def post(self, request, *args, **kwargs):
+        """
+        Override post method to save formsets
+        """
+
+        initial_response = super().post(request, *args, **kwargs)
+
+        # check for failure of initial form
+        if not isinstance(initial_response, HttpResponseRedirect):
+            return initial_response
+
+        # Process formsets
+        formsets = {}
+
+        for key, formset in self.formsets.items():
+            formsets[key] = formset(products.get_finished_class(),
+                   request.user,
+                   request.POST,
+                   request.FILES,
+                   instance=self.object)
+
+        if all([formset.is_valid() for formset in formsets.values()]):
+            for formset in formsets.values():
+                formset.save()
+
+            # All is well - return success!
+            messages.success(request,
+                    'Decoy successfully saved',
+                    extra_tags="safe noicon")
+            return initial_response
+
+        else:
+            return self.form_invalid(self.get_form())
+
+
+
+class FinishedDeleteView(ProductDeleteView):
+    """
+    Override the get_success_url method of the generic ProductDeleteView to send us
+    back to the finished decoy section
+    """
+    def get_success_url(self):
+        """
+        When deleting child products, this view redirects to editing the
+        parent product. When deleting any other product, it redirects to the
+        product list view.
+        """
+        if self.object.is_child:
+            msg = _("Deleted product variant '%s'") % self.object.get_title()
+            messages.success(self.request, msg)
+            return reverse(
+                'dashboard:catalogue-finished',
+                kwargs={'pk': self.object.parent_id})
+        else:
+            msg = _("Deleted product '%s'") % self.object.title
+            messages.success(self.request, msg)
+            return reverse('dashboard:catalogue-finished-list')
 
 
 
@@ -47,7 +196,7 @@ class InstructionListView(SingleTableView):
 
 class UnfinishedListView(SingleTableView):
     """
-    Dashboard view that lists existing unfinished blanks
+    Dashboard view that lists existing finished decoys
     """
     context_table_name = 'products'
     queryset = Product.browsable.filter(product_class=products.get_unfinished_class())
@@ -106,7 +255,6 @@ class UnfinishedCreateView(UnfinishedMixin, generic.CreateView):
     """
     Create an unfinished blank
     """
-
     def get_context_data(self, **kwargs):
         """
         Override get_context_data to fix the page title
@@ -116,7 +264,6 @@ class UnfinishedCreateView(UnfinishedMixin, generic.CreateView):
         context['title'] = 'Add Unfinished Blank'
 
         return context
-
 
 
 
