@@ -44,7 +44,7 @@ class FinishedListView(SingleTableView):
         Set the table caption by overriding the parent method
         """
         table = super().get_table(**kwargs)
-        table.caption = 'Unfinished Blanks'
+        table.caption = 'Finished Decoys'
         return table
 
 
