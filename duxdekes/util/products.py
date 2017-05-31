@@ -90,14 +90,15 @@ def save_finished(**kwargs):
 
     if updating:
         product = kwargs['instance']
-        stock = StockRecord.objects.get(product=product)
+
+        try:
+            stock = StockRecord.objects.get(product=product)
+        except:
+            stock = StockRecord()
+            stock.partner = get_partner()
     else:
         product = Product()
-        product.structure = Product.PARENT
         product.product_class = get_finished_class()
-
-        stock = StockRecord()
-        stock.partner = get_partner()
 
     product.title = kwargs['title']
     product.upc = kwargs['upc']
@@ -105,9 +106,11 @@ def save_finished(**kwargs):
 
     # Set stock record AFTER the object's been saved
     stock.product = product
-    stock.partner_sku = upc 
+    stock.partner_sku = kwargs['upc']
     stock.price_excl_tax = kwargs['price']
     stock.save()
+
+    return product
 
 
 def save_unfinished(**kwargs):

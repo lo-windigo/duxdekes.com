@@ -29,7 +29,6 @@ class FinishedForm(ProductForm):
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.instance.structure = Product.PARENT
         self.instance.product_class = products.get_finished_class()
 
 

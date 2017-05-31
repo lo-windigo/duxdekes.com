@@ -62,6 +62,9 @@ class FinishedMixin():
 
 
     def __init__(self, *args, **kwargs):
+        """
+        Override to set up the formsets dictionary
+        """
         super().__init__(*args, **kwargs)
         self.formsets = {
             'category_formset': self.category_formset,
@@ -102,6 +105,10 @@ class FinishedCreateView(FinishedMixin, generic.CreateView):
         return context
 
 
+    def get_success_url(self):
+        return self.success_url
+
+
 
 class FinishedUpdateView(FinishedMixin, generic.UpdateView):
     """
@@ -117,6 +124,26 @@ class FinishedUpdateView(FinishedMixin, generic.UpdateView):
         context['title'] = 'Change Finished Decoy'
 
         return context
+
+
+    def get_initial(self):
+        """
+        If there has been a product sent in, get its values and pre-populate
+        the form
+        """
+
+        initial = super().get_initial()
+
+        # Set the price from the related stock record
+        try:
+            stock = StockRecord.objects.get(product=self.object)
+            initial['price'] = stock.price_excl_tax
+
+        except Exception as e:
+            pass
+
+        # Get the pricing/sku details
+        return initial
 
 
     def get_object(self):
@@ -227,6 +254,9 @@ class UnfinishedMixin():
 
 
     def __init__(self, *args, **kwargs):
+        """
+        Override to set up the formsets dictionary
+        """
         super().__init__(*args, **kwargs)
         self.formsets = {
             'category_formset': self.category_formset,
