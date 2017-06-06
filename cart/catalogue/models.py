@@ -12,11 +12,12 @@ class InstructionProduct(Product):
     blank to bundle
     """
     blank = models.ForeignKey(Product,
+            related_name = 'matching_blank',
             blank = True,
             null = True)
 
 
-class InstructionProduct(Product):
+class BauerProduct(Product):
     """
     Override the usual product model to include extra descriptive content
     """
