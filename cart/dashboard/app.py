@@ -7,7 +7,24 @@ from . import views
 
 class DuxDashboardApplication(DashboardApplication):
 
+    # Set permissions for any new admin views
+    default_permissions = ['is_staff', ]
+    permissions_map = _map = {
+        'catalogue-finished-list': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-finished': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-finished-create': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-finished-delete': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-unfinished-list': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-unfinished': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-unfinished-create': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-unfinished-delete': (['is_staff'], ['partner.dashboard_access']),
+    }
+
+
     def get_urls(self):
+        """
+        Get the URL patterns for our custom admin pages
+        """
         urls = super().get_urls()
         custom_urls = [
             url(r'^finished/$',
