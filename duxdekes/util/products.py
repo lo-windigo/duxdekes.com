@@ -21,24 +21,44 @@ StockRecord = get_model('partner', 'StockRecord')
 
 
 def get_partner():
-    try:
-        return Partner.objects.get(name='Dux Dekes')
-    except Exception:
-        return None
+    partner, created = Partner.objects.get_or_create(name='Dux Dekes')
+
+    if created:
+        print('Partner was created for the first time')
+
+    return partner
 
 
 def get_finished_class():
-    try:
-        return ProductClass.objects.get(name='Finished Decoys')
-    except Exception:
-        return None
+    return get_product_class('Finished Decoys')
+
+
+def get_instructions_class():
+    return get_product_class('Instructions')
+
+
+def get_bauer_class():
+    return get_product_class('Bauer Instructions')
 
 
 def get_unfinished_class():
-    try:
-        return ProductClass.objects.get(name='Unfinished Blanks')
-    except Exception:
-        return None
+    return get_product_class('Unfinished Blanks')
+
+
+def get_product_class(name):
+    """
+    Fetch a generic product class, or create it if this is the first time called
+    """
+    klass, created = ProductClass.objects.get_or_create(name=name,
+            defaults={
+                'requires_shipping': True,
+                'track_stock': False,
+                })
+
+    if created:
+        print('Product class {} was created for the first time'.format(name))
+
+    return klass
 
 
 def get_material(unfinished_blank, upc_format, original_upc = None):

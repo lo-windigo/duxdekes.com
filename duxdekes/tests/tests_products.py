@@ -23,8 +23,8 @@ class UnfinishedUtilities(TestCase):
         self.assertIsNotNone(product_class)
         self.assertIsInstance(partner, self.partner_class)
         self.assertIsInstance(product_class, self.product_class)
-        self.assertIs(partner.name, partner_name)
-        self.assertIs(product_class.title, unfinished_name)
+        self.assertEqual(partner.name, partner_name)
+        self.assertEqual(product_class.name, unfinished_name)
 
 
     def test_create_pine_product(self):
