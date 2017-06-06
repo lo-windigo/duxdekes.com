@@ -1,7 +1,9 @@
 from oscar.apps.catalogue.models import *  # noqa
-from django.contrib.flatpages import FlatPage
+from oscar.core.loading import get_model
 from django.db import models
 
+
+FlatPage = get_model('flatpages', 'FlatPage')
 
 
 class InstructionProduct(Product):
@@ -15,6 +17,9 @@ class InstructionProduct(Product):
 
 
 class InstructionProduct(Product):
+    """
+    Override the usual product model to include extra descriptive content
+    """
     extra_content = models.ForeignKey(FlatPage,
             blank = True,
             null = True)

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'duxdekes',
-    'products',
+    #'products',
     'django.contrib.flatpages',
     'compressor',
     'widget_tweaks',
@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'cart.catalogue',
     'cart.checkout',
     'cart.dashboard',
-    #'cart.dashboard.catalogue',
     'cart.partner',
     'cart.shipping',
 ], )

@@ -27,7 +27,7 @@ listing = get_class('catalogue.views', 'CatalogueView')
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^contact/?$', views.contact, name='contact'),
-    url(r'^products/', include('products.urls')),
+    #url(r'^products/', include('products.urls')),
     #url(r'^admin/', admin.site.urls),
     url(r'^listing/', listing.as_view()),
     url(r'', include(application.urls)),
