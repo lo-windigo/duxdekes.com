@@ -1,9 +1,13 @@
 from django import forms
 from duxdekes.util import products
-from oscar.core.loading import get_model
+from oscar.core.loading import get_class, get_model
 
+# Dynamically get all of Oscar's classes
+Category = get_model('catalogue', 'Category')
 Product = get_model('catalogue', 'Product')
 ProductClass = get_model('catalogue', 'ProductClass')
+ProductCategoryFormSet = get_class('dashboard.catalogue.forms',
+        'ProductCategoryFormSet')
 
 
 class ProductForm(forms.ModelForm):
@@ -13,6 +17,24 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['title', 'upc']
+
+
+class FinishedCategoryFormSet(ProductCategoryFormSet):
+    """
+    Override the formset to only provide finished categories
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Set this formset's queryset to children of the parent category
+        """
+        super().__init__(*args, **kwargs)
+
+        try:
+            parent = Category.objects.get(name="Finished Decoys")
+            self.queryset = parent.get_children()
+        except:
+            # Use the parent's default: all categories
+            pass
 
 
 class FinishedForm(ProductForm):

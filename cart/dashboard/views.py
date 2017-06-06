@@ -57,7 +57,7 @@ class FinishedMixin():
     queryset = Product.objects.filter(product_class=products.get_finished_class())
     success_url = reverse_lazy('dashboard:catalogue-finished-list')
     template_name = 'dashboard/catalogue/product_finished_update.html'
-    category_formset = ProductCategoryFormSet
+    category_formset = forms.FinishedCategoryFormSet
     image_formset = ProductImageFormSet
 
 
