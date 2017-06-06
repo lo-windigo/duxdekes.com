@@ -50,9 +50,14 @@ echo -e "> "
 
 select DB in "mysql" "postgres" "none"; do
 	case $DB in
-		mysql ) PACKAGES+=' '$MYSQL_PACKAGES; break;;
-		postgres ) PACKAGES+=' '$PGSQL_PACKAGES; break;;
-		none|* ) break;;
+		mysql)
+			PACKAGES+=' '$MYSQL_PACKAGES
+			break;;
+		postgres)
+			PACKAGES+=' '$PGSQL_PACKAGES
+			break;;
+		none|*)
+			break;;
 	esac
 done
 
