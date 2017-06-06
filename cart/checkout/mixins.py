@@ -3,7 +3,7 @@ from oscar.apps.checkout import mixins
 from oscar.apps.payment.models import SourceType, Source
 from oscar.apps.payment.exceptions import UnableToTakePayment
 from squareconnect.rest import ApiException
-from squareconnect.apis.transaction_api import TransactionApi
+from squareconnect.apis.transactions_api import TransactionsApi
 
 
 class OrderPlacementMixin(mixins.CheckoutSessionMixin):
