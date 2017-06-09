@@ -23,8 +23,8 @@ StockRecord = get_model('partner', 'StockRecord')
 def get_partner():
     partner, created = Partner.objects.get_or_create(name='Dux Dekes')
 
-    if created:
-        print('Partner was created for the first time')
+    #if created:
+    #    print('Partner was created for the first time')
 
     return partner
 
@@ -55,8 +55,8 @@ def get_product_class(name):
                 'track_stock': False,
                 })
 
-    if created:
-        print('Product class {} was created for the first time'.format(name))
+    #if created:
+    #    print('Product class {} was created for the first time'.format(name))
 
     return klass
 

@@ -51,6 +51,18 @@ class DuxDashboardApplication(DashboardApplication):
             url(r'^unfinished/delete/(?P<pk>\d+)/$',
                 views.UnfinishedDeleteView.as_view(),
                 name='catalogue-unfinished-delete'),
+            url(r'^instructions/$',
+                views.InstructionsListView.as_view(),
+                name='catalogue-instructions-list'),
+            url(r'^instructions/(?P<pk>\d+)/$',
+                views.InstructionsUpdateView.as_view(),
+                name='catalogue-instructions'),
+            url(r'^instructions/create/$',
+                views.InstructionsCreateView.as_view(),
+                name='catalogue-instructions-create'),
+            url(r'^instructions/delete/(?P<pk>\d+)/$',
+                views.InstructionsDeleteView.as_view(),
+                name='catalogue-instructions-delete'),
         ]
 
         urls.extend(custom_urls)
