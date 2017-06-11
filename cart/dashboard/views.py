@@ -216,7 +216,7 @@ class FinishedDeleteView(ProductDeleteView):
 
 
 
-class InstructionListView(SingleTableView):
+class InstructionsListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_instructions.html'
     table_class = tables.InstructionsTable
     context_table_name = 'products'
@@ -233,7 +233,7 @@ class InstructionListView(SingleTableView):
 
 
 
-class InstructionMixin():
+class InstructionsMixin():
     """
     Contain common functionality for create and update views
     """
@@ -273,7 +273,7 @@ class InstructionMixin():
 
 
 
-class InstructionCreateView(InstructionMixin, generic.CreateView):
+class InstructionsCreateView(InstructionsMixin, generic.CreateView):
     """
     Create an instruction
     """
@@ -294,9 +294,9 @@ class InstructionCreateView(InstructionMixin, generic.CreateView):
 
 
 
-class InstructionUpdateView(InstructionMixin, generic.UpdateView):
+class InstructionsUpdateView(InstructionsMixin, generic.UpdateView):
     """
-    Update an instruction
+    Update an instruction product
     """
 
     def get_context_data(self, *args, **kwargs):
@@ -305,7 +305,7 @@ class InstructionUpdateView(InstructionMixin, generic.UpdateView):
         """
         context = super().get_context_data(*args, **kwargs)
 
-        context['title'] = 'Change Instruction'
+        context['title'] = 'Change Instructions'
 
         return context
 
@@ -355,7 +355,7 @@ class InstructionUpdateView(InstructionMixin, generic.UpdateView):
         formsets = {}
 
         for key, formset in self.formsets.items():
-            formsets[key] = formset(products.get_instruction_class(),
+            formsets[key] = formset(products.get_instructions_class(),
                    request.user,
                    request.POST,
                    request.FILES,
@@ -367,7 +367,7 @@ class InstructionUpdateView(InstructionMixin, generic.UpdateView):
 
             # All is well - return success!
             messages.success(request,
-                    'Decoy successfully saved',
+                    'Instructions successfully saved',
                     extra_tags="safe noicon")
             return initial_response
 
@@ -376,7 +376,7 @@ class InstructionUpdateView(InstructionMixin, generic.UpdateView):
 
 
 
-class InstructionDeleteView(ProductDeleteView):
+class InstructionsDeleteView(ProductDeleteView):
     """
     Override the get_success_url method of the generic ProductDeleteView to send us
     back to the instruction section
@@ -391,14 +391,12 @@ class InstructionDeleteView(ProductDeleteView):
             msg = _("Deleted product variant '%s'") % self.object.get_title()
             messages.success(self.request, msg)
             return reverse(
-                'dashboard:catalogue-instruction',
+                'dashboard:catalogue-instructions',
                 kwargs={'pk': self.object.parent_id})
         else:
             msg = _("Deleted product '%s'") % self.object.title
             messages.success(self.request, msg)
-            return reverse('dashboard:catalogue-instruction-list')
-
-
+            return reverse('dashboard:catalogue-instructions-list')
 
 
 
