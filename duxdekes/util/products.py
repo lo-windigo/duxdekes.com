@@ -37,8 +37,8 @@ def get_instructions_class():
     return get_product_class('Instructions')
 
 
-def get_bauer_class():
-    return get_product_class('Bauer Instructions')
+def get_book_class():
+    return get_product_class('Instruction Books')
 
 
 def get_unfinished_class():
