@@ -19,6 +19,21 @@ class FinishedTable(ProductTable):
         pass
 
 
+class InstructionsTable(ProductTable):
+    actions = TemplateColumn(
+        verbose_name=_('Actions'),
+        template_name='dashboard/catalogue/instructions_row_actions.html',
+        orderable=False)
+    title = TemplateColumn(
+        verbose_name=_('Title'),
+        template_name='dashboard/catalogue/instructions_row_title.html',
+        order_by='title', accessor=A('title'))
+
+    # Bring over the meta configurations from the parent view
+    class Meta(ProductTable.Meta):
+        pass
+
+
 class UnfinishedTable(ProductTable):
     actions = TemplateColumn(
         verbose_name=_('Actions'),

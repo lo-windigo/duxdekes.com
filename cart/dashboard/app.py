@@ -18,6 +18,10 @@ class DuxDashboardApplication(DashboardApplication):
         'catalogue-unfinished': (['is_staff'], ['partner.dashboard_access']),
         'catalogue-unfinished-create': (['is_staff'], ['partner.dashboard_access']),
         'catalogue-unfinished-delete': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-instructions-list': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-instructions': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-instructions-create': (['is_staff'], ['partner.dashboard_access']),
+        'catalogue-instructions-delete': (['is_staff'], ['partner.dashboard_access']),
     }
 
 

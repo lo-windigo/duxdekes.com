@@ -218,9 +218,9 @@ class FinishedDeleteView(ProductDeleteView):
 
 class InstructionListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_instructions.html'
-    table_class = tables.InstructionTable
+    table_class = tables.InstructionsTable
     context_table_name = 'products'
-    queryset = Product.browsable.filter(product_class=products.get_instruction_class())
+    queryset = Product.browsable.filter(product_class=products.get_instructions_class())
 
 
     def get_table(self, **kwargs):
@@ -237,10 +237,10 @@ class InstructionMixin():
     """
     Contain common functionality for create and update views
     """
-    form_class = forms.InstructionForm
-    queryset = Product.objects.filter(product_class=products.get_instruction_class())
-    success_url = reverse_lazy('dashboard:catalogue-instruction-list')
-    template_name = 'dashboard/catalogue/product_instruction_update.html'
+    form_class = forms.InstructionsForm
+    queryset = Product.objects.filter(product_class=products.get_instructions_class())
+    success_url = reverse_lazy('dashboard:catalogue-instructions-list')
+    template_name = 'dashboard/catalogue/product_instructions_update.html'
     category_formset = ProductCategoryFormSet
     image_formset = ProductImageFormSet
 
@@ -284,7 +284,7 @@ class InstructionCreateView(InstructionMixin, generic.CreateView):
         """
         context = super().get_context_data(**kwargs)
 
-        context['title'] = 'Add Instruction'
+        context['title'] = 'Add Instructions'
 
         return context
 
