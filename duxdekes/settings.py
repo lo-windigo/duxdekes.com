@@ -169,10 +169,6 @@ OSCAR_DASHBOARD_NAVIGATION = [
 #                'label': _('Bauer Instructions'),
 #                'url_name': 'dashboard:bauer',
 #            },
-#            {
-#                'label': _('Other Instructions'),
-#                'url_name': 'dashboard:instructions',
-#            },
             {
                 'label': _('Unfinished Blanks'),
                 'url_name': 'dashboard:catalogue-unfinished-list',
@@ -180,6 +176,10 @@ OSCAR_DASHBOARD_NAVIGATION = [
             {
                 'label': _('Finished Decoys'),
                 'url_name': 'dashboard:catalogue-finished-list',
+            },
+            {
+                'label': _('Instructions'),
+                'url_name': 'dashboard:catalogue-instructions-list',
             },
         ]
     },
