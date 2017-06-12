@@ -265,7 +265,7 @@ class InstructionsMixin():
         # Add the product formsets
         for ctx_name, formset_class in self.formsets.items():
             if ctx_name not in context:
-                context[ctx_name] = formset_class(products.get_instruction_class(),
+                context[ctx_name] = formset_class(products.get_instructions_class(),
                     self.request.user,
                     instance=self.object)
 
