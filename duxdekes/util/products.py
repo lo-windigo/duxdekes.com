@@ -13,6 +13,7 @@ TUPELO_FEET_UPC = '{}_TF'
 FEET = 'with Feet'
 
 # Get Oscar classes
+InstructionsWithBlankProduct = get_model('catalogue', 'InstructionsWithBlankProduct')
 ProductClass = get_model('catalogue', 'ProductClass')
 Product = get_model('catalogue', 'Product')
 Partner = get_model('partner', 'Partner')
@@ -110,15 +111,79 @@ def save_finished(**kwargs):
 
     if updating:
         product = kwargs['instance']
+        stock, created = StockRecord.objects.get(product=product)
 
-        try:
-            stock = StockRecord.objects.get(product=product)
-        except:
-            stock = StockRecord()
+        if created:
             stock.partner = get_partner()
     else:
         product = Product()
         product.product_class = get_finished_class()
+
+    product.title = kwargs['title']
+    product.upc = kwargs['upc']
+    product.save()
+
+    # Set stock record AFTER the object's been saved
+    stock.product = product
+    stock.partner_sku = kwargs['upc']
+    stock.price_excl_tax = kwargs['price']
+    stock.save()
+
+    return product
+
+
+def save_instructions(**kwargs):
+    """
+    Add or update Instructions product
+
+    Supported Args:
+    - title: Name/Description of the product
+    - upc: Stock ID of this product
+    - original_upc: Stock ID of this product (prior to editing)
+    - price: price of instructions
+    - blank: the connected unfinished blank
+    - price_with_blank: price of the instructions with the matching unfinished
+      blank
+    - instance: The object to update
+    """
+
+    updating = 'instance' in kwargs
+    instructions_class = get_instructions_class()
+
+    if updating:
+        product = kwargs['instance']
+
+        # TODO: This won't work with a parent product! Have to make another
+        # child!
+        stock, _ = StockRecord.objects.get_or_create(product=product,
+                defaults={'partner': get_partner()})
+    else:
+        product = Product()
+        product.product_class = instructions_class
+        product.structure = Product.PARENT
+
+    # Store the associated blank and price as a child product
+    if 'blank' in kwargs and 'price_with_blank' in kwargs:
+        blank = Product.objects.get(pk=kwargs['blank'])
+        instructions_matching_blank, _ = \
+            InstructionsWithBlankProduct.objects.get_or_create(parent=product,
+                    defaults={
+                        'product_class': instructions_class,
+                        'structure': Product.CHILD,
+                        })
+
+        instructions_matching_blank.blank = blank
+
+        # Create a matching stock record for the instructions with matching
+        # blank
+        matching_stock, _ = StockRecord.objects.get_or_create(
+                product=instructions_matching_blank,
+                defaults={'partner': get_partner()})
+
+    # Remove the matching blank if the fields were erased
+    elif updating:
+        for matching_blank in product.children:
+            matching_blank.delete()
 
     product.title = kwargs['title']
     product.upc = kwargs['upc']
