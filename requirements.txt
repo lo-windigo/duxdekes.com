@@ -7,3 +7,4 @@ django-compressor
 django-widget-tweaks
 django-oscar==1.4
 squareconnect==2.1.*
+django-markdown==0.8.4

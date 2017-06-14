@@ -329,3 +329,8 @@ TEMPLATES = [
 ##
 THUMBNAIL_DEBUG = DEBUG
 
+##
+## Django Markdown
+##
+MARKDOWN_EDITOR_SKIN = 'simple'
+
