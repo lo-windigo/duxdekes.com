@@ -13,6 +13,7 @@ TUPELO_FEET_UPC = '{}_TF'
 FEET = 'with Feet'
 INSTRUCTIONS_ALONE = '{} Painting Kit'
 INSTRUCTIONS_WITH_BLANK = '{} Painting Kit & {} blank'
+INSTRUCTIONS_WITH_BLANK_UPC = '{}B'
 
 # Get Oscar classes
 InstructionsWithBlankProduct = get_model('catalogue', 'InstructionsWithBlankProduct')
@@ -148,34 +149,29 @@ def save_instructions(**kwargs):
       blank
     - instance: The object to update
     """
-
     updating = 'instance' in kwargs
-    instructions_class = get_instructions_class()
-
-    if updating:
-        product = kwargs['instance']
-    else:
-        product = Product()
-        product.product_class = instructions_class
-        product.structure = Product.PARENT
-
-    product.title = kwargs['title']
-    product.upc = kwargs['upc']
-    product.save()
-
     old_upc = None
+
     if 'original_upc' in kwargs:
         old_upc = kwargs['original_upc']
 
+    if updating:
+        instructions = kwargs['instance']
+    else:
+        instructions = Product()
+        instructions.product_class = get_instructions_class()
+        instructions.structure = Product.PARENT
+
+    instructions.title = kwargs['title']
+    instructions.upc = kwargs['upc']
+    instructions.save()
+
     # Store the associated blank and price as a child product
     if 'blank' in kwargs and 'price_with_blank' in kwargs:
-        blank = Product.objects.get(pk=kwargs['blank'])
-
-        save_instructions_child(product,
-                INSTRUCTIONS_WITH_BLANK.format(kwargs['title'], blank.title),
+        save_instructions_with_blank(instructions,
+                Product.objects.get(pk=kwargs['blank']),
                 kwargs['price_with_blank'],
-                old_upc,
-                blank)
+                old_upc)
 
     # Remove the matching blank if the fields were erased
     elif updating:
@@ -184,64 +180,103 @@ def save_instructions(**kwargs):
         #    matching_blank.delete()
 
     # Add a product for the instructions, without a blank
-    save_instructions_child(product,
-            INSTRUCTIONS_ALONE.format(kwargs['title']),
+    save_instructions_child(instructions,
             kwargs['price'],
             old_upc)
 
-    return product
+    return instructions
 
 
-def save_instructions_child(instructions, title, price, old_upc=None, blank=None):
+def save_instructions_alone(instructions, price, old_upc=None):
     """
     Add or update Instructions child product
 
     Supported Args:
     - instructions: product object that this should be a child of
     - price: price of instructions
-    - upc: Stock ID of this product
-    - original_upc: original stock ID of this product (optional)
-    - blank: the connected unfinished blank (optional)
+    - old_upc: original stock ID of this product (optional)
     """
-    variants = StockRecord.objects.filter(product__in=instructions.children.all())
-    stock = None
     variant = None
+    variants = Product.objects.filter(parent=instructions)
 
     # Try to get the stock record with the old SKU first
-    if old_upc:
-        try:
-            stock = variants.get(sku=old_upc)
-            stock.sku = instructions.upc
-            variant = stock.product
+    try:
+        variant = variants.get(upc=old_upc)
+    except:
+        pass
 
-    # Create/fetch the stock record if it hasn't been found yet
-    if not stock:
-        stock, created = variants.get_or_create(sku=instructions.upc)
+    if not variant:
+        variant, created = variants.get_or_create(upc=instructions.upc)
 
         if created:
-            if blank:
-                variant = InstructionsWithBlankProduct()
-            else:
-                variant = Product()
-
             variant.parent = instructions
-            variant.product_class = instructions_class
+            variant.product_class = get_instructions_class()
             variant.structure = Product.CHILD
             variant.save()
 
-            stock.partner = get_partner()
-            stock.product = variant
-        else:
-            variant = stock.product
+    variant.title = INSTRUCTIONS_ALONE.format(instructions.title)
+    variant.price = price
+    variant.upc = instructions.upc
 
-    # Update all of the relevant details for this variant
-    stock.price_excl_tax = price
-    stock.sku = instructions.upc
+    variant.save()
+
+    save_instructions_variant_stock(variant)
+
+
+def save_instructions_with_blank(instructions, blank, price, old_upc=None):
+    """
+    Add or update Instructions child product
+
+    Supported Args:
+    - instructions: product object that this should be a child of
+    - blank: the connected unfinished blank (optional)
+    - price: price of instructions
+    - old_upc: original stock ID of this product (optional)
+    """
+    variant = None
+    variants = InstructionsWithBlankProduct.objects.filter(parent=instructions)
+
+    # Try to get the stock record with the old SKU first
+    try:
+        variant = variants.get(upc=old_upc)
+    except:
+        pass
+
+    if not variant:
+        variant, created = variants.get_or_create(upc=instructions.upc)
+
+        if created:
+            variant.parent = instructions
+            variant.product_class = get_instructions_class()
+            variant.structure = Product.CHILD
+
+    variant.title = INSTRUCTIONS_WITH_BLANK.format(kwargs['title'], blank.title),
+    variant.price = price
+    variant.upc = INSTRUCTIONS_WITH_BLANK_UPC.format(instructions.upc)
+    variant.blank = blank
+
+    variant.save()
+
+    save_instructions_variant_stock(variant)
+
+
+def save_instructions_variant_stock(variant):
+    """
+    Create or update a stock record for an instructions variant
+
+    Supported Args:
+    - variant: a child product that represents an Instructions variant
+    - price: price of instructions
+    - old_upc: original stock ID of this product (optional)
+    """
+    stock, _ = StockRecord.objects.get_or_create(product=variant,
+            defaults={
+                'partner': get_partner()
+                })
+
+    stock.price_excl_tax = variant.price
+    stock.sku = variant.upc
     stock.save()
-    
-    if blank:
-        variant.blank = blank
-        variant.save()
 
 
 def save_unfinished(**kwargs):
