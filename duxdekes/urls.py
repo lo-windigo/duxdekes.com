@@ -16,7 +16,8 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
-from django.contrib import admin
+#from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from oscar.app import application
 from oscar.core.loading import get_class
 from . import views
@@ -31,6 +32,9 @@ urlpatterns = [
     #url(r'^admin/', admin.site.urls),
     url(r'^listing/', listing.as_view()),
     url(r'', include(application.urls)),
+    url(r'^login2/$', auth_views.login, {
+        'redirect_field_name': '',
+    }, name='login-nextless'),
 ]
 
 if settings.DEBUG:
