@@ -318,13 +318,26 @@ class InstructionsUpdateView(InstructionsMixin, generic.UpdateView):
 
         initial = super().get_initial()
 
-        # Set the price from the related stock record
-        try:
-            stock = StockRecord.objects.get(product=self.object)
-            initial['price'] = stock.price_excl_tax
+        if self.object:
 
-        except Exception as e:
-            pass
+            # Set the price from the related stock record
+            instructions_alone = products.get_instructions_alone(self.object)
+            instructions_with_blank = \
+                products.get_instructions_with_blank(self.object)
+
+            if instructions_alone:
+                stock_alone = instructions_alone.stockrecords.all()[0]
+                initial['price'] = stock_alone.price_excl_tax
+                initial['upc'] = stock_alone.partner_sku
+
+            if instructions_with_blank:
+                stock_w_blank = instructions_with_blank.stockrecords.all()[0]
+
+                initial['price_with_blank'] = stock_w_blank.price_excl_tax
+                initial['blank'] = instructions_with_blank.blank.pk
+
+                if 'upc' not in initial:
+                    initial['upc'] = stock_w_blank.partner_sku
 
         # Get the pricing/sku details
         return initial

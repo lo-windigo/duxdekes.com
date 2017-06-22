@@ -82,6 +82,32 @@ def get_material(unfinished_blank, upc_format, original_upc = None):
         return None
 
 
+def get_instructions_alone(instructions, original_upc = None):
+    variant, _ = get_instructions_variants(instructions)
+    return variant
+
+
+def get_instructions_with_blank(instructions, original_upc = None):
+    _, variant = get_instructions_variants(instructions)
+    return variant
+
+
+def get_instructions_variants(instructions):
+    """
+    Get the variants for an instructions product
+    """
+    instructions_alone = None
+    instructions_with_blank = None
+
+    for variant in instructions.children.all():
+        if isinstance(variant, InstructionsWithBlankProduct):
+            instructions_with_blank = variant
+        else:
+            instructions_alone = variant
+
+    return instructions_alone, instructions_with_blank
+
+
 def get_pine(unfinished_blank, original_upc = None):
     return get_material(unfinished_blank, PINE_UPC, original_upc)
 
@@ -150,10 +176,6 @@ def save_instructions(**kwargs):
     - instance: The object to update
     """
     updating = 'instance' in kwargs
-    old_upc = None
-
-    if 'original_upc' in kwargs:
-        old_upc = kwargs['original_upc']
 
     if updating:
         instructions = kwargs['instance']
@@ -163,67 +185,68 @@ def save_instructions(**kwargs):
         instructions.structure = Product.PARENT
 
     instructions.title = kwargs['title']
-    instructions.upc = kwargs['upc']
+    # NO UPC. Parents can't have stock records, and products can't share UPCs.
+    # So NO UPC FOR YOU, parent product.
+    instructions.upc = None
     instructions.save()
 
     # Store the associated blank and price as a child product
-    if 'blank' in kwargs and 'price_with_blank' in kwargs:
+    if 'blank' in kwargs and 'price_with_blank' in kwargs and \
+             kwargs['blank'] and kwargs['price_with_blank']:
         save_instructions_with_blank(instructions,
                 Product.objects.get(pk=kwargs['blank']),
                 kwargs['price_with_blank'],
-                old_upc)
+                kwargs['upc'])
 
     # Remove the matching blank if the fields were erased
-    elif updating:
-        pass
+#    elif updating:
+#       pass
         #for matching_blank in product.children:
         #    matching_blank.delete()
 
     # Add a product for the instructions, without a blank
-    save_instructions_child(instructions,
+    save_instructions_alone(instructions,
             kwargs['price'],
-            old_upc)
+            kwargs['upc'])
 
     return instructions
 
 
-def save_instructions_alone(instructions, price, old_upc=None):
+def save_instructions_alone(instructions, price, upc, old_upc=None):
     """
     Add or update Instructions child product
 
     Supported Args:
     - instructions: product object that this should be a child of
     - price: price of instructions
+    - upc: product UPC or SKU
     - old_upc: original stock ID of this product (optional)
     """
     variant = None
-    variants = Product.objects.filter(parent=instructions)
 
     # Try to get the stock record with the old SKU first
     try:
-        variant = variants.get(upc=old_upc)
+        variant = Product.objects.get(upc=old_upc)
     except:
         pass
 
     if not variant:
-        variant, created = variants.get_or_create(upc=instructions.upc)
+        try:
+            variant = Product.objects.get(upc=upc)
 
-        if created:
+        except:
+            variant = Product()
             variant.parent = instructions
-            variant.product_class = get_instructions_class()
             variant.structure = Product.CHILD
-            variant.save()
 
+    variant.upc = upc
     variant.title = INSTRUCTIONS_ALONE.format(instructions.title)
-    variant.price = price
-    variant.upc = instructions.upc
-
     variant.save()
 
-    save_instructions_variant_stock(variant)
+    save_instructions_variant_stock(variant, price)
 
 
-def save_instructions_with_blank(instructions, blank, price, old_upc=None):
+def save_instructions_with_blank(instructions, blank, price, upc, old_upc=None):
     """
     Add or update Instructions child product
 
@@ -231,36 +254,38 @@ def save_instructions_with_blank(instructions, blank, price, old_upc=None):
     - instructions: product object that this should be a child of
     - blank: the connected unfinished blank (optional)
     - price: price of instructions
+    - upc: product UPC or SKU of the parent item
     - old_upc: original stock ID of this product (optional)
     """
     variant = None
-    variants = InstructionsWithBlankProduct.objects.filter(parent=instructions)
+    upc_with_blank = INSTRUCTIONS_WITH_BLANK_UPC.format(upc)
 
     # Try to get the stock record with the old SKU first
     try:
-        variant = variants.get(upc=old_upc)
+        variant = InstructionsWithBlankProduct.objects.filter(
+                parent=instructions
+                ).get(upc=INSTRUCTIONS_WITH_BLANK_UPC.format(old_upc))
+        variant.upc = upc_with_blank 
     except:
         pass
 
     if not variant:
-        variant, created = variants.get_or_create(upc=instructions.upc)
+        variant, created = InstructionsWithBlankProduct.objects.get_or_create(
+                upc=upc_with_blank)
 
         if created:
             variant.parent = instructions
-            variant.product_class = get_instructions_class()
             variant.structure = Product.CHILD
 
     variant.title = INSTRUCTIONS_WITH_BLANK.format(kwargs['title'], blank.title),
-    variant.price = price
-    variant.upc = INSTRUCTIONS_WITH_BLANK_UPC.format(instructions.upc)
     variant.blank = blank
 
     variant.save()
 
-    save_instructions_variant_stock(variant)
+    save_instructions_variant_stock(variant, price)
 
 
-def save_instructions_variant_stock(variant):
+def save_instructions_variant_stock(variant, price):
     """
     Create or update a stock record for an instructions variant
 
@@ -269,13 +294,16 @@ def save_instructions_variant_stock(variant):
     - price: price of instructions
     - old_upc: original stock ID of this product (optional)
     """
-    stock, _ = StockRecord.objects.get_or_create(product=variant,
-            defaults={
-                'partner': get_partner()
-                })
+    try:
+        stock = StockRecord.objects.get(product=variant)
+    except:
+        stock = StockRecord()
+        stock.product = variant
+        stock.partner = get_partner()
 
-    stock.price_excl_tax = variant.price
-    stock.sku = variant.upc
+    stock.price_excl_tax = price
+    stock.partner_sku = variant.upc
+
     stock.save()
 
 
