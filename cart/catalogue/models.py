@@ -1,6 +1,7 @@
 from oscar.apps.catalogue.models import *  # noqa
 from oscar.core.loading import get_model
 from django.db import models
+from duxdekes.util import products
 
 StockRecord = get_model('partner', 'StockRecord')
 
@@ -47,21 +48,24 @@ class InstructionsProduct(Product):
             alone.parent = self
             alone.structure = Product.CHILD
 
-            self.alone_stock = StockRecord()
-            self.alone_stock.partner = products.get_partner()
+            alone_stock = StockRecord()
+            alone_stock.partner = products.get_partner()
         else:
+            alone_stock = self.alone_stock
             alone = self.alone_stock.product
         
         alone.title = self.TITLE_ALONE.format(self.title)
-        alone.upc = self.sku
+        #alone.upc = self.sku
         alone.save()
 
         if new_alone:
-            self.alone_stock.product = alone
+            alone_stock.product = alone
 
-        self.alone_stock.partner_sku = self.sku
-        self.alone_stock.price_excl_tax = self.price
-        self.alone_stock.save()
+        alone_stock.partner_sku = self.sku
+        alone_stock.price_excl_tax = self.price
+        alone_stock.save()
+
+        self.alone_stock = alone_stock
 
         # Stock records and child products for instructions with blank
         if self.blank and self.price_with_blank:
@@ -71,23 +75,32 @@ class InstructionsProduct(Product):
                 with_blank.parent = self
                 with_blank.structure = Product.CHILD
 
-                self.with_blank_stock = StockRecord()
-                self.with_blank_stock.partner = products.get_partner()
+                with_blank_stock = StockRecord()
+                with_blank_stock.partner = products.get_partner()
             else:
-                with_blank = self.with_blank_stock.product
+                with_blank_stock = self.with_blank_stock
+                with_blank = with_blank_stock.product
             
             with_blank.title = self.TITLE_WITH_BLANK.format(self.title,
-                    blank.title)
-            with_blank.upc = self.SKU_WITH_BLANK.format(self.sku)
+                    self.blank.title)
+            #with_blank.upc = self.SKU_WITH_BLANK.format(self.sku)
             with_blank.save()
 
             if new_w_blank:
-                self.with_blank_stock.product = with_blank
+                with_blank_stock.product = with_blank
 
-            self.with_blank_stock.partner_sku = \
-                self.SKU_WITH_BLANK.format(self.sku)
-            self.with_blank_stock.price_excl_tax = self.price
-            self.with_blank_stock.save()
+            with_blank_stock.partner_sku = \
+                self.SKU_WITH_BLANK_UPC.format(self.sku)
+            with_blank_stock.price_excl_tax = self.price_with_blank
+            with_blank_stock.save()
+
+            self.with_blank_stock = with_blank_stock
+
+        # If either of these have been added, we need to re-save the model to
+        # point to the new StockRecord objects
+        if new_alone or new_w_blank:
+            super().save(*args, **kwargs)
+
 
 
 #class BookInstructionsProduct(Product):
