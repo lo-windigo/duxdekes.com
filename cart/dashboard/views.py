@@ -11,6 +11,7 @@ from duxdekes.util import products
 
 
 # Dynamically get any oscar models/classes in use
+InstructionsProduct = get_model('catalogue', 'InstructionsProduct')
 ProductTable, CategoryTable \
     = get_classes('dashboard.catalogue.tables',
                   ('ProductTable', 'CategoryTable'))
@@ -220,8 +221,7 @@ class InstructionsListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_instructions.html'
     table_class = tables.InstructionsTable
     context_table_name = 'products'
-    queryset = Product.browsable.filter(product_class=products.get_instructions_class())
-
+    model = InstructionsProduct
 
     def get_table(self, **kwargs):
         """
@@ -238,7 +238,7 @@ class InstructionsMixin():
     Contain common functionality for create and update views
     """
     form_class = forms.InstructionsForm
-    queryset = Product.objects.filter(product_class=products.get_instructions_class())
+    model = InstructionsProduct
     success_url = reverse_lazy('dashboard:catalogue-instructions-list')
     template_name = 'dashboard/catalogue/product_instructions_update.html'
     category_formset = ProductCategoryFormSet
@@ -308,49 +308,6 @@ class InstructionsUpdateView(InstructionsMixin, generic.UpdateView):
         context['title'] = 'Change Instructions'
 
         return context
-
-
-    def get_initial(self):
-        """
-        If there has been a product sent in, get its values and pre-populate
-        the form
-        """
-
-        initial = super().get_initial()
-
-        if self.object:
-
-            # Set the price from the related stock record
-            instructions_alone = products.get_instructions_alone(self.object)
-            instructions_with_blank = \
-                products.get_instructions_with_blank(self.object)
-
-            if instructions_alone:
-                stock_alone = instructions_alone.stockrecords.all()[0]
-                initial['price'] = stock_alone.price_excl_tax
-                initial['upc'] = stock_alone.partner_sku
-
-            if instructions_with_blank:
-                stock_w_blank = instructions_with_blank.stockrecords.all()[0]
-
-                initial['price_with_blank'] = stock_w_blank.price_excl_tax
-                initial['blank'] = instructions_with_blank.blank.pk
-
-                if 'upc' not in initial:
-                    initial['upc'] = stock_w_blank.partner_sku
-
-        # Get the pricing/sku details
-        return initial
-
-
-    def get_object(self):
-        """
-        Populate the existing object if one has been sent in
-        """
-        if 'pk' in self.kwargs:
-            return Product.objects.get(pk=self.kwargs.get('pk'))
-
-        return None
 
 
     def post(self, request, *args, **kwargs):
