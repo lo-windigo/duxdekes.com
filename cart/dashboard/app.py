@@ -1,6 +1,5 @@
 from django.conf.urls import url
-from django.views.generic.base import RedirectView
-from oscar.core.loading import get_class
+from django.urls import reverse_lazy
 from oscar.apps.dashboard.app import DashboardApplication
 from . import views
 
@@ -9,6 +8,7 @@ class DuxDashboardApplication(DashboardApplication):
 
     # Set permissions for any new admin views
     default_permissions = ['is_staff', ]
+    login_url = reverse_lazy('login-nextless')
 
 
     def get_urls(self):

@@ -32,7 +32,7 @@ urlpatterns = [
     #url(r'^admin/', admin.site.urls),
     url(r'^listing/', listing.as_view()),
     url(r'', include(application.urls)),
-    url(r'^login2/$', auth_views.login, {
+    url(r'^login/$', auth_views.login, {
         'redirect_field_name': '',
     }, name='login-nextless'),
 ]
