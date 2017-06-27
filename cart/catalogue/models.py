@@ -95,6 +95,8 @@ class InstructionsProduct(Product):
             with_blank_stock.save()
 
             self.with_blank_stock = with_blank_stock
+        else:
+            new_w_blank = False
 
         # If either of these have been added, we need to re-save the model to
         # point to the new StockRecord objects

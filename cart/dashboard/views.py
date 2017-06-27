@@ -216,7 +216,6 @@ class FinishedDeleteView(ProductDeleteView):
             return reverse('dashboard:catalogue-finished-list')
 
 
-
 class InstructionsListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_instructions.html'
     table_class = tables.InstructionsTable
@@ -232,7 +231,6 @@ class InstructionsListView(SingleTableView):
         return table
 
 
-
 class InstructionsMixin():
     """
     Contain common functionality for create and update views
@@ -244,7 +242,6 @@ class InstructionsMixin():
     category_formset = ProductCategoryFormSet
     image_formset = ProductImageFormSet
 
-
     def __init__(self, *args, **kwargs):
         """
         Override to set up the formsets dictionary
@@ -254,7 +251,6 @@ class InstructionsMixin():
             'category_formset': self.category_formset,
             'image_formset': self.image_formset,
         }
-
 
     def get_context_data(self, **kwargs):
         """
@@ -270,7 +266,6 @@ class InstructionsMixin():
                     instance=self.object)
 
         return context
-
 
 
 class InstructionsCreateView(InstructionsMixin, generic.CreateView):
