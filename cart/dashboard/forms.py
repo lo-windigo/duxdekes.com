@@ -3,8 +3,8 @@ from duxdekes.util import products
 from oscar.core.loading import get_model
 
 InstructionsProduct = get_model('catalogue', 'InstructionsProduct')
+InstructionsBookProduct = get_model('catalogue', 'InstructionsBookProduct')
 Product = get_model('catalogue', 'Product')
-ProductClass = get_model('catalogue', 'ProductClass')
 
 PRIMARY_MODEL_FIELDS=('title', 'upc')
 
@@ -117,6 +117,30 @@ class InstructionsForm(forms.ModelForm):
             required=False,
             empty_label='No blank')
 
+
+    # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.product_class = products.get_instructions_class()
+
+    class Meta:
+        model = InstructionsProduct
+        fields = ['title', 'sku', 'price', 'price_with_blank', 'blank']
+
+
+class InstructionsForForm(forms.Form):
+    instructions_for = forms.CharField(label="Instructions for",
+            max_length=128)
+
+
+InstructionsForFormset = forms.formset_factory(InstructionsForForm, extra=5)
+
+
+class InstructionsBookForm(forms.ModelForm):
+    """
+    A form specifically tailored to creating Instructions - book product
+    """
+    instructions_for = forms.CharField(label="Optional Blank")
 
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):

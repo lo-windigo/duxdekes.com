@@ -109,7 +109,39 @@ class InstructionsProduct(Product):
 #    """
 #    Override the usual product model to include extra descriptive content
 #    """
-#    extra_content = models.ForeignKey(FlatPage,
-#            blank = True,
-#            null = True)
+#    description = models.TextField(blank=True,
+#            null=True)
+#    instructions_for = models.TextField(blank=True,
+#            null=True)
+#    author = models.CharField(max_length=128,
+#            blank=True,
+#            null=True)
+#    product_code = models.CharField(max_length=64,
+#            blank=True,
+#            null=True)
+#    isbn_13 = models.CharField(max_length=17,
+#            blank=True,
+#            null=True)
+#    isbn_10 = models.CharField(max_length=13,
+#            blank=True,
+#            null=True)
+#    pages = models.CharField(max_length=64,
+#            blank=True,
+#            null=True)
+#    binding = models.CharField(max_length=64,
+#            blank=True,
+#            null=True)
+#    size = models.CharField(max_length=64,
+#            blank=True,
+#            null=True)
+#
+#    def save(self, *args, **kwargs):
+#        """
+#        Save the model, and hook up a bunch of other Oscar-specific connections
+#        """
+#        self.product_class = products.get_instructions_class()
+#        self.structure = Product.PARENT
+#
+#        # Save this model the ol' fashioned way
+#        super().save(*args, **kwargs)
 

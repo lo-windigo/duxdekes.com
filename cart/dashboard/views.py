@@ -23,13 +23,7 @@ ProductCategoryFormSet, ProductImageFormSet \
         ))
 ProductDeleteView = get_class('dashboard.catalogue.views', 'ProductDeleteView')
 Product = get_model('catalogue', 'Product')
-ProductClass = get_model('catalogue', 'ProductClass')
 StockRecord = get_model('partner', 'StockRecord')
-
-
-
-class BauerListView(SingleTableView):
-    pass
 
 
 
