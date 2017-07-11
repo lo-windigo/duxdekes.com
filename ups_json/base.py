@@ -2,6 +2,17 @@
 import json
 from urllib import request
 
+class UPSAddress():
+    """
+    A class built for containing a whole address, and all of its variable parts
+    """
+    name = None
+    address_lines = []
+    city = None
+    state_province = None
+    postal_code = None
+    country_code = None
+
 
 class UPSBase():
     """
@@ -10,7 +21,8 @@ class UPSBase():
     debug = False
     request_data = {}
 
-    def __init__(self, account, password, license_number=None, testing=False):
+    def __init__(self, account, password, ship_to, ship_from,
+            license_number=None, testing=False):
         """
         Save user credentials, values to the request data
         """
@@ -21,6 +33,28 @@ class UPSBase():
 
         self.request_data['ServiceAccessToken'] = {
                 'AccessLicenseNumber': license_number,
+                }
+
+        self.request_data['Shipment'] = {
+                'ShipTo': {
+                    'Name': ship_to.name,
+                    'Address': {
+                        'AddressLine': ship_to.address_lines,
+                        'City': ship_to.city,
+                        'StateProvinceCode': ship_to.state_province,
+                        'PostalCode': ship_to.postal_code,
+                        'CountryCode': ship_to.country_code
+                        }
+                    },
+                'ShipFrom': {
+                    'Name': ship_from.name,
+                    'Address': {
+                        'AddressLine': ship_from.address_lines,
+                        'City': ship_from.city,
+                        'StateProvinceCode': ship_from.state_province,
+                        'PostalCode': ship_from.postal_code,
+                        'CountryCode': ship_from.country_code
+                    },
                 }
 
         self.testing = testing
