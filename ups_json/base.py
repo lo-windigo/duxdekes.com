@@ -34,9 +34,11 @@ class UPSBase():
                 'Password': password,
                 }
 
-#        self.request_data['ServiceAccessToken'] = {
-#                'AccessLicenseNumber': license_number,
-#                }
+        self.request_data['UPSSecurity'].update({
+                'ServiceAccessToken': {
+                    'AccessLicenseNumber': license_number,
+                    }
+                })
 
         self.request_data['Shipment'] = {
                 'ShipTo': {
@@ -64,7 +66,7 @@ class UPSBase():
 
         # If an optional ship_from is specified, add it
         if ship_from:
-            self.request_data['Shipment'].extend({
+            self.request_data['Shipment'].update({
                 'ShipFrom': {
                     'Name': ship_from.name,
                     'Address': {
@@ -87,7 +89,7 @@ class UPSBase():
         if not request_data:
             request_data = self.request_data
 
-        json_data = json.dumps(self.request_data)
+        json_data = json.dumps(self.request_data).encode('utf-8')
         url = self.get_url()
 
         api_request = request.Request(url,
@@ -102,7 +104,7 @@ class UPSBase():
                 method = 'POST')
         api_response = request.urlopen(api_request)
 
-        return json.loads(api_response.read())
+        return json.loads(api_response.read().decode('utf-8'))
 
 
     def get_url(self):

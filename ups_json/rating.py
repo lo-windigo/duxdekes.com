@@ -7,18 +7,19 @@ class UPSRating(UPSBase):
     Get a rate for a UPS package
     """    
     TESTING_URL = 'https://wwwcie.ups.com/rest/Rate'
-    PRODUCTION_URL = 'https://onlinetools.ups.com/rest/Rate'
+    #PRODUCTION_URL = 'https://onlinetools.ups.com/rest/Rate'
+    PRODUCTION_URL = 'https://atlas.fragdev.net'
 
 
     def __init__(self, account, password, ship_to, shipper,
-            license_number=None, debug=False):
+            ship_from=None, license_number=None, debug=False):
         """
         Store the data for a rate request that is consistent over multiple package
         requests
         """
         
-        super().__init__(account, password, ship_to, shipper, license_number,
-                debug)
+        super().__init__(account, password, ship_to, shipper, ship_from,
+                license_number, debug)
 
         self.request_data['RateRequest'] = {
                 'Request': {
@@ -71,12 +72,15 @@ class UPSRating(UPSBase):
                 }
 
         # TODO: Allow this to be sent in
-        request_data['ShipmentRatingOptions'] = {
-                'NegotiatedRatesIndicator': False
-                }
+        #request_data['ShipmentRatingOptions'] = {
+        #        'NegotiatedRatesIndicator': False
+        #        }
+
+        #print(json.dumps(request_data))
 
         # TODO: Custom exceptions
-        rate_response = self.request(request)
+        rate_response = self.request(request_data)
 
-        return rate_response['RatedShipment']['TotalCharges']
+        print(rate_response)
+        #return rate_response['RatedShipment']['TotalCharges']
 
