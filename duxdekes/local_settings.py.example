@@ -40,7 +40,7 @@ STATIC_ROOT = join(WEB_ROOT, 'srv/static')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(WEB_ROOT, 'db.sqlite3'),
+        'NAME': os.path.join(WEB_ROOT, 'path/to/db.sqlite3'),
     },
 
     # MySQL/MariaDB
@@ -78,4 +78,12 @@ CONTACT_RECIPIENTS = [ "example@example.com", ]
 ###################
 SQUARE_ACCESS_TOKEN = ''
 SQUARE_LOCATION_ID = ''
+
+
+####################
+# UPS API Settings #
+####################
+UPS_ACCOUNT = ''
+UPS_PASSWORD = ''
+UPS_LICENCE_NUMBER = ''
 
