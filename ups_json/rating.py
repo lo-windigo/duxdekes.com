@@ -11,27 +11,8 @@ class UPSRating(UPSBase):
     PRODUCTION_URL = 'https://atlas.fragdev.net'
 
 
-    def __init__(self, account, password, ship_to, shipper,
-            ship_from=None, license_number=None, debug=False):
-        """
-        Store the data for a rate request that is consistent over multiple package
-        requests
-        """
-        
-        super().__init__(account, password, ship_to, shipper, ship_from,
-                license_number, debug)
-
-        self.request_data['RateRequest'] = {
-                'Request': {
-                    'RequestOption': 'Rate',
-#                    'TransactionReference': {
-#                        'CustomerContext': XXX, #TODO: Customer context? Order number?
-#                        }
-                    }
-                }
-
-
-    def get_package_rate(self, length, width, height, weight):
+    def get_package_rate(self, length, width, height, weight, ship_to, shipper,
+            ship_from=None):
         """
         Get a rate from the UPS shipping API for a single package.
 
@@ -40,46 +21,109 @@ class UPSRating(UPSBase):
         - width: Package width (in inches)
         - height: Package height (in inches)
         - weight: Package weight (in pounds - lb)
+        - ship_to: The package destination
+        - ship_from: Where the package will be shipping from (optional)
         """
-        request_data = self.request_data.copy()
-
-        request_data['Service'] = {
-                'Code': '03',
-                'Description': 'Ground'
-                }
-
-        request_data['Package'] = {
-                'PackagingType': {
-                    'Code': '02',
-                    'Description': 'Package'
+        shipment = {
+                'ShipTo': {
+                    'Name': ship_to.name,
+                    'Address': {
+                        'AddressLine': ship_to.address_lines,
+                        'City': ship_to.city,
+                        'StateProvinceCode': ship_to.state_province,
+                        'PostalCode': ship_to.postal_code,
+                        'CountryCode': ship_to.country_code
+                        }
                     },
-                'Dimensions': {
-                    'UnitOfMeasurement': {
-                        'Code': 'IN',
-                        'Description': 'inches'
+                'Shipper': {
+                    'Name': shipper.name,
+                    #'ShipperNumber': account_number,
+                    'Address': {
+                        'AddressLine': shipper.address_lines,
+                        'City': shipper.city,
+                        'StateProvinceCode': shipper.state_province,
+                        'PostalCode': shipper.postal_code,
+                        'CountryCode': shipper.country_code
                         },
-                    'Length': length,
-                    'Width': width,
-                    'Height': height
-                    },
-                'PackageWeight': {
-                    'UnitOfMeasurement': {
-                        'Code': 'LBS',
-                        'Description': 'Pounds'
-                        },
-                    'Weight': weight
                     }
+                'Package': {
+                    'PackagingType': {
+                        'Code': '02',
+                        'Description': 'Package',
+                        },
+                    'Dimensions': {
+                        'UnitOfMeasurement': {
+                            'Code': 'IN',
+                            'Description': 'inches',
+                            },
+                        'Length': length,
+                        'Width': width,
+                        'Height': height,
+                        },
+                    'PackageWeight': {
+                        'UnitOfMeasurement': {
+                            'Code': 'Lbs',
+                            'Description': 'Pounds',
+                            },
+                        'Weight': weight,
+                        },
+                    },
                 }
+
+        # If an optional ship_from is specified, add it
+        if ship_from:
+            shipment.update({
+                'ShipFrom': {
+                    'Name': ship_from.name,
+                    'Address': {
+                        'AddressLine': ship_from.address_lines,
+                        'City': ship_from.city,
+                        'StateProvinceCode': ship_from.state_province,
+                        'PostalCode': ship_from.postal_code,
+                        'CountryCode': ship_from.country_code
+                        },
+                    }
+                })
+
+        #TODO: Other services are available
+        shipment.update({
+                'Service': {
+                    'Code': '03',
+                    'Description': 'Ground'
+                    }
+                })
 
         # TODO: Allow this to be sent in
-        #request_data['ShipmentRatingOptions'] = {
-        #        'NegotiatedRatesIndicator': False
-        #        }
+        shipment.update({
+               'ShipmentRatingOptions': {
+                   'NegotiatedRatesIndicator': '',
+                   },
+               })
 
-        #print(json.dumps(request_data))
+        request = {
+                'RequestOption': 'Rate',
+#                    'TransactionReference': {
+#                        'CustomerContext': XXX, #TODO: Customer context? Order number?
+#                        }
+                }
+
+        pickup_type = {
+                'Code': '01',
+                }
+
+        rate_request = {
+                'RateRequest': {
+                    'Shipment': shipment,
+                    'Request': request,
+                    'PickupType': pickup_type,
+                    },
+                'UPSSecurity': self.security_token,
+                }
+
+        #print(json.dumps(rate_request))
 
         # TODO: Custom exceptions
-        rate_response = self.request(request_data)
+        rate_response = self.request(rate_request)
 
         print(rate_response)
         #return rate_response['RatedShipment']['TotalCharges']

@@ -7,11 +7,14 @@ class UPSAddress():
     A class built for containing a whole address, and all of its variable parts
     """
     name = None
-    address_lines = []
+    address_lines = None
     city = None
     state_province = None
     postal_code = None
     country_code = None
+
+    def __init__(self):
+        self.address_lines = []
 
 
 class UPSBase():
@@ -19,87 +22,50 @@ class UPSBase():
     A base for requests to the UPS JSON API
     """
     debug = False
-    request_data = {}
+    security_token = None
 
-    def __init__(self, account, password, ship_to, shipper, ship_from=None,
-            license_number=None, testing=False):
+
+    def __init__(self, account, password, license_number, testing=False):
         """
-        Save user credentials, values to the request data
+        Save user credentials, values for use in later requests
 
         Args:
-        - TODO
+        - account: UPS account username
+        - password: UPS password
+        - license_number: Your access license number
+        - testing: Whether or not the testing API should be used. Default: False
         """
-        self.request_data['UPSSecurity'] = {
-                'Username': account,
-                'Password': password,
-                }
-
-        self.request_data['UPSSecurity'].update({
-                'ServiceAccessToken': {
-                    'AccessLicenseNumber': license_number,
-                    }
-                })
-
-        self.request_data['Shipment'] = {
-                'ShipTo': {
-                    'Name': ship_to.name,
-                    'Address': {
-                        'AddressLine': ship_to.address_lines,
-                        'City': ship_to.city,
-                        'StateProvinceCode': ship_to.state_province,
-                        'PostalCode': ship_to.postal_code,
-                        'CountryCode': ship_to.country_code
-                        }
-                    },
-                'Shipper': {
-                    'Name': shipper.name,
-                    #'ShipperNumber': account_number,
-                    'Address': {
-                        'AddressLine': shipper.address_lines,
-                        'City': shipper.city,
-                        'StateProvinceCode': shipper.state_province,
-                        'PostalCode': shipper.postal_code,
-                        'CountryCode': shipper.country_code
-                    },
-                }
-            }
-
-        # If an optional ship_from is specified, add it
-        if ship_from:
-            self.request_data['Shipment'].update({
-                'ShipFrom': {
-                    'Name': ship_from.name,
-                    'Address': {
-                        'AddressLine': ship_from.address_lines,
-                        'City': ship_from.city,
-                        'StateProvinceCode': ship_from.state_province,
-                        'PostalCode': ship_from.postal_code,
-                        'CountryCode': ship_from.country_code
+        self.security_token = {
+                'UPSSecurity': {
+                    'UsernameToken': {
+                        'Username': account,
+                        'Password': password,
                         },
+                    'ServiceAccessToken': {
+                        'AccessLicenseNumber': license_number,
+                        }
                     }
-                })
+                }
 
         self.testing = testing
 
-    def request(self, request_data=None):
+
+    def request(self, request_data):
         """
         Take in the required information, and encode it in the JSON format that
         is required by the UPS API
         """
-        if not request_data:
-            request_data = self.request_data
-
         json_data = json.dumps(self.request_data).encode('utf-8')
         url = self.get_url()
 
         api_request = request.Request(url,
                 headers = {
-                'Access-Control-Allow-Headers':
-                    'Origin, X-Requested-With, Content-Type, Accept',
-                'Access-Control-Allow-Methods': 'POST',
-                'Access-Control-Allow-Origin': '*',
-                'Content-type': 'application/json',
-                },
+                    'Access-Control-Allow-Headers':
+                        'Origin, X-Requested-With, Content-Type, Accept',
+                    'Access-Control-Allow-Methods': 'POST',
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-type': 'application/json',
+                    },
                 data = json_data,
                 method = 'POST')
         api_response = request.urlopen(api_request)
