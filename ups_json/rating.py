@@ -32,8 +32,8 @@ class UPSRating(UPSBase):
                         'City': ship_to.city,
                         'StateProvinceCode': ship_to.state_province,
                         'PostalCode': ship_to.postal_code,
-                        'CountryCode': ship_to.country_code
-                        }
+                        'CountryCode': ship_to.country_code,
+                        },
                     },
                 'Shipper': {
                     'Name': shipper.name,
@@ -43,9 +43,9 @@ class UPSRating(UPSBase):
                         'City': shipper.city,
                         'StateProvinceCode': shipper.state_province,
                         'PostalCode': shipper.postal_code,
-                        'CountryCode': shipper.country_code
+                        'CountryCode': shipper.country_code,
                         },
-                    }
+                    },
                 'Package': {
                     'PackagingType': {
                         'Code': '02',
@@ -56,16 +56,16 @@ class UPSRating(UPSBase):
                             'Code': 'IN',
                             'Description': 'inches',
                             },
-                        'Length': length,
-                        'Width': width,
-                        'Height': height,
+                        'Length': str(length),
+                        'Width': str(width),
+                        'Height': str(height),
                         },
                     'PackageWeight': {
                         'UnitOfMeasurement': {
-                            'Code': 'Lbs',
+                            'Code': 'LBS',
                             'Description': 'Pounds',
                             },
-                        'Weight': weight,
+                        'Weight': str(weight),
                         },
                     },
                 }
@@ -120,11 +120,17 @@ class UPSRating(UPSBase):
                 'UPSSecurity': self.security_token,
                 }
 
-        #print(json.dumps(rate_request))
+#        return json.dumps(rate_request)
 
         # TODO: Custom exceptions
         rate_response = self.request(rate_request)
 
-        print(rate_response)
+        if 'Response' in rate_response and 
+            'ResponseStatus' in rate_response['Response'] and
+            'Code' in rate_response['Response']['ResponseStatus'] and
+            :
+            raise Exception()
+
+        return rate_response
         #return rate_response['RatedShipment']['TotalCharges']
 

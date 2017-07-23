@@ -36,14 +36,12 @@ class UPSBase():
         - testing: Whether or not the testing API should be used. Default: False
         """
         self.security_token = {
-                'UPSSecurity': {
-                    'UsernameToken': {
-                        'Username': account,
-                        'Password': password,
-                        },
-                    'ServiceAccessToken': {
-                        'AccessLicenseNumber': license_number,
-                        }
+                'UsernameToken': {
+                    'Username': account,
+                    'Password': password,
+                    },
+                'ServiceAccessToken': {
+                    'AccessLicenseNumber': license_number,
                     }
                 }
 
@@ -55,7 +53,7 @@ class UPSBase():
         Take in the required information, and encode it in the JSON format that
         is required by the UPS API
         """
-        json_data = json.dumps(self.request_data).encode('utf-8')
+        json_data = json.dumps(request_data).encode('utf-8')
         url = self.get_url()
 
         api_request = request.Request(url,
