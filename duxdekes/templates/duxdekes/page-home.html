@@ -31,12 +31,16 @@
 		</ul>
 	</header>
 	<main class="content" id="content">
+		{% for parent_category in categories %}
 		<section id="unfinished">
 			<header>
-				<h1 class="content-title">Unfinished Blanks</h1>
+				<h1 class="content-title">{{ parent_category.category.name }}</h1>
 			</header>
+			{% if parent_category.category.description %}
+			{{ parent_category.category.description|safe }}
+			{% endif %}
 			<ul class="product-categories">
-				{% for category in unfinished.categories %}
+				{% for category in parent_category.sub_categories %}
 				<li>
 					<a href="{{ category.get_absolute_url }}">
 						{{ category.name }}</a>
@@ -46,7 +50,7 @@
 			<h2>What's new</h2>
 			<div class="products">
 				<ol class="row">
-					{% for product in unfinished.products %}
+					{% for product in parent_category.products %}
 					<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
 					{% render_product product %}
 					</li>
@@ -54,66 +58,7 @@
 				</ol>
 			</div>
 		</section>
-		<section id="finished">
-			<header>
-				<h1 class="content-title">Finished Carvings</h1>
-			</header>
-			<p>
-				The details in all of our decoys are fine-tuned, accurate, and
-				precise. The
-				high quality and attention to detail make them a work of art to add
-				to your home.
-			</p>
-			<ul class="product-categories">
-				{% for category in finished.categories %}
-				<li>
-					<a href="{{ category.get_absolute_url }}">
-						{{ category.name }}</a>
-				</li>
-				{% endfor %}
-			</ul>
-			<h2>What's new</h2>
-			<div class="products">
-				<ol class="row">
-					{% for product in finished.products %}
-					<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
-					{% render_product product %}
-					</li>
-					{% endfor %}
-				</ol>
-			</div>
-		</section>
-		<section id="instructions">
-			<header>
-				<h1 class="content-title">Instructions</h1>
-			</header>
-			<p>
-				Our wood carving supplies will directly supplement your decoy
-				painting and carving needs, and our Nancy Baur's easy to follow
-				instruction packets are used by beginners, as well as advanced
-				painters. Bruce Burk ranks among the master bird carvers in the
-				country and is responsible for getting thousands of other carvers
-				started.
-			</p>
-			<ul class="product-categories">
-				{% for category in instructions.categories %}
-				<li>
-					<a href="{{ category.get_absolute_url }}">
-						{{ category.name }}</a>
-				</li>
-				{% endfor %}
-			</ul>
-			<h2>What's new</h2>
-			<div class="products">
-				<ol class="row">
-					{% for product in instructions.products %}
-					<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
-					{% render_product product %}
-					</li>
-					{% endfor %}
-				</ol>
-			</div>
-		</section>
+		{% endfor %}
 	</main>
 	<footer class="footer" id="fullnav">
 		<nav>

@@ -2,7 +2,13 @@ from .util.contact import ContactForm
 from django.shortcuts import redirect, render
 from django.core.mail import send_mail
 from django.conf import settings
-from .util.homepage import homepage_data
+from django.views.generic import ListView, TemplateView
+from oscar.core.loading import get_model
+
+
+# Dynamically get oscar models
+Category = get_model('catalogue', 'Category')
+Product = get_model('catalogue', 'Product')
 
 
 def contact(request):
@@ -43,50 +49,43 @@ def contact(request):
     return render(request, 'duxdekes/page-contact.html', {'form': form})
 
 
-def contact_sent(request):
-    """
-    Status message: Contact was successfully sent
-    """
-    return render(request, 'duxdekes/page-contact-sent.html')
+class ContactSent(TemplateView):
+    template_name='duxdekes/page-contact-sent.html'
 
 
-def home(request):
+class HomeView(TemplateView):
     """
     The homepage: list the major product types, along with the categories, and a
     selection of the newest products.
     """
+    context_object_name = 'categories'
+    #queryset = Category.get_root_nodes()
+    template_name = 'duxdekes/page-home.html'
 
-    # Get all the categories (and subcategories)
-    try:
-        unfinished = homepage_data('Unfinished Blanks')
-    except Exception as e:
-        unfinished = {
-            'categories': [],
-            'products': [],
-        }
+    def get_context_data(self, **kwargs):
+        """
+        Provide the complicated context data we need for the homepage
+        """
 
-    try:
-        finished = homepage_data('Finished Carvings')
-    except:
-        finished = {
-            'categories': [],
-            'products': [],
-        }
+        context = super().get_context_data(**kwargs)
+        categories = []
+        
+        for parent in Category.get_root_nodes():
 
-    try:
-        instructions = homepage_data('Instructions')
-    except:
-        instructions = {
-            'categories': [],
-            'products': [],
-        }
+            child_categories = parent.get_children()
 
+            # Get the newest products from each category tree
+            products = Product.objects.filter(
+                    categories__in=child_categories
+                    ).order_by('-date_updated')[:4]
 
-    return render(request,
-        'duxdekes/page-home.html',
-        {
-            'unfinished': unfinished,
-            'finished': finished,
-            'instructions': instructions,
-        })
+            categories.append({
+                'category': parent,
+                'sub_categories': child_categories,
+                'products': products,
+                })
+
+        print(categories)
+        context[self.context_object_name] = categories 
+        return context
 

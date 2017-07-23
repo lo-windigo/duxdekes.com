@@ -147,10 +147,6 @@ OSCAR_DASHBOARD_NAVIGATION = [
         'icon': 'icon-sitemap',
         'children': [
 #            {
-#                'label': _('Products'),
-#                'url_name': 'dashboard:catalogue-product-list',
-#            },
-#            {
 #                'label': _('Product Types'),
 #                'url_name': 'dashboard:catalogue-class-list',
 #            },
@@ -181,6 +177,10 @@ OSCAR_DASHBOARD_NAVIGATION = [
             {
                 'label': _('Instructions'),
                 'url_name': 'dashboard:catalogue-instructions-list',
+            },
+            {
+                'label': _('Other Products'),
+                'url_name': 'dashboard:catalogue-product-list',
             },
         ]
     },

@@ -26,8 +26,9 @@ from . import views
 listing = get_class('catalogue.views', 'CatalogueView')
 
 urlpatterns = [
-    url(r'^$', views.home, name='home'),
+    url(r'^$', views.HomeView.as_view(), name='home'),
     url(r'^contact/?$', views.contact, name='contact'),
+    url(r'^contact-sent/?$', views.ContactSent.as_view(), name='contact_sent'),
     #url(r'^products/', include('products.urls')),
     #url(r'^admin/', admin.site.urls),
     url(r'^listing/', listing.as_view()),
