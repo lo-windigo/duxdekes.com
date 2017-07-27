@@ -8,7 +8,10 @@ class Repository(repository.Repository):
             self, basket, user=None, shipping_addr=None,
             request=None, **kwargs):
         
-        if shipping_addr and shipping_addr.country.code == 'US':
-            return (methods.DomesticShipping(),)
+        if shipping_addr:
+            if shipping_addr.country.code == 'US':
+                return (methods.DomesticShipping(shipping_addr),)
+            else:
+                return (methods.InternationalShipping(shipping_addr),)
         else:
-            return (methods.InternationalShipping(),)
+            raise Exception('No shipping address provided!')
