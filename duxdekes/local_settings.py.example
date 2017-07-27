@@ -86,4 +86,12 @@ SQUARE_LOCATION_ID = ''
 UPS_ACCOUNT = ''
 UPS_PASSWORD = ''
 UPS_LICENCE_NUMBER = ''
+UPS_SHIPPER = UPSAddress()
+UPS_SHIPPER.name = ''
+UPS_SHIPPER.address_lines.append('')
+UPS_SHIPPER.city = ''
+UPS_SHIPPER.state_province = ''
+UPS_SHIPPER.postal_code = ''
+UPS_SHIPPER.country_code = ''
+UPS_TESTING = False
 
