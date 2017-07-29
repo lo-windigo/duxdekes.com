@@ -59,6 +59,5 @@ class InternationalShipping(methods.Base):
         # TODO: Also include tax for incl_tax value
         return prices.Price(
             currency=basket.currency,
-            excl_tax=D('10.00'),
-            incl_tax=D('10.00'))
+            excl_tax=D('10.00'))
 
