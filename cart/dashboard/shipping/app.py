@@ -1,8 +1,7 @@
-from django.conf.urls import include, url
+from django.conf.urls import url
 from django.urls import reverse_lazy
 from oscar.apps.dashboard.app import DashboardApplication
 from . import views
-from .shipping import urls as shipping_urls
 
 
 class DuxDashboardApplication(DashboardApplication):
@@ -10,6 +9,7 @@ class DuxDashboardApplication(DashboardApplication):
     # Set permissions for any new admin views
     default_permissions = ['is_staff', ]
     login_url = reverse_lazy('login-nextless')
+
 
     def get_urls(self):
         """
@@ -53,8 +53,6 @@ class DuxDashboardApplication(DashboardApplication):
             url(r'^instructions/delete/(?P<pk>\d+)/$',
                 views.InstructionsDeleteView.as_view(),
                 name='catalogue-instructions-delete'),
-            url(r'^shipping/', include(shipping_urls,
-            namespace='shipping')),
         ]
 
         urls.extend(custom_urls)

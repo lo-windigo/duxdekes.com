@@ -27,12 +27,6 @@ ProductClass = get_model('catalogue', 'ProductClass')
 StockRecord = get_model('partner', 'StockRecord')
 
 
-
-class BauerListView(SingleTableView):
-    pass
-
-
-
 class FinishedListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_finished.html'
     table_class = tables.FinishedTable
