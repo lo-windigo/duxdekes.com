@@ -43,7 +43,7 @@
     {% block search_products %}
     {% endblock %}
 
-    {% if products %}
+    {% if boxes %}
         {% block product_list %}
             <form action="." method="post">
                 {% csrf_token %}

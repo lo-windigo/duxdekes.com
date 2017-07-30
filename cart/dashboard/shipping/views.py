@@ -23,20 +23,19 @@ class BoxListView(SingleTableView):
         table.caption = 'Box Sizes'
         return table
 
-
-class BoxCreateView(generic.CreateView):
-    model = Box
+class BoxMixin():
     fields = ['length', 'width', 'height']
+    model = Box
     success_url = reverse_lazy('dashboard:shipping:box-list')
+
+class BoxCreateView(BoxMixin, generic.CreateView):
     template_name = '{}/update.html'.format(BOX_TEMPLATE_DIR)
 
 
-class BoxUpdateView(generic.UpdateView):
-    model = Box
+class BoxUpdateView(BoxMixin, generic.UpdateView):
     template_name = '{}/update.html'.format(BOX_TEMPLATE_DIR)
 
 
-class BoxDeleteView(generic.DeleteView):
-    model = Box
+class BoxDeleteView(BoxMixin, generic.DeleteView):
     template_name = '{}/delete.html'.format(BOX_TEMPLATE_DIR)
 

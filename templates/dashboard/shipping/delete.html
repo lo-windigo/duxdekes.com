@@ -1,0 +1,41 @@
+{% extends 'dashboard/layout.html' %}
+
+{% load i18n %}
+
+{% block title %}
+    {{ box }} | {{ block.super }}
+{% endblock %}
+
+{% block body_class %}{{ block.super }} create-page{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a>
+        </li>
+        <li>
+            <a href="{% url 'dashboard:shipping:box-list' %}">{% trans "Box Sizes" %}</a>
+        </li>
+        <li class="active">{{ box }}</li>
+    </ul>
+{% endblock %}
+
+{% block headertext %}{{ box }}{% endblock %}
+
+{% block dashboard_content %}
+    <div class="table-header">
+        <h2>{{ box }}</h2>
+    </div>
+    <form method="post" class="well">
+        {% csrf_token %}
+
+        <p>
+			Delete box size <strong>{{ box }}</strong> - are you sure?
+        </p>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger" data-loading-text="{% trans 'Deleting...' %}">{% trans "Delete" %}</button>
+            <a href="{% url 'dashboard:shipping:box-list' %}">{% trans "cancel" %}</a>
+        </div>
+    </form>
+{% endblock %}
