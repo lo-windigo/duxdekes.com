@@ -196,6 +196,10 @@ OSCAR_DASHBOARD_NAVIGATION = [
                 'label': _('Statistics'),
                 'url_name': 'dashboard:order-stats',
             },
+            {
+                'label': _('Box Sizes'),
+                'url_name': 'dashboard:shipping:box-list',
+            },
 #            {
 #                'label': _('Partners'),
 #                'url_name': 'dashboard:partner-list',
