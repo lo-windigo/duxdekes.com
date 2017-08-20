@@ -3,8 +3,18 @@ from oscar.core.loading import get_model
 from django.db import models
 from duxdekes.util import products
 
+#ProductAttribute = get_model('catalogue', 'ProductAttribute')
+#ProductClass = get_model('catalogue', 'ProductClass')
 StockRecord = get_model('partner', 'StockRecord')
 
+
+"""
+class BoxSizeAttribute(ProductAttribute):
+    Create a special attribute that links with the box sizing model
+    TODO: Would this be cleaner than overriding the ProductForm?
+    pass
+
+"""
 
 class InstructionsProduct(Product):
     TITLE_ALONE = '{} Painting Kit'

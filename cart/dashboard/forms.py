@@ -1,6 +1,8 @@
+from cart.catalogue.util import products
+from cart.shipping.models import Box
 from django import forms
-from duxdekes.util import products
-from oscar.core.loading import get_model
+from oscar.core.loading import get_class, get_model
+from oscar.apps.dashboard.catalogue.forms import ProductForm as OscarProductForm
 
 InstructionsProduct = get_model('catalogue', 'InstructionsProduct')
 Product = get_model('catalogue', 'Product')
@@ -9,7 +11,13 @@ ProductClass = get_model('catalogue', 'ProductClass')
 PRIMARY_MODEL_FIELDS=('title', 'upc')
 
 
-class ProductForm(forms.ModelForm):
+def _attr_box_entity_field(attribute):
+    return forms.ModelChoiceField(label=attribute.name,
+            queryset=Box.objects.all(),
+            required=attribute.required)
+
+
+class ProductForm(OscarProductForm):
     """
     A generic product form, containing common fields
     """
@@ -22,6 +30,9 @@ class ProductForm(forms.ModelForm):
 
         for field in PRIMARY_MODEL_FIELDS:
             self.fields[field].required = True
+
+        # Assign a special handler for entity fields
+        self.FIELD_FACTORIES["entity"] = _attr_box_entity_field
 
 
     class Meta:
@@ -45,8 +56,7 @@ class FinishedForm(ProductForm):
 
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.instance.product_class = products.get_finished_class()
+        super().__init__(products.get_finished_class(), *args, **kwargs)
 
 
     def save(self):
@@ -87,9 +97,8 @@ class UnfinishedForm(ProductForm):
 
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(products.get_unfinished_class(), *args, **kwargs)
         self.instance.structure = Product.PARENT
-        self.instance.product_class = products.get_unfinished_class()
 
 
     def save(self):
