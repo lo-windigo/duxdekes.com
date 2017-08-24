@@ -1,19 +1,19 @@
-from django.conf.urls import include, url
 from django.urls import reverse_lazy
-from oscar.apps.dashboard.app import DashboardApplication
-from . import views
-from .shipping import urls as shipping_urls
+from django.conf.urls import include, url
+from oscar.apps.dashboard.app import (
+    DashboardApplication as BaseDashboardApplication)
+from .catalogue import views
 
 
-class DuxDashboardApplication(DashboardApplication):
-
-    # Set permissions for any new admin views
+class DashboardApplication(BaseDashboardApplication):
+    name = 'dashboard'
+    app_name = 'dashboard'
     default_permissions = ['is_staff', ]
     login_url = reverse_lazy('login-nextless')
 
     def get_urls(self):
         """
-        Get the URL patterns for our custom admin pages
+        Add our custom, snazzy URLs to the app
         """
         urls = super().get_urls()
         custom_urls = [
@@ -53,13 +53,12 @@ class DuxDashboardApplication(DashboardApplication):
             url(r'^instructions/delete/(?P<pk>\d+)/$',
                 views.InstructionsDeleteView.as_view(),
                 name='catalogue-instructions-delete'),
-            url(r'^shipping/', include(shipping_urls,
-            namespace='shipping')),
+            url(r'^shipping/', include('cart.dashboard.shipping.urls')),
         ]
 
         urls.extend(custom_urls)
-        return self.post_process_urls(urls)
+        return urls
 
 
-application = DuxDashboardApplication()
+application = DashboardApplication()
 
