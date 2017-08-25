@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'cart.catalogue',
     'cart.checkout',
     'cart.dashboard',
+    'cart.dashboard.catalogue',
+    #'cart.dashboard.shipping',
     'cart.partner',
     'cart.shipping',
 ], )

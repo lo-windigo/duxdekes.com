@@ -2,7 +2,6 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from oscar.core.loading import get_classes, get_model
 
 
-
 # Set up some product name constants
 PINE = 'Pine'
 PINE_UPC = '{}_P'
@@ -17,14 +16,15 @@ INSTRUCTIONS_WITH_BLANK_UPC = '{}B'
 
 # Get Oscar classes
 #InstructionsWithBlankProduct = get_model('catalogue', 'InstructionsWithBlankProduct')
-ProductClass = get_model('catalogue', 'ProductClass')
-Product = get_model('catalogue', 'Product')
-Partner = get_model('partner', 'Partner')
-StockRecord = get_model('partner', 'StockRecord')
 
 
 
 def get_partner():
+    """
+    Get the only partner that matters to Dux Dekes
+    """
+    Partner = get_model('partner', 'Partner')
+
     partner, created = Partner.objects.get_or_create(name='Dux Dekes')
 
     #if created:
@@ -53,6 +53,8 @@ def get_product_class(name):
     """
     Fetch a generic product class, or create it if this is the first time called
     """
+    ProductClass = get_model('catalogue', 'ProductClass')
+
     klass, created = ProductClass.objects.get_or_create(name=name,
             defaults={
                 'requires_shipping': True,
@@ -136,6 +138,7 @@ def save_finished(**kwargs):
     - instance: The object to update
     """
 
+    Product = get_model('catalogue', 'Product')
     updating = 'instance' in kwargs
 
     if updating:
@@ -321,6 +324,7 @@ def save_unfinished(**kwargs):
     - instance: The object to update
     """
 
+    Product = get_model('catalogue', 'Product')
     updating = 'instance' in kwargs
     material_args = dict(kwargs)
 
@@ -365,6 +369,9 @@ def save_unfinished_material(product, **kwargs):
     Save a child product that represents a material that this decoy can be made
     out of
     """
+    Product = get_model('catalogue', 'Product')
+    StockRecord = get_model('partner', 'StockRecord')
+
     upc_format = kwargs['upc_format']
     upc = upc_format.format(product.upc)
 
