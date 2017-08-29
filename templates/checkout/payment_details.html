@@ -2,15 +2,11 @@
 {% load i18n %}
 
 {% block title %}
-    {% trans "Order preview" %} | {{ block.super }}
+    {% trans "Payment details" %} | {{ block.super }}
 {% endblock %}
 
 {% block checkout_nav %}
-    {% include 'checkout/nav.html' with step=4 %}
-{% endblock %}
-
-{% block checkout_title %}
-    {% trans "Preview order" %}
+    {% include 'checkout/nav.html' with step=3 %}
 {% endblock %}
 
 {% block extrahead %}
@@ -110,8 +106,15 @@
 		}
 	</style>
 {% endblock %}
+{% block checkout_title %}{% trans "Enter payment details" %}{% endblock %}
 
-{% block place_order %}
+{% block order_contents %}{% endblock %}
+{% block shipping_address %}{% endblock %}
+{% block shipping_method %}{% endblock %}
+{% block payment_method %}{% endblock %}
+
+{% block payment_details %}
+    {% block payment_details_content %}
 	<noscript>
 		<h1>Square requires Javascript</h1>
 		<p>
@@ -169,4 +172,5 @@
 			</div>
 		</div>
 	</form>
-{% endblock place_order %}
+    {% endblock payment_details_content %}
+{% endblock payment_details %}
