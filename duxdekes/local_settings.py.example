@@ -85,7 +85,7 @@ SQUARE_LOCATION_ID = ''
 ####################
 UPS_ACCOUNT = ''
 UPS_PASSWORD = ''
-UPS_LICENCE_NUMBER = ''
+UPS_LICENSE_NUMBER = ''
 UPS_SHIPPER = UPSAddress()
 UPS_SHIPPER.name = ''
 UPS_SHIPPER.address_lines.append('')
