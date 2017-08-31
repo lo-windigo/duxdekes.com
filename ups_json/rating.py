@@ -25,8 +25,8 @@ class UPSRating(UPSBase):
         - ship_to: The package destination
         - ship_from: Where the package will be shipping from (optional)
         """
-        rated_shipment = self.request_rate(self, length, width, height, weight,
-                ship_to, shipper, ship_from=None)
+        rated_shipment = self.request_rate(length, width, height, weight,
+                ship_to, shipper, ship_from)
 
         return D(get_nested(rated_shipment, 'TotalCharges', 'MonetaryValue'))
 
@@ -49,8 +49,8 @@ class UPSRating(UPSBase):
             
         }
         """
-        rated_shipment = self.request_rate(self, length, width, height, weight,
-                ship_to, shipper, ship_from=None)
+        rated_shipment = self.request_rate(length, width, height, weight,
+                ship_to, shipper, ship_from)
 
         transport = D(rated_shipment['TransportationCharges']['MonetaryValue'])
 
