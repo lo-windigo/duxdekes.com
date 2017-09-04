@@ -8,10 +8,15 @@ class Repository(repository.Repository):
             self, basket, user=None, shipping_addr=None,
             request=None, **kwargs):
         
+        # For now, only return UPS
+        return (methods.DomesticShipping(),)
+
         if shipping_addr:
             if shipping_addr.country.code == 'US':
-                return (methods.DomesticShipping(shipping_addr),)
+                return (methods.DomesticShipping(),)
             else:
-                return (methods.InternationalShipping(shipping_addr),)
+                return (methods.InternationalShipping(),)
         else:
-            raise Exception('No shipping address provided!')
+            # We need a return value before details have been entered, for
+            # presenting the basket originally
+            return (methods.DomesticShipping(), methods.InternationalShipping())

@@ -168,11 +168,11 @@ class UPSRating(UPSBase):
         try:
             return rate_response['RateResponse']['RatedShipment']
         except:
-            raise Exception()
+            # TODO: Custom exceptions
+            if 'Response' in rate_response and \
+                'ResponseStatus' in rate_response['Response'] and \
+                'Code' in rate_response['Response']['ResponseStatus']:
+                raise Exception()
 
-        # TODO: Custom exceptions
-        if 'Response' in rate_response and \
-            'ResponseStatus' in rate_response['Response'] and \
-            'Code' in rate_response['Response']['ResponseStatus']:
             raise Exception()
 

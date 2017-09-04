@@ -1,12 +1,15 @@
 from decimal import Decimal as D
 from django.conf import settings
-from oscar.apps.shipping import methods
+from oscar.apps.checkout.utils import CheckoutSessionData
+from oscar.apps.shipping import methods, scales 
 from oscar.core import prices
 from oscar.core.loading import get_class, get_model
+from ups_json.base import UPSAddress
 from ups_json.rating import UPSRating
 
 
 InvalidShippingEvent = get_class('order.exceptions', 'InvalidShippingEvent')
+Box = get_model('shipping', 'Box')
 WeightBased = get_model('shipping', 'WeightBased')
 
 
@@ -15,33 +18,51 @@ class DomesticShipping(methods.Base):
     name = 'UPS Ground'
     description = '''
     Shipping via UPS Ground services, delivered within 1-5 business days of
-    packaging and shipping.
+    packaging and shipping. Rate is calculated AFTER address has been entered.
     '''
-    address = None
-
-    def __init__(self, shipping_address=None):
+    def __init__(self):
         """
-        Initialize this shipping method with a shipping address for rate
-        calculation
+        Quickly init the default box as a dictionary
         """
-        if not shipping_address:
-            raise InvalidShippingEvent(
-                '{} cannot be used without a shipping address'.format(
-                    self.name))
+        box = Box()
 
-        self.address = shipping_address
+        box.length = 0
+        box.width = 0
+        box.height = 0
+
+        self.box = box
 
 
     def calculate(self, basket):
+        """
+        Get a rate for this package from UPS
+        """
 
-        rateRequest = UPSRating(settings.UPS_ACCOUNT,
+        # TODO: Implement actual address check
+        if True:
+            return prices.Price(
+                currency=basket.currency,
+                excl_tax=D(0))
+
+
+        # Temporary address - DAMNIT
+        address = UPSAddress()
+        address.name = "SHIP 2 ME"
+        rate_request = UPSRating(settings.UPS_ACCOUNT,
                 settings.UPS_PASSWORD,
                 settings.UPS_LICENSE_NUMBER,
                 settings.UPS_TESTING)
+        scale = scales.Scale()
+        weight = scale.weigh_basket(basket)
+ 
+        #for item in basket.get_lines():
+        #    box = 
 
-        weight = Scale.weigh_basket(basket)
+        # TEMPORARY BOX CRAP
+        box = self.box
 
-        rate = rateRequest.get_rate(box, box, box, weight, self.address, UPS_SHIPPER)
+        rate = rate_request.get_rate(box.length, box.width, box.height, weight,
+                address, settings.UPS_SHIPPER)
 
         return prices.Price(
             currency=basket.currency,
