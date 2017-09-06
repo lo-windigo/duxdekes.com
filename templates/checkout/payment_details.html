@@ -17,7 +17,7 @@
       // Replace this value with your application's ID (available from the merchant dashboard).
       // If you're just testing things out, replace this with your _Sandbox_ application ID,
       // which is also available there.
-      applicationId: 'REPLACE_ME',
+	  applicationId: '{{ square_app }}',
       inputClass: 'sq-input',
       cardNumber: {
         elementId: 'sq-card-number',
@@ -75,6 +75,7 @@
         },
         unsupportedBrowserDetected: function() {
           // Alert the buyer that their browser is not supported
+		  // TODO!!!
         }
       }
     });
@@ -160,7 +161,7 @@
 				Postal Code (of card billing address)
 			</label>
 			<div id="sq-postal-code"></div>
-			<input type="hidden" id="card-nonce" name="nonce">
+			{{ form.nonce }}
 			<input type="hidden" name="action" value="place_order">
 		</p>
 		<div class="form-group clearfix">
