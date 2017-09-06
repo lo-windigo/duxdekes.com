@@ -67,7 +67,7 @@
               console.log('Nonce received! ' + nonce + ' ' + JSON.stringify(cardData));
 			}
             // Assign the value of the nonce to a hidden form element
-            var nonceField = document.getElementById('card-nonce');
+            var nonceField = document.getElementById('id_nonce');
             nonceField.value = nonce;
             // Submit the form
             document.getElementById('form').submit();
