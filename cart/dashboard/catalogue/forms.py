@@ -21,24 +21,22 @@ class ProductForm(OscarProductForm):
     """
     A generic product form, containing common fields
     """
-
     def __init__(self, *args, **kwargs):
         """
         Override the default "required" attribute of the form fields
         """
-        super().__init__(*args, **kwargs)
-
-        for field in PRIMARY_MODEL_FIELDS:
-            self.fields[field].required = True
 
         # Assign a special handler for entity fields
         self.FIELD_FACTORIES["entity"] = _attr_box_entity_field
 
+        super().__init__(*args, **kwargs)
+
+        # Set the primary fields as required
+        for field in PRIMARY_MODEL_FIELDS:
+            if field in self.fields:
+                self.fields[field].required = True
 
     class Meta:
-        """
-        Meta data for this model form
-        """
         model = Product
         fields = PRIMARY_MODEL_FIELDS
 
@@ -116,7 +114,7 @@ class UnfinishedForm(ProductForm):
         return products.save_unfinished(**product_data)
 
 
-class InstructionsForm(forms.ModelForm):
+class InstructionsForm(ProductForm):
     """
     A form specifically tailored to creating Instructions product
     """
@@ -129,8 +127,24 @@ class InstructionsForm(forms.ModelForm):
 
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.instance.product_class = products.get_instructions_class()
+        klass = products.get_instructions_class()
+        super().__init__(klass, *args, **kwargs)
+        self.instance.product_class = klass
+
+
+    def save(self, **kwargs):
+        """
+        Override the form to add the extra product attributes
+        """
+        product = super().save(**kwargs)
+
+        # Add attributes, and save product
+        #product.attr.box = self.cleaned_data['attr_box'] 
+        #product.attr.weight = self.cleaned_data['attr_weight'] 
+        product.save()
+
+        return product
+
 
     class Meta:
         model = InstructionsProduct

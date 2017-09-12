@@ -68,6 +68,10 @@ def get_product_class(name):
 
 
 def get_material(unfinished_blank, upc_format, original_upc = None):
+    """
+    Get a stock record for a unfinished blank material option
+    """
+    StockRecord = get_model('partner', 'StockRecord')
 
     if original_upc:
         upc = upc_format.format(original_upc)
@@ -135,15 +139,18 @@ def save_finished(**kwargs):
     - upc: Stock ID of this product
     - original_upc: Stock ID of this product (prior to editing)
     - price: price of a decoy
+    - box: The box size to be associated with this blank
+    - weight: The weight of a single blank
     - instance: The object to update
     """
 
     Product = get_model('catalogue', 'Product')
+    StockRecord = get_model('partner', 'StockRecord')
     updating = 'instance' in kwargs
 
     if updating:
         product = kwargs['instance']
-        stock, created = StockRecord.objects.get(product=product)
+        stock, created = StockRecord.objects.get_or_create(product=product)
 
         if created:
             stock.partner = get_partner()
@@ -153,6 +160,8 @@ def save_finished(**kwargs):
 
     product.title = kwargs['title']
     product.upc = kwargs['upc']
+    product.attr.box = kwargs['attr_box'] 
+    product.attr.weight = kwargs['attr_weight'] 
     product.save()
 
     # Set stock record AFTER the object's been saved
@@ -338,6 +347,8 @@ def save_unfinished(**kwargs):
 
     product.title = kwargs['title']
     product.upc = kwargs['upc']
+    product.attr.box = kwargs['attr_box'] 
+    product.attr.weight = kwargs['attr_weight'] 
     product.save()
 
     # If there are pine or Tupelo values, add them as sub-products
@@ -471,6 +482,8 @@ def remove_material(product, upc_format, **kwargs):
     """
     Remove a child product(s) representing an unfinished blank material
     """
+    StockRecord = get_model('partner', 'StockRecord')
+
     if 'original_sku' in kwargs:
         upc = upc_format.format(kwargs['original_sku'])
     else:
