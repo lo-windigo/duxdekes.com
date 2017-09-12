@@ -15,19 +15,19 @@ class UnhandledException(Exception):
     pass
 
 
-def UPSException(code, msg=None):
+def GetUPSException(code, msg=None):
     """
     A exception factory function: return the proper exception type based on code
     """
     codes = {
-            1: UnrecognizedException(msg),
-            2: UnknownOperationException(msg),
-            3: NetworkException(msg),
-            4: JSONSyntaxException(msg),
+            1: UnrecognizedException,
+            2: UnknownOperationException,
+            3: NetworkException,
+            4: JSONSyntaxException,
             }
 
     if code in codes:
-        return codes[code]
+        return codes[code](msg)
     else
         return UnhandledException(msg)
 

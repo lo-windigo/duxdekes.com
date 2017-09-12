@@ -1,5 +1,6 @@
 from decimal import Decimal as D
 from .base import UPSBase
+from .exception import UPSException
 from .util.dict import get_nested
 import json
 
@@ -23,7 +24,11 @@ class UPSRating(UPSBase):
         - height: Package height (in inches)
         - weight: Package weight (in pounds - lb)
         - ship_to: The package destination
+        - shipper: The person shipping the package
         - ship_from: Where the package will be shipping from (optional)
+
+        Returns:
+        A single Decimal (D) with the total package rate
         """
         rated_shipment = self.request_rate(length, width, height, weight,
                 ship_to, shipper, ship_from)
@@ -42,6 +47,7 @@ class UPSRating(UPSBase):
         - height: Package height (in inches)
         - weight: Package weight (in pounds - lb)
         - ship_to: The package destination
+        - shipper: The person shipping the package
         - ship_from: Where the package will be shipping from (optional)
 
         Returns:
@@ -52,7 +58,8 @@ class UPSRating(UPSBase):
         rated_shipment = self.request_rate(length, width, height, weight,
                 ship_to, shipper, ship_from)
 
-        transport = D(rated_shipment['TransportationCharges']['MonetaryValue'])
+        transport = D(get_nested(rated_shipment, 'TransportationCharges',
+            'MonetaryValue'))
 
         # TODO: Add all interesting information to this value
         rates = {
@@ -69,24 +76,24 @@ class UPSRating(UPSBase):
         """
         shipment = {
                 'ShipTo': {
-                    'Name': ship_to.name,
+                    'Name': ship_to.get('name', ''),
                     'Address': {
-                        'AddressLine': ship_to.address_lines,
-                        'City': ship_to.city,
-                        'StateProvinceCode': ship_to.state_province,
-                        'PostalCode': ship_to.postal_code,
-                        'CountryCode': ship_to.country_code,
+                        'AddressLine': ship_to.get('address_lines', []),
+                        'City': ship_to.get('city', ''),
+                        'StateProvinceCode': ship_to.get('state_province', ''),
+                        'PostalCode': ship_to.get('postal_code', ''),
+                        'CountryCode': ship_to.get('country_code', ''),
                         },
                     },
                 'Shipper': {
-                    'Name': shipper.name,
+                    'Name': shipper.get('name', ''),
                     #'ShipperNumber': account_number,
                     'Address': {
-                        'AddressLine': shipper.address_lines,
-                        'City': shipper.city,
-                        'StateProvinceCode': shipper.state_province,
-                        'PostalCode': shipper.postal_code,
-                        'CountryCode': shipper.country_code,
+                        'AddressLine': shipper.get('address_lines', []),
+                        'City': shipper.get('city', ''),
+                        'StateProvinceCode': shipper.get('state_province', ''),
+                        'PostalCode': shipper.get('postal_code', ''),
+                        'CountryCode': shipper.get('country_code', ''),
                         },
                     },
                 'Package': {
@@ -117,13 +124,13 @@ class UPSRating(UPSBase):
         if ship_from:
             shipment.update({
                 'ShipFrom': {
-                    'Name': ship_from.name,
+                    'Name': ship_from.get('name', ''),
                     'Address': {
-                        'AddressLine': ship_from.address_lines,
-                        'City': ship_from.city,
-                        'StateProvinceCode': ship_from.state_province,
-                        'PostalCode': ship_from.postal_code,
-                        'CountryCode': ship_from.country_code
+                        'AddressLine': ship_from.get('address_lines', ''),
+                        'City': ship_from.get('city', ''),
+                        'StateProvinceCode': ship_from.get('state_province', ''),
+                        'PostalCode': ship_from.get('postal_code', ''),
+                        'CountryCode': ship_from.get('country_code', ''),
                         },
                     }
                 })
@@ -168,11 +175,7 @@ class UPSRating(UPSBase):
         try:
             return rate_response['RateResponse']['RatedShipment']
         except:
-            # TODO: Custom exceptions
-            if 'Response' in rate_response and \
-                'ResponseStatus' in rate_response['Response'] and \
-                'Code' in rate_response['Response']['ResponseStatus']:
-                raise Exception()
-
-            raise Exception()
+            keys = ('Response', 'ResponseStatus', 'Code')
+            code = get_nested(rate_response, *keys)
+            raise GetUPSException(code)
 

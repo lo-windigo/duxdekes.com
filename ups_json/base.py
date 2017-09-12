@@ -2,20 +2,6 @@
 import json
 from urllib import request
 
-class UPSAddress():
-    """
-    A class built for containing a whole address, and all of its variable parts
-    """
-    name = None
-    address_lines = None
-    city = None
-    state_province = None
-    postal_code = None
-    country_code = None
-
-    def __init__(self):
-        self.address_lines = []
-
 
 class UPSBase():
     """
