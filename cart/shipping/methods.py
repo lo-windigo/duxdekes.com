@@ -10,63 +10,85 @@ from ups_json.rating import UPSRating
 
 InvalidShippingEvent = get_class('order.exceptions', 'InvalidShippingEvent')
 Box = get_model('shipping', 'Box')
-WeightBased = get_model('shipping', 'WeightBased')
 
 
 class DomesticShipping(methods.Base):
+    """
+    Provide a method of standard UPS ground shipping
+    """
     code = 'UPS'
     name = 'UPS Ground'
     description = '''
     Shipping via UPS Ground services, delivered within 1-5 business days of
     packaging and shipping. Rate is calculated AFTER address has been entered.
     '''
-    def __init__(self):
-        """
-        Quickly init the default box as a dictionary
-        """
-        box = Box()
+    shipping_addr = None
 
-        box.length = 0
-        box.width = 0
-        box.height = 0
 
-        self.box = box
+    def __init__(self, shipping_addr=None):
+        """
+        Quickly init the default box, and save the shipping address
+        """
+        self.shipping_addr = shipping_addr
+        if not shipping_addr:
+            self.name = '{} (rated after address entered)'.format(self.name)
 
 
     def calculate(self, basket):
         """
         Get a rate for this package from UPS
         """
-
-        # TODO: Implement actual address check
-        if True:
+        if not self.shipping_addr:
             return prices.Price(
                 currency=basket.currency,
                 excl_tax=D(0))
 
-
         # Temporary address - DAMNIT
-        address = UPSAddress()
-        address.name = "SHIP 2 ME"
+        address = {}
+
+        # Initialize a rate request object
         rate_request = UPSRating(settings.UPS_ACCOUNT,
                 settings.UPS_PASSWORD,
                 settings.UPS_LICENSE_NUMBER,
                 settings.UPS_TESTING)
-        scale = scales.Scale()
-        weight = scale.weigh_basket(basket)
+        # TODO: Allow rating entire basket
+        #scale = scales.Scale()
+        #weight = scale.weigh_basket(basket)
  
-        #for item in basket.get_lines():
-        #    box = 
+        # Compile the address dictionary
+        address['name'] = '{} {}'.format(getattr(self.shipping_address,
+            'first_name', ''),
+            getattr(self.shipping_address, 'last_name', ''))
+        address['postal_code'] = self.shipping_address.postcode
+        address['city'] = self.shipping_address.line4
+        address['state_province'] = self.shipping_address.state
 
-        # TEMPORARY BOX CRAP
-        box = self.box
+        # Append any address lines to the list
+        address['lines'] = []
+        for i in range(1, 3):
+            try:
+                address['lines'].append(getattr(self.shipping_address,
+                    'line{}'.format(i)))
+            except:
+                pass
+
+
+        # TODO: Consolidate items into one box, if applicable?
+        for item in basket.get_lines():
+            boxes.append(item.attr.box) 
 
         rate = rate_request.get_rate(box.length, box.width, box.height, weight,
                 address, settings.UPS_SHIPPER)
 
+        if self.shipping_address.state.upper() == 'NY':
+            rate_incl_tax = rate * D(1.07)
+        else:
+            rate_incl_tax = rate
+
         return prices.Price(
             currency=basket.currency,
-            excl_tax=rate)
+            excl_tax=rate,
+            incl_tax=rate_incl_tax)
 
 
 class InternationalShipping(methods.Base):
