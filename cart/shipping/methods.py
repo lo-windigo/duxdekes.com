@@ -4,7 +4,6 @@ from oscar.apps.checkout.utils import CheckoutSessionData
 from oscar.apps.shipping import methods, scales 
 from oscar.core import prices
 from oscar.core.loading import get_class, get_model
-from ups_json.base import UPSAddress
 from ups_json.rating import UPSRating
 
 
