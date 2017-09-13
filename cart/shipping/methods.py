@@ -55,22 +55,19 @@ class DomesticShipping(methods.Base):
         #weight = scale.weigh_basket(basket)
  
         # Compile the address dictionary
-        address['name'] = '{} {}'.format(getattr(self.shipping_address,
-            'first_name', ''),
-            getattr(self.shipping_address, 'last_name', ''))
-        address['postal_code'] = self.shipping_address.postcode
-        address['city'] = self.shipping_address.line4
-        address['state_province'] = self.shipping_address.state
+        address['name'] = '{} {}'.format(self.shipping_addr.get('first_name', ''),
+            self.shipping_addr.get('last_name', ''))
+        address['postal_code'] = self.shipping_addr.postcode
+        address['city'] = self.shipping_addr.line4
+        address['state_province'] = self.shipping_addr.state
 
         # Append any address lines to the list
         address['lines'] = []
         for i in range(1, 3):
             try:
-                address['lines'].append(getattr(self.shipping_address,
-                    'line{}'.format(i)))
+                address['lines'].append(self.shipping_address.get('line{}'.format(i)))
             except:
                 pass
-
 
         # TODO: Consolidate items into one box, if applicable?
         for item in basket.get_lines():
