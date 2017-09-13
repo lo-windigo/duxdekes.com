@@ -28,6 +28,6 @@ def GetUPSException(code, msg=None):
 
     if code in codes:
         return codes[code](msg)
-    else
+    else:
         return UnhandledException(msg)
 

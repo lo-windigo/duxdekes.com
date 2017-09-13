@@ -1,6 +1,6 @@
 from decimal import Decimal as D
 from .base import UPSBase
-from .exception import UPSException
+from .exception import GetUPSException
 from .util.dict import get_nested
 import json
 
