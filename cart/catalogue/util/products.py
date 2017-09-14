@@ -400,6 +400,17 @@ def save_unfinished_material(product, **kwargs):
         stock.partner = get_partner()
 
     variant.title = '{} — {}'.format(kwargs['name'], product.title)
+
+    try:
+        variant.attr.box = kwargs['attr_box'] 
+    except:
+        pass
+
+    try:
+        variant.attr.weight = kwargs['attr_weight'] 
+    except:
+        pass
+
     variant.save()
 
     # Set variant AFTER the object's been saved
@@ -419,6 +430,8 @@ def save_pine(product, **kwargs):
     material_args['name'] = PINE
     material_args['upc_format'] = PINE_UPC
     material_args['price'] = kwargs['pine_price']
+    material_args['attr_box'] = kwargs.get('attr_box', None)
+    material_args['attr_weight'] = kwargs.get('attr_weight', None)
     
     if 'original_upc' in kwargs:
         material_args['original_upc'] = kwargs['original_upc']
@@ -436,6 +449,8 @@ def save_pine_feet(product, **kwargs):
     material_args['name'] = '{} {}'.format(PINE, FEET)
     material_args['upc_format'] = PINE_FEET_UPC
     material_args['price'] = int(kwargs['pine_price']) + int(kwargs['feet_price'])
+    material_args['attr_box'] = kwargs.get('attr_box', None)
+    material_args['attr_weight'] = kwargs.get('attr_weight', None)
     
     if 'original_upc' in kwargs:
         material_args['original_upc'] = kwargs['original_upc']
@@ -453,6 +468,8 @@ def save_tupelo(product, **kwargs):
     material_args['name'] = TUPELO
     material_args['upc_format'] = TUPELO_UPC
     material_args['price'] = kwargs['tupelo_price']
+    material_args['attr_box'] = kwargs.get('attr_box', None)
+    material_args['attr_weight'] = kwargs.get('attr_weight', None)
     
     if 'original_upc' in kwargs:
         material_args['original_upc'] = kwargs['original_upc']
@@ -471,6 +488,8 @@ def save_tupelo_feet(product, **kwargs):
     material_args['name'] = '{} {}'.format(TUPELO, FEET)
     material_args['upc_format'] = TUPELO_FEET_UPC
     material_args['price'] = int(kwargs['tupelo_price']) + int(kwargs['feet_price'])
+    material_args['attr_box'] = kwargs.get('attr_box', None)
+    material_args['attr_weight'] = kwargs.get('attr_weight', None)
     
     if 'original_upc' in kwargs:
         material_args['original_upc'] = kwargs['original_upc']
