@@ -37,13 +37,11 @@ class DomesticShipping(methods.Base):
         """
         Get a rate for this package from UPS
         """
-        if not self.shipping_addr:
+        if not self.shipping_addr or not basket.all_lines():
             return prices.Price(
                 currency=basket.currency,
-                excl_tax=D(0))
-
-        # Temporary address - DAMNIT
-        address = {}
+                excl_tax=D(0),
+                tax=D(0))
 
         # Initialize a rate request object
         rate_request = UPSRating(settings.UPS_ACCOUNT,
@@ -55,23 +53,35 @@ class DomesticShipping(methods.Base):
         #weight = scale.weigh_basket(basket)
  
         # Compile the address dictionary
-        address['name'] = '{} {}'.format(self.shipping_addr.get('first_name', ''),
-            self.shipping_addr.get('last_name', ''))
-        address['postal_code'] = self.shipping_addr.postcode
-        address['city'] = self.shipping_addr.line4
-        address['state_province'] = self.shipping_addr.state
+        address = {
+                'name': '{} {}'.format(getattr(self.shipping_addr,
+                    'first_name', ''),
+                    getattr(self.shipping_addr, 'last_name', '')),
+                'postal_code': self.shipping_addr.postcode,
+                'city': self.shipping_addr.line4,
+                'state_province': self.shipping_addr.state,
+                'lines': [],
+                }
 
         # Append any address lines to the list
-        address['lines'] = []
         for i in range(1, 3):
             try:
-                address['lines'].append(self.shipping_address.get('line{}'.format(i)))
+                address['lines'].append(getattr(self.shipping_addr,
+                    'line{}'.format(i)))
             except:
                 pass
 
+        return prices.Price(
+            currency=basket.currency,
+            excl_tax=D(1),
+            tax=D(.07))
+
         # TODO: Consolidate items into one box, if applicable?
-        for item in basket.get_lines():
-            boxes.append(item.attr.box) 
+        # TODO: More than one quantity of this item?
+        boxes = []
+        for item in basket.all_lines():
+            if item.product.attr.box:
+                boxes.append(item.product.attr.box) 
 
         rate = rate_request.get_rate(box.length, box.width, box.height, weight,
                 address, settings.UPS_SHIPPER)
