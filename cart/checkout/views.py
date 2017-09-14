@@ -4,6 +4,10 @@ from oscar.apps.checkout.views import PaymentDetailsView as OscarPaymentDetailsV
 from . import forms
 
 
+# Dynamically load some of Oscar's classes
+OrderNumberGenerator = get_class('order.utils', 'OrderNumberGenerator')
+
+
 class PaymentDetailsView(OscarPaymentDetailsView):
 
     def get_context_data(self, **kwargs):
@@ -28,4 +32,10 @@ class PaymentDetailsView(OscarPaymentDetailsView):
             return self.render_preview(request, form=square_form)
         
         return self.render_payment_details(request, form=square_form)
+
+    def generate_order_number(self, basket):
+        """
+        Was not being carried over by Oscar's PaymentDetailsView
+        """
+        return OrderNumberGenerator().order_number(basket)
 
