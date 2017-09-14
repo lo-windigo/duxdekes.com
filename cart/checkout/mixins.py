@@ -6,7 +6,7 @@ from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
 
 
-class OrderPlacementMixin(mixins.CheckoutSessionMixin):
+class OrderPlacementMixin(mixins.OrderPlacementMixin):
     """
     Mixin which provides functionality for paying with SquareSpace
     """
