@@ -275,6 +275,11 @@ OSCAR_DASHBOARD_NAVIGATION = [
 #        'icon': 'icon-bar-chart',
 #        'url_name': 'dashboard:reports-index',
 #    },
+    {
+        'label': _('Square'),
+        'icon': 'icon-credit-card',
+        'url_name': 'dashboard:index',
+    },
 ]
 
 

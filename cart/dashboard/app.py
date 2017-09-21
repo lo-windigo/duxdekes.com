@@ -54,6 +54,7 @@ class DashboardApplication(BaseDashboardApplication):
                 views.InstructionsDeleteView.as_view(),
                 name='catalogue-instructions-delete'),
             url(r'^shipping/', include('cart.dashboard.shipping.urls')),
+            url(r'^square/', include('cart.dashboard.square.urls')),
         ]
 
         urls.extend(custom_urls)
