@@ -4,6 +4,7 @@ from oscar.apps.payment.models import SourceType, Source
 from oscar.apps.payment.exceptions import UnableToTakePayment
 from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
+from . import models
 
 
 class OrderPlacementMixin(mixins.OrderPlacementMixin):
@@ -15,7 +16,9 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         """
         Try to process the payment using the Square REST API
         """
-
+        square_settings = models.SquareSettings.get_settings()
+        squareconnect.configuration.access_token = \
+            square_settings.access_token
         api_instance = TransactionApi()
 
         # Set the total amount to charge, in US Cents
@@ -31,9 +34,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
 
         try:
             # Charge
-            api_response = api_instance.charge(settings.SQUARE_ACCESS_TOKEN,
-                    settings.SQUARE_LOCATION_ID,
-                    body)
+            api_response = api_instance.charge(square_settings.location_id, body)
             res = api_response.transaction
         except ApiException as e:
             if settings.DEBUG:

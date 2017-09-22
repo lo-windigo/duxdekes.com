@@ -276,9 +276,9 @@ OSCAR_DASHBOARD_NAVIGATION = [
 #        'url_name': 'dashboard:reports-index',
 #    },
     {
-        'label': _('Square'),
-        'icon': 'icon-credit-card',
-        'url_name': 'dashboard:index',
+        'label': _('Settings'),
+        'icon': 'icon-cog',
+        'url_name': 'dashboard:settings:index',
     },
 ]
 

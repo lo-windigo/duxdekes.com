@@ -73,13 +73,6 @@ CONTACT_SENDER = "duxdekes@example.com"
 CONTACT_RECIPIENTS = [ "example@example.com", ]
 
 
-###################
-# Square Settings #
-###################
-SQUARE_ACCESS_TOKEN = ''
-SQUARE_LOCATION_ID = ''
-
-
 ####################
 # UPS API Settings #
 ####################

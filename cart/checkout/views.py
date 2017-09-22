@@ -1,7 +1,7 @@
 from django.conf import settings
 from oscar.core.loading import get_class
 from oscar.apps.checkout.views import PaymentDetailsView as OscarPaymentDetailsView
-from . import forms
+from . import forms, models
 
 
 class PaymentDetailsView(OscarPaymentDetailsView):
@@ -16,7 +16,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         ctx = super().get_context_data(**kwargs)
 
         ctx['form'] = forms.SquareNonceForm()
-        ctx['square_app'] = settings.SQUARE_APPLICATION_ID
+        ctx['square_app'] = square_settings.application_id
 
         return ctx
 
