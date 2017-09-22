@@ -6,5 +6,4 @@ sorl-thumbnail
 pycountry
 django-compressor
 django-widget-tweaks
-squareconnect==2.1.*
-django-markdown==0.8.4
+squareconnect==2.3.*
