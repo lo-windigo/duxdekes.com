@@ -135,7 +135,7 @@
 			get re-submitted when the user confirms the order.
 		{% endcomment %}
 		<div style="display:none">
-			{% block hiddenforms %}{% endblock %}
+			{% block hiddenforms %}{{ form.nonce }}{% endblock %}
 		</div>
 
 		<p>
@@ -161,7 +161,6 @@
 				Postal Code (of card billing address)
 			</label>
 			<div id="sq-postal-code"></div>
-			{{ form.nonce }}
 			<input type="hidden" name="action" value="place_order">
 		</p>
 		<div class="form-group clearfix">

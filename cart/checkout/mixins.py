@@ -2,6 +2,7 @@ from django.conf import settings
 from oscar.apps.checkout import mixins
 from oscar.apps.payment.models import SourceType, Source
 from oscar.apps.payment.exceptions import UnableToTakePayment
+import squareconnect
 from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
 from . import models
@@ -23,19 +24,31 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
 
         # Set the total amount to charge, in US Cents
         amount = {
-            'amount': 100*total.incl_tax,
+            'amount': int(100*float(total.incl_tax)),
             'currency': 'USD'
         }
-        body = {
-            'idempotency_key': order_number,
-            'card_nonce': kwargs['nonce'],
-            'amount_money': amount
-        }
+
+        try:
+            body = {
+                'idempotency_key': str(order_number),
+                'card_nonce': kwargs['nonce'],
+                'amount_money': amount
+            }
+        except:
+            # TODO: better error, get the type of ValueException perhaps
+            print('Problem getting the card nonce value!')
 
         try:
             # Charge
             api_response = api_instance.charge(square_settings.location_id, body)
-            res = api_response.transaction
+
+            # Save the response ID
+            if api_response.transaction:
+                res = api_response.transaction.reference_id
+
+            else:
+                raise ApiException(', '.join(api_response.errors))
+
         except ApiException as e:
             if settings.DEBUG:
                 print("Exception when calling TransactionApi->charge: {}".format(e))

@@ -15,10 +15,30 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         """
         ctx = super().get_context_data(**kwargs)
 
-        ctx['form'] = forms.SquareNonceForm()
+        if 'form' in kwargs:
+            ctx['form'] = kwargs['form']
+        else:
+            ctx['form'] = forms.SquareNonceForm()
+
         ctx['square_app'] = square_settings.application_id
 
         return ctx
+
+
+    def handle_place_order_submission(self, request):
+        """
+        Handle Square payment form submission
+        """
+        square_form = forms.SquareNonceForm(request.POST)
+
+        if square_form.is_valid():
+            kwargs = self.build_submission()
+
+            kwargs.update({'payment_kwargs': square_form.cleaned_data})
+            return self.submit(**kwargs)
+        
+        # TODO: Create/set an error message?
+        return self.render_preview(request, form=square_form)
 
 
     def handle_payment_details_submission(self, request):
@@ -30,5 +50,6 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         if square_form.is_valid():
             return self.render_preview(request, form=square_form)
         
+        # TODO: Create/set an error message?
         return self.render_payment_details(request, form=square_form)
 
