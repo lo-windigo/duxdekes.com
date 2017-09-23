@@ -38,8 +38,9 @@ class SquareSettings(models.Model):
         super().save(*args, **kwargs)
 
 
-    def get_settings(self):
-        square_settings,_ = self.objects.get_or_create(
+    @staticmethod
+    def get_settings():
+        square_settings,_ = SquareSettings.objects.get_or_create(
                 site__pk=settings.SITE_ID)
         return square_settings
 

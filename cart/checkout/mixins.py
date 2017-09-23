@@ -20,7 +20,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         square_settings = models.SquareSettings.get_settings()
         squareconnect.configuration.access_token = \
             square_settings.access_token
-        api_instance = TransactionApi()
+        api_instance = TransactionsApi()
 
         # Set the total amount to charge, in US Cents
         amount = {

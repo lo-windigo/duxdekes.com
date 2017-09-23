@@ -33,19 +33,18 @@ class SquareSettingsView(generic.UpdateView):
         """
         form_kwargs = super().get_form_kwargs(*args, **kwargs)
         square_settings = form_kwargs.get('instance', None) 
+        choices = []
 
-        if square_settings:
+        if square_settings.access_token:
             squareconnect.configuration.access_token = \
                 square_settings.access_token
 
-        api_instance = LocationsApi()
-        choices = []
-
         try:
+            api_instance = LocationsApi()
             response = api_instance.list_locations()
 
             for location in response.locations:
-                location_id = getattr(location, 'name', False)
+                location_id = getattr(location, 'id', False)
                 
                 # Skip a location that doesn't provide a valid ID
                 if not location_id:
@@ -60,7 +59,8 @@ class SquareSettingsView(generic.UpdateView):
 
         except ApiException as e:
             # TODO: Something smart, instead of this.
-            raise e
+            #raise e
+            pass
 
         form_kwargs.update({'location_choices': choices})
 
@@ -71,6 +71,5 @@ class SquareSettingsView(generic.UpdateView):
         """
         We only ever want one object, so override to get it manually
         """
-        square_settings, _ = self.model.objects.get_or_create()
-        return square_settings
+        return self.model.get_settings()
 

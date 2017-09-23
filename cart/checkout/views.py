@@ -14,6 +14,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         Provide the square nonce form in context
         """
         ctx = super().get_context_data(**kwargs)
+        square_settings = models.SquareSettings.get_settings()
 
         if 'form' in kwargs:
             ctx['form'] = kwargs['form']
