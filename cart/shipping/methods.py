@@ -71,20 +71,17 @@ class DomesticShipping(methods.Base):
             except:
                 pass
 
-        return prices.Price(
-            currency=basket.currency,
-            excl_tax=D(1),
-            tax=D(.07))
-
         # TODO: Consolidate items into one box, if applicable?
         # TODO: More than one quantity of this item?
-        boxes = []
+        rate = D(0)
         for item in basket.all_lines():
-            if item.product.attr.box:
-                boxes.append(item.product.attr.box) 
+            try:
+                box = item.product.attr.box 
 
-        rate = rate_request.get_rate(box.length, box.width, box.height, weight,
-                address, settings.UPS_SHIPPER)
+                rate = rate + rate_request.get_rate(box.length, box.width, box.height,
+                        item.product.attr.weight, address, settings.UPS_SHIPPER)
+            except:
+                pass
 
         if self.shipping_address.state.upper() == 'NY':
             rate_incl_tax = rate * D(1.07)
