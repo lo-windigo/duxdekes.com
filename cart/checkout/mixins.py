@@ -21,6 +21,11 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         squareconnect.configuration.access_token = \
             square_settings.access_token
         api_instance = TransactionsApi()
+        nonce = kwargs.get('nonce', False)
+
+        if not nonce:
+            raise Exception('Problem getting the card nonce value!')
+
 
         # Set the total amount to charge, in US Cents
         amount = {
@@ -28,25 +33,18 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
             'currency': 'USD'
         }
 
-        try:
-            body = {
-                'idempotency_key': str(order_number),
-                'card_nonce': kwargs['nonce'],
-                'amount_money': amount
-            }
-        except:
-            # TODO: better error, get the type of ValueException perhaps
-            print('Problem getting the card nonce value!')
+        body = {
+            'idempotency_key': str(order_number),
+            'card_nonce': nonce,
+            'amount_money': amount
+        }
 
         try:
             # Charge
             api_response = api_instance.charge(square_settings.location_id, body)
 
             # Save the response ID
-            if api_response.transaction:
-                res = api_response.transaction.reference_id
-
-            else:
+            if not api_response.transaction:
                 raise ApiException(', '.join(api_response.errors))
 
         except ApiException as e:
@@ -57,10 +55,10 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # Request was successful - record the "payment source".  As this
         # request was a 'pre-auth', we set the 'amount_allocated' - if we had
         # performed an 'auth' request, then we would set 'amount_debited'.
-        source_type, _ = SourceType.objects.get_or_create(name='Square')
+        source_type, __ = SourceType.objects.get_or_create(name='Square')
         source = Source(source_type=source_type,
                         amount_debited=total.incl_tax,
-                        reference=res)
+                        reference=api_response.transaction.reference_id)
 
         self.add_payment_source(source)
 
