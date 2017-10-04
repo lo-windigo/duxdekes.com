@@ -19,7 +19,7 @@ class DomesticShipping(methods.Base):
     name = 'UPS Ground'
     description = '''
     Shipping via UPS Ground services, delivered within 1-5 business days of
-    packaging and shipping. Rate is calculated AFTER address has been entered.
+    packaging and shipping.
     '''
     shipping_addr = None
 
@@ -83,7 +83,7 @@ class DomesticShipping(methods.Base):
             except:
                 pass
 
-        if self.shipping_address.state.upper() == 'NY':
+        if self.shipping_addr and self.shipping_addr.state.upper() == 'NY':
             rate_incl_tax = rate * D(1.07)
         else:
             rate_incl_tax = rate
