@@ -1,7 +1,7 @@
 from django.conf import settings
 from oscar.apps.checkout import mixins
 from oscar.apps.payment.models import SourceType, Source
-from oscar.apps.payment.exceptions import UnableToTakePayment
+from oscar.apps.payment.exceptions import PaymentError, UnableToTakePayment
 import squareconnect
 from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
@@ -20,12 +20,23 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         square_settings = models.SquareSettings.get_settings()
         squareconnect.configuration.access_token = \
             square_settings.access_token
+        source_type, __ = SourceType.objects.get_or_create(name='Square')
         api_instance = TransactionsApi()
         nonce = kwargs.get('nonce', False)
 
         if not nonce:
-            raise Exception('Problem getting the card nonce value!')
+            raise PaymentError('Problem getting the card nonce value!')
 
+        # Debugging - allow for testing without pinging the Square API
+        elif settings.DEBUG and nonce == 'TEST':
+            source = Source(source_type=source_type,
+                            amount_debited=total.incl_tax,
+                            reference='Test entry')
+
+            self.add_payment_source(source)
+            self.add_payment_event('auth', total.incl_tax)
+
+            return
 
         # Set the total amount to charge, in US Cents
         amount = {
@@ -50,12 +61,11 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         except ApiException as e:
             if settings.DEBUG:
                 print("Exception when calling TransactionApi->charge: {}".format(e))
-            raise UnableToTakePayment(str(e))
+            raise PaymentError(str(e))
 
         # Request was successful - record the "payment source".  As this
         # request was a 'pre-auth', we set the 'amount_allocated' - if we had
         # performed an 'auth' request, then we would set 'amount_debited'.
-        source_type, __ = SourceType.objects.get_or_create(name='Square')
         source = Source(source_type=source_type,
                         amount_debited=total.incl_tax,
                         reference=api_response.transaction.reference_id)
