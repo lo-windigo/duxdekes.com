@@ -15,7 +15,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         ctx = super().get_context_data(**kwargs)
         square_settings = models.SquareSettings.get_settings()
 
-        ctx['form'] = kwargs.get('form', forms.SquareNonceForm())
+        ctx['square_form'] = kwargs.get('square_form', forms.SquareNonceForm())
         ctx['square_app'] = square_settings.application_id
 
         return ctx
@@ -34,7 +34,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
             return self.submit(**kwargs)
         
         # TODO: Create/set an error message?
-        return self.render_preview(request, form=square_form)
+        return self.render_preview(request, square_form=square_form)
 
 
     def handle_payment_details_submission(self, request):
@@ -44,8 +44,8 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         square_form = forms.SquareNonceForm(request.POST)
 
         if square_form.is_valid():
-            return self.render_preview(request, form=square_form)
+            return self.render_preview(request, square_form=square_form)
         
         # TODO: Create/set an error message?
-        return self.render_payment_details(request, form=square_form)
+        return self.render_payment_details(request, square_form=square_form)
 
