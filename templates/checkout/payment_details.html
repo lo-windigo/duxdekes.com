@@ -1,13 +1,5 @@
-{% extends "checkout/checkout.html" %}
+{% extends "oscar/checkout/payment_details.html" %}
 {% load i18n %}
-
-{% block title %}
-    {% trans "Payment details" %} | {{ block.super }}
-{% endblock %}
-
-{% block checkout_nav %}
-    {% include 'checkout/nav.html' with step=3 %}
-{% endblock %}
 
 {% block extrahead %}
 <script type="text/javascript"
@@ -107,15 +99,8 @@
 		}
 	</style>
 {% endblock %}
-{% block checkout_title %}{% trans "Enter payment details" %}{% endblock %}
 
-{% block order_contents %}{% endblock %}
-{% block shipping_address %}{% endblock %}
-{% block shipping_method %}{% endblock %}
-{% block payment_method %}{% endblock %}
-
-{% block payment_details %}
-    {% block payment_details_content %}
+{% block payment_details_content %}
 	<noscript>
 		<h1>Square requires Javascript</h1>
 		<p>
@@ -135,7 +120,6 @@
 			get re-submitted when the user confirms the order.
 		{% endcomment %}
 		<div style="display:none">
-			{% block hiddenforms %}{{ form.nonce }}{% endblock %}
 		</div>
 
 		<p>
@@ -172,6 +156,9 @@
 				</div>
 			</div>
 		</div>
+		<div style="display: none;">
+			{{ square_form }}
+		</div>
 	</form>
-    {% endblock payment_details_content %}
-{% endblock payment_details %}
+{% endblock payment_details_content %}
+
