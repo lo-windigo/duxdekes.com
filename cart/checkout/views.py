@@ -30,7 +30,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         if square_form.is_valid():
             kwargs = self.build_submission()
 
-            kwargs.update({'payment_kwargs': square_form.cleaned_data})
+            kwargs['payment_kwargs']['nonce'] = square_form.nonce
             return self.submit(**kwargs)
         
         # TODO: Create/set an error message?

@@ -10,10 +10,11 @@ class Repository(repository.Repository):
             request=None, **kwargs):
         
         if shipping_addr:
-            if shipping_addr.country.code == 'US':
-                return (methods.DomesticShipping(shipping_addr),)
-            else:
-                return (methods.InternationalShipping(shipping_addr),)
+            #if shipping_addr.country.code == 'US':
+            #    return (methods.DomesticShipping(shipping_addr),)
+            #else:
+            #    return (methods.InternationalShipping(shipping_addr),)
+            return (methods.DomesticShipping(shipping_addr),)
         else:
             # We need a return value before details have been entered, for
             # presenting the basket originally

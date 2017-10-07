@@ -41,7 +41,7 @@ class DomesticShipping(methods.Base):
             return prices.Price(
                 currency=basket.currency,
                 excl_tax=D(0),
-                tax=D(0))
+                incl_tax=D(0))
 
         # Initialize a rate request object
         rate_request = UPSRating(settings.UPS_ACCOUNT,
@@ -60,11 +60,12 @@ class DomesticShipping(methods.Base):
                 'postal_code': self.shipping_addr.postcode,
                 'city': self.shipping_addr.line4,
                 'state_province': self.shipping_addr.state,
+                'country_code': self.shipping_addr.country.code,
                 'lines': [],
                 }
 
         # Append any address lines to the list
-        for i in range(1, 3):
+        for i in range(1, 4):
             try:
                 address['lines'].append(getattr(self.shipping_addr,
                     'line{}'.format(i)))
@@ -74,14 +75,11 @@ class DomesticShipping(methods.Base):
         # TODO: Consolidate items into one box, if applicable?
         # TODO: More than one quantity of this item?
         rate = D(0)
+        
         for item in basket.all_lines():
-            try:
-                box = item.product.attr.box 
-
-                rate = rate + rate_request.get_rate(box.length, box.width, box.height,
-                        item.product.attr.weight, address, settings.UPS_SHIPPER)
-            except:
-                pass
+            box = item.product.attr.box 
+            rate = rate + rate_request.get_rate(box.length, box.width, box.height,
+                    item.product.attr.weight, address, settings.UPS_SHIPPER)
 
         if self.shipping_addr and self.shipping_addr.state.upper() == 'NY':
             rate_incl_tax = rate * D(1.07)
