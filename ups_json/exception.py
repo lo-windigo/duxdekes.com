@@ -1,21 +1,41 @@
 
-class UnrecognizedException(Exception):
+class CredentialsException(Exception):
     pass
 
-class UnknownOperationException(Exception):
-    pass
-
-class NetworkException(Exception):
+class GeneralException(Exception):
     pass
 
 class JSONSyntaxException(Exception):
     pass
 
+class NetworkException(Exception):
+    pass
+
 class UnhandledException(Exception):
     pass
 
+class UnknownOperationException(Exception):
+    pass
 
-def GetUPSException(code, msg=None):
+class UnrecognizedException(Exception):
+    pass
+
+
+def GetException(code, msg=None):
+    """
+    A exception factory function: return the proper exception type based on code
+    """
+    codes = {
+            '10': JSONSyntaxException,
+            '20': GeneralException,
+            '25': CredentialsException,
+            }
+
+    exception_class = codes.get(code[:2], UnhandledException)
+    return exception_class(msg)
+
+
+def GetSimpleException(code, msg=None):
     """
     A exception factory function: return the proper exception type based on code
     """
@@ -26,8 +46,6 @@ def GetUPSException(code, msg=None):
             4: JSONSyntaxException,
             }
 
-    if code in codes:
-        return codes[code](msg)
-    else:
-        return UnhandledException(msg)
+    exception_class = codes.get(code, UnhandledException)
+    return exception_class(msg)
 

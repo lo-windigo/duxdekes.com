@@ -1,6 +1,6 @@
 from decimal import Decimal as D
+from . import exception
 from .base import UPSBase
-from .exception import GetUPSException
 from .util.dict import get_nested
 import json
 
@@ -144,11 +144,13 @@ class UPSRating(UPSBase):
                 })
 
         # TODO: Allow this to be sent in
+        """
         shipment.update({
                'ShipmentRatingOptions': {
                    'NegotiatedRatesIndicator': '',
                    },
                })
+        """
 
         request = {
                 'RequestOption': 'Rate',
@@ -170,12 +172,35 @@ class UPSRating(UPSBase):
                 'UPSSecurity': self.security_token,
                 }
 
-    #        return json.dumps(rate_request)
+        # Make the request to the UPS API
+        rate_response = self.request(rate_request)
 
         try:
             return rate_response['RateResponse']['RatedShipment']
         except:
-            keys = ('Response', 'ResponseStatus', 'Code')
-            code = get_nested(rate_response, *keys)
-            raise GetUPSException(code)
+            if 'Fault' in rate_response:
+                base_keys = 'Fault', 'detail', 'Errors', 'ErrorDetail', \
+                    'PrimaryErrorCode'
+
+                code_keys = *base_keys, 'Code'
+                code = get_nested(rate_response, *code_keys)
+
+                error_keys = *base_keys, 'Description'
+                error_description = get_nested(rate_response, *error_keys)
+
+                e = exception.GetException(code, error_description)
+
+            if 'Error' in rate_response:
+                code = get_nested(rate_response, 'Error', 'Code')
+                error = get_nested(rate_response, 'Error', 'Description')
+
+                e = exception.GetSimpleException(code, error)
+
+            else:
+                error = 'Unknown error: {}'.format(json.dumps(rate_response))
+
+                e = exception.UnhandledException(error)
+
+            # ...from None stops the nested exception reporting
+            raise e from None
 
