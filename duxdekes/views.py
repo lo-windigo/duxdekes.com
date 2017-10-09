@@ -60,7 +60,7 @@ class HomeView(TemplateView):
     """
     context_object_name = 'categories'
     #queryset = Category.get_root_nodes()
-    template_name = 'duxdekes/page-home.html'
+    template_name = 'home.html'
 
     def get_context_data(self, **kwargs):
         """
@@ -85,7 +85,6 @@ class HomeView(TemplateView):
                 'products': products,
                 })
 
-        print(categories)
         context[self.context_object_name] = categories 
         return context
 
