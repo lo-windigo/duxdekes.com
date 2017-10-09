@@ -13,7 +13,8 @@ Installing
 
 To install the website, you must first create a virtualenv with Python 3:
 
-    virtualenv -p $( which python3 ) duxdekes
+	mkdir duxdekes && cd duxdekes
+    virtualenv -p python3 --always-copy ./
 
 Once you've created the virtualenv, you need to switch to the new virtualenv
 and activate it:
@@ -26,10 +27,15 @@ the systems requirements and the python requirements:
     sudo ./system-requirements.sh
 	pip install -r requirements.txt
 
+NOTE: You need a sort of up-to-date pip version to use the `-r` option. Once in a
+virtualenv, you can upgrade your version of pip locally:
+
+    pip install --upgrade pip
+
 After that, you need to create the `local_settings.py` file, and fill in the
 right values:
 
-    cp duxdekes/local_settings.py.example duxdekes/local_settings.py
+    cp duxdekes/local_settings.py{.example,}
 
 Don't forget to edit the new `local_settings.py` file to add in your actual
 database details and settings!
