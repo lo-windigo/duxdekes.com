@@ -182,10 +182,10 @@ class UPSRating(UPSBase):
                 base_keys = 'Fault', 'detail', 'Errors', 'ErrorDetail', \
                     'PrimaryErrorCode'
 
-                code_keys = *base_keys, 'Code'
+                code_keys = base_keys + ('Code',)
                 code = get_nested(rate_response, *code_keys)
 
-                error_keys = *base_keys, 'Description'
+                error_keys = base_keys + ('Description',)
                 error_description = get_nested(rate_response, *error_keys)
 
                 e = exception.GetException(code, error_description)
