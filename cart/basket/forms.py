@@ -26,7 +26,7 @@ class UnfinishedAddToBasketForm(AddToBasketForm):
             choices.append((child.id, child.get_title()))
 
         self.fields['child_id'] = forms.ChoiceField(
-            choices=tuple(choices), label=_("Variant"),
+            choices=tuple(choices), label=_("Material"),
             widget=widgets.AdvancedSelect(disabled_values=disabled_values))
 
 
