@@ -10,7 +10,7 @@
 
 {% block content %}
 		{% for parent_category in categories %}
-		<section id="unfinished">
+		<section id="{{ parent_category.category.slug }}">
 			<header>
 				<h1 class="content-title">{{ parent_category.category.name }}</h1>
 			</header>

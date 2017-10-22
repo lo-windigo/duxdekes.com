@@ -16,7 +16,7 @@ main {
 section {
 	background-image: linear-gradient(to top, #bbb, #fefefe);
 	min-height: 100vh;
-	padding: 0 1em;
+	padding: 1em;
 }
 
 section>h2 {
@@ -30,33 +30,6 @@ section>h2 {
 .main-categories {
 	font-family: 'Site-Title', serif;
 	padding: 0;
-}
-
-.product-categories {
-	-moz-columns: auto 10em;
-	-webkit-columns: auto 10em;
-	columns: auto 10em;
-	padding-left: .5em;
-}
-
-/* Fix for Chrome multi-column list marker bug */
-.product-categories>li {
-	background-color: transparent;
-	list-style: none;
-	padding: .5em 0;
-	text-indent: -1em;
-	margin-left: 1em;
-	-webkit-column-break-inside: avoid;
-	break-inside: avoid;
-	display: table; /* Hack to prevent FF line breaks within li */
-}
-
-.product-categories>li::before {
-	content: "• ";
-}
-
-.product-categories>li>a {
-	font-size: 1.1em;
 }
 
 .site-title {
