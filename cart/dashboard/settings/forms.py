@@ -1,5 +1,15 @@
 from django import forms
-from cart.checkout import models
+from django.contrib.sites.models import Site
+from duxdekes import models
+
+
+class SettingsForm(forms.ModelForm):
+    """
+    Generic umbrella form for site settings
+    """
+    class Meta:
+        model = Site
+        fields = ['name', 'domain']
 
 
 class SquareSettingsForm(forms.ModelForm):
@@ -25,5 +35,17 @@ class SquareSettingsForm(forms.ModelForm):
         exclude = ['location_desc', 'site']
         widgets = {
                 'location_id': forms.Select,
+                }
+
+
+class UPSSettingsForm(forms.ModelForm):
+    """
+    Allow editing the UPS Account & license numbers
+    """
+    class Meta:
+        model = models.UPSSettings
+        exclude = ['site']
+        widgets = {
+                'password': forms.PasswordInput,
                 }
 

@@ -35,7 +35,7 @@
                         <div class="table-header">
                             <h3>{% trans "Sections" %}</h3>
                         </div>
-                        <ul class="nav nav-list bs-docs-sidenav" id="product_update_tabs">
+                        <ul class="nav nav-list bs-docs-sidenav">
                             {% comment %}
                                 The navigation below is filtered heavily on the product structure.
                                 This intentionally is the only place where filtering is done, as
@@ -75,7 +75,6 @@
                             </div>
                         </div>
                     {% endblock product_details %}
-
                 </div>
             </div>
         </div>
@@ -84,15 +83,10 @@
             <div class="fixed-actions-group">
                 <div class="form-group">
                     <div class="pull-right">
-                        <a href="{% url 'dashboard:catalogue-product-list' %}">
+                        <a href="{% url 'dashboard:index' %}">
                             {% trans "Cancel" %}
                         </a>
                         {% trans "or" %}
-                        {% if parent %}
-                            <button class="btn btn-default btn-lg" name="action" type="submit" value="create-another-child" data-loading-text="{% trans 'Saving...' %}">
-                                {% trans "Save and add another variant" %}
-                            </button>
-                        {% endif %}
                         <button class="btn btn-default btn-lg" name="action" type="submit" value="continue" data-loading-text="{% trans 'Saving...' %}">
                             {% trans "Save and continue editing" %}
                         </button>

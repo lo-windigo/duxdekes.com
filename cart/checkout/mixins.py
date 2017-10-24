@@ -5,7 +5,7 @@ from oscar.apps.payment.exceptions import PaymentError, UnableToTakePayment
 import squareconnect
 from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
-from . import models
+from duxdekes.models import SquareSettings
 
 
 class OrderPlacementMixin(mixins.OrderPlacementMixin):
@@ -17,7 +17,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         """
         Try to process the payment using the Square REST API
         """
-        square_settings = models.SquareSettings.get_settings()
+        square_settings = SquareSettings.get_settings()
         squareconnect.configuration.access_token = \
             square_settings.access_token
         source_type, __ = SourceType.objects.get_or_create(name='Square')

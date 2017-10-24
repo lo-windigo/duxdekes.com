@@ -1,6 +1,7 @@
 from django.conf import settings
+from duxdekes.models import SquareSettings
 from oscar.apps.checkout.views import PaymentDetailsView as OscarPaymentDetailsView
-from . import forms, models
+from . import forms
 
 
 class PaymentDetailsView(OscarPaymentDetailsView):
@@ -13,7 +14,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         Provide the square nonce form in context
         """
         ctx = super().get_context_data(**kwargs)
-        square_settings = models.SquareSettings.get_settings()
+        square_settings = SquareSettings.get_settings()
 
         ctx['square_form'] = kwargs.get('square_form', forms.SquareNonceForm())
         ctx['square_app'] = square_settings.application_id

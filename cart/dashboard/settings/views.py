@@ -1,22 +1,32 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
-#from django.contrib.sites.models import Site
-from django.views import generic
-from cart.checkout import models
+from django.contrib.sites.models import Site
+from django.forms import formset_factory
+from django.views.generic.edit import UpdateView
+from duxdekes import models
 import squareconnect
 from squareconnect.apis.locations_api import LocationsApi
 from squareconnect.rest import ApiException
 from . import forms
 
 
-class SquareSettingsView(generic.UpdateView):
+class SettingsView(UpdateView):
     """
-    Edit the Square connection settings... dynamically!
+    Edit the various API settings... dynamically!
     """
-    template_name = 'dashboard/settings/squaresettings_form.html'
-    model = models.SquareSettings
-    form_class = forms.SquareSettingsForm
+    template_name = 'dashboard/settings/settings_form.html'
+    form_class = forms.SettingsForm
+    forms = {
+            'square': forms.SquareSettingsForm,
+            'ups': forms.UPSSettingsForm,
+            }
     success_url = reverse_lazy('dashboard:index')
+
+    def __init__(self, *args, **kwargs):
+        """
+        Set up the forms array
+        """
+
 
     def get_context_data(self, *args, **kwargs):
         """
@@ -32,7 +42,7 @@ class SquareSettingsView(generic.UpdateView):
         Fetch locations from Square, and assign that to "choices"
         """
         form_kwargs = super().get_form_kwargs(*args, **kwargs)
-        square_settings = form_kwargs.get('instance', None) 
+        square_settings = models.SquareSettings.get_settings()
         choices = []
 
         if square_settings.access_token:
@@ -67,9 +77,9 @@ class SquareSettingsView(generic.UpdateView):
         return form_kwargs
 
 
-    def get_object(self, queryset=None):
+    def get_object(self):
         """
-        We only ever want one object, so override to get it manually
+        Get the only site in town
         """
-        return self.model.get_settings()
-
+        site, _ = Site.objects.get_or_create(pk=settings.SITE_ID)
+        return site
