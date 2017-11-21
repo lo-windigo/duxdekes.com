@@ -6,9 +6,6 @@ from django.forms import formset_factory
 from django.views.generic.base import View, TemplateResponseMixin
 from django.http import HttpResponseRedirect
 from duxdekes import models
-import squareconnect
-from squareconnect.apis.locations_api import LocationsApi
-from squareconnect.rest import ApiException
 from . import forms
 
 
@@ -57,38 +54,6 @@ class SettingsView(TemplateResponseMixin, View):
         context = {}
         context.update(**kwargs)
         context['title'] = 'Settings'
-        choices = []
-
-        square_settings = models.SquareSettings.get_settings()
-
-        if square_settings.access_token:
-            squareconnect.configuration.access_token = \
-                square_settings.access_token
-
-        try:
-            api_instance = LocationsApi()
-            response = api_instance.list_locations()
-
-            for location in response.locations:
-                location_id = getattr(location, 'id', False)
-                
-                # Skip a location that doesn't provide a valid ID
-                if not location_id:
-                    pass
-
-                try:
-                    location_desc = location.name
-                except:
-                    location_desc = location_id
-
-                choices.append((location_id, location_desc))
-
-        except ApiException as e:
-            # TODO: Something smart, instead of this.
-            #raise e
-            pass
-
-        context['location_choices'] = choices
 
         return context
 

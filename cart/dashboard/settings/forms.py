@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.sites.models import Site
 from duxdekes import models
+import squareconnect
+from squareconnect.apis.locations_api import LocationsApi
+from squareconnect.rest import ApiException
 
 
 class SettingsForm(forms.ModelForm):
@@ -20,12 +23,38 @@ class SquareSettingsForm(forms.ModelForm):
         """
         Set the location choices dynamically
         """
+        super().__init__(*args, **kwargs)
+
+        access_token = getattr(self.instance, 'access_token', False)
         choices = []
 
-        if 'location_choices' in kwargs:
-            choices = kwargs.pop('location_choices', None)
+        if not access_token:
+            return
 
-        super().__init__(*args, **kwargs)
+        squareconnect.configuration.access_token = access_token
+
+        try:
+            api_instance = LocationsApi()
+            response = api_instance.list_locations()
+
+            for location in response.locations:
+                location_id = getattr(location, 'id', False)
+                
+                # Skip a location that doesn't provide a valid ID
+                if not location_id:
+                    pass
+
+                try:
+                    location_desc = location.name
+                except:
+                    location_desc = location_id
+
+                choices.append((location_id, location_desc))
+
+        except ApiException as e:
+            # TODO: Something smart, instead of this.
+            #raise e
+            pass
 
         self.fields['location_id'].widget = forms.Select(choices=choices)
 
