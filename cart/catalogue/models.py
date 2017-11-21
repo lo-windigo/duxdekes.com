@@ -8,15 +8,10 @@ from duxdekes.util import products
 StockRecord = get_model('partner', 'StockRecord')
 
 
-"""
-class BoxSizeAttribute(ProductAttribute):
-    Create a special attribute that links with the box sizing model
-    TODO: Would this be cleaner than overriding the ProductForm?
-    pass
-
-"""
-
 class InstructionsProduct(Product):
+    """
+    A product specifically designed to be used for special instructions
+    """
     TITLE_ALONE = '{} Painting Kit'
     TITLE_WITH_BLANK = '{} Painting Kit & {} blank'
     SKU_WITH_BLANK_UPC = '{}B'
