@@ -66,8 +66,19 @@
           }
         },
         unsupportedBrowserDetected: function() {
-          // Alert the buyer that their browser is not supported
-		  // TODO!!!
+			// Alert the buyer that their browser is not supported
+			err = document.getElementById('messages');
+			err.innerHTML = '\
+	<div class="alert alert-danger  fade in" role="alert">\
+        <button type="button" class="close" data-dismiss="alert"\
+			aria-label="Close"><span aria-hidden="true">×</span></button>\
+        <div class="alertinner wicon">\
+			We are sorry, but our payment processor does not support your\
+			browser. Please <a href="/contact/">contact us</a> to arrange a \
+			different payment method.\
+			<i class="icon-exclamation-sign"></i>\
+        </div>\
+    </div>';
         }
       }
     });
@@ -111,7 +122,6 @@
 	<h1>Pay with Square</h1>
 	<form id="form" action="{% url 'checkout:preview' %}" novalidate method="post">
 		{% csrf_token %}
-		<div id="errors"></div>
 
 		{% comment %}
 			When submitting sensitive data on the payment details page (eg a bankcard)

@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-{% load product_categories static %}
+{% load static %}
 <head>
 	<title>{% block "title" %}Dux’ Dekes{% endblock %}</title>
 	<meta charset="UTF-8">
@@ -32,13 +32,10 @@
 	{% block "content" %}
 	{% endblock %}
 	</main>
-	<footer>
+	<footer id="fullnav" class="footer">
 		<nav>
 			<ul class="foot-nav">
-				<li class="nav-item"><a href="{% url "about" %}">About Us</a></li>
-				<li class="nav-item"><a href="{% url "about-artist" %}">About the Artist</a></li>
-				<li class="nav-item"><a href="{% url "contact" %}">Contact</a></li>
-				{% product_categories %}
+				{% include 'partials/nav_secondary.html' %}
 			</ul>
 		</nav>
 		<p>
