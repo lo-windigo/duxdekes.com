@@ -25,25 +25,29 @@ class SettingsView(TemplateResponseMixin, View):
     success_url = reverse_lazy('dashboard:index')
 
 
+    def forms_invalid(self, forms):
+        """
+        Called if the form data didn't check out
+        """
+        return self.render_to_response(self.get_context_data(forms=forms))
+
+
+    def forms_valid(self, forms):
+        """
+        All the forms are valid; please save the data
+        """
+        for _,form in forms.items():
+            form.save()
+
+        return HttpResponseRedirect(self.success_url)
+
+
     def get(self, request, *args, **kwargs):
         """
         Serve up the forms with current settings
         """
         forms = self.get_forms()
         return self.render_to_response(self.get_context_data(forms=forms))
-
-
-    def post(self, request, *args, **kwargs):
-        """
-        Process all forms, and send them to the right places
-        """
-        forms = self.get_forms()
-        
-        if all([form.is_valid() for form in forms.values()]):
-            return self.forms_valid(forms)
-        else:
-            # TODO: Throw a wrench or something
-            pass
 
 
     def get_context_data(self, *args, **kwargs):
@@ -121,4 +125,16 @@ class SettingsView(TemplateResponseMixin, View):
         """
         site, _ = Site.objects.get_or_create(pk=settings.SITE_ID)
         return site
+
+
+    def post(self, request, *args, **kwargs):
+        """
+        Process all forms, and send them to the right places
+        """
+        forms = self.get_forms()
+        
+        if all([form.is_valid() for form in forms.values()]):
+            return self.forms_valid(forms)
+
+        return self.forms_invalid(forms)
 
