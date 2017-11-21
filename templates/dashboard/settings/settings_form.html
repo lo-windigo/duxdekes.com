@@ -44,8 +44,11 @@
                                 only one template block (instead of all affected) has to be altered.
                             {% endcomment %}
                             {% block tabs %}
-                                <li class="active"><a href="#square_settings" data-toggle="tab">
-										{% trans 'Square Settings' %}</a></li>
+								{% for section, form in forms.items %}
+								<li{% if forloop.first %} class="active"{% endif %}>
+									<a href="#{{ section }}_settings" data-toggle="tab">
+										{{ section }} Settings</a></li>
+								{% endfor %}
                             {% endblock tabs %}
                         </ul>
                     </div>
@@ -54,27 +57,29 @@
 
             <div class="col-md-9">
                 <div class="tab-content">
-                    {% block product_details %}
-                        <div class="tab-pane active" id="square_settings">
-                            <div class="table-header">
-                                <h3>{% trans "Square Settings" %}</h3>
-                            </div>
-                            <div class="well product-details">
-                                {% block product_details_content %}
-                                    <span class="error-block">{{ form.non_field_errors }}</span>
-                                    {% for field in form.hidden_fields %}
-                                        {{ field }}
-                                    {% endfor %}
+					{% for section, form in forms.items %}
+                    {# % block product_details % #}
+					<div class="tab-pane{% if forloop.first %} active{% endif %}" id="{{ section }}_settings">
+						<div class="table-header">
+							<h3>{{ section }} Settings</h3>
+						</div>
+						<div class="well product-details">
+							{# % block product_details_content % #}
+								<span class="error-block">{{ form.non_field_errors }}</span>
+								{% for field in form.hidden_fields %}
+									{{ field }}
+								{% endfor %}
 
-                                    {% for field in form.visible_fields %}
-                                        {% if 'attr' not in field.id_for_label %}
-                                            {% include 'dashboard/partials/form_field.html' with field=field %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endblock product_details_content %}
-                            </div>
-                        </div>
-                    {% endblock product_details %}
+								{% for field in form.visible_fields %}
+									{% if 'attr' not in field.id_for_label %}
+										{% include 'dashboard/partials/form_field.html' with field=field %}
+									{% endif %}
+								{% endfor %}
+							{# % endblock product_details_content % #}
+						</div>
+					</div>
+                    {# % endblock product_details % #}
+					{% endfor %}
                 </div>
             </div>
         </div>
@@ -87,9 +92,6 @@
                             {% trans "Cancel" %}
                         </a>
                         {% trans "or" %}
-                        <button class="btn btn-default btn-lg" name="action" type="submit" value="continue" data-loading-text="{% trans 'Saving...' %}">
-                            {% trans "Save and continue editing" %}
-                        </button>
                         <button class="btn btn-primary btn-lg" name="action" type="submit" value="save" data-loading-text="{% trans 'Saving...' %}">
                             {% trans "Save" %}
                         </button>

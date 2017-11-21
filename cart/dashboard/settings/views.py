@@ -2,7 +2,9 @@ from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.sites.models import Site
 from django.forms import formset_factory
-from django.views.generic.edit import UpdateView
+#from django.views.generic.edit import UpdateView
+from django.views.generic.base import View, TemplateResponseMixin
+from django.http import HttpResponseRedirect
 from duxdekes import models
 import squareconnect
 from squareconnect.apis.locations_api import LocationsApi
@@ -10,40 +12,50 @@ from squareconnect.rest import ApiException
 from . import forms
 
 
-class SettingsView(UpdateView):
+class SettingsView(TemplateResponseMixin, View):
     """
     Edit the various API settings... dynamically!
     """
     template_name = 'dashboard/settings/settings_form.html'
-    form_class = forms.SettingsForm
-    forms = {
-            'square': forms.SquareSettingsForm,
-            'ups': forms.UPSSettingsForm,
-            }
+    settings_forms = {
+                'Primary': forms.SettingsForm,
+                'Square': forms.SquareSettingsForm,
+                'UPS': forms.UPSSettingsForm,
+                }
     success_url = reverse_lazy('dashboard:index')
 
-    def __init__(self, *args, **kwargs):
+
+    def get(self, request, *args, **kwargs):
         """
-        Set up the forms array
+        Serve up the forms with current settings
         """
+        forms = self.get_forms()
+        return self.render_to_response(self.get_context_data(forms=forms))
+
+
+    def post(self, request, *args, **kwargs):
+        """
+        Process all forms, and send them to the right places
+        """
+        forms = self.get_forms()
+        
+        if all([form.is_valid() for form in forms.values()]):
+            return self.forms_valid(forms)
+        else:
+            # TODO: Throw a wrench or something
+            pass
 
 
     def get_context_data(self, *args, **kwargs):
         """
         Override get_context_data to fix the page title
         """
-        context = super().get_context_data(*args, **kwargs)
+        context = {}
+        context.update(**kwargs)
         context['title'] = 'Settings'
-        return context
-
-
-    def get_form_kwargs(self, *args, **kwargs):
-        """
-        Fetch locations from Square, and assign that to "choices"
-        """
-        form_kwargs = super().get_form_kwargs(*args, **kwargs)
-        square_settings = models.SquareSettings.get_settings()
         choices = []
+
+        square_settings = models.SquareSettings.get_settings()
 
         if square_settings.access_token:
             squareconnect.configuration.access_token = \
@@ -72,14 +84,41 @@ class SettingsView(UpdateView):
             #raise e
             pass
 
-        form_kwargs.update({'location_choices': choices})
+        context['location_choices'] = choices
 
-        return form_kwargs
+        return context
 
 
-    def get_object(self):
+    def get_forms(self):
+        """
+        Instantiate all of the available forms
+        """
+        forms = {}
+
+        for key, klass in self.settings_forms.items():
+            
+            if key == 'Primary':
+                instance, _ = klass.Meta.model.objects.get_or_create(id=settings.SITE_ID)
+            else:
+                instance = klass.Meta.model.get_settings()
+
+            kwargs = {
+                    'instance': instance,
+                    'prefix': key,
+                    }
+
+            if self.request.method in ('POST', 'PUT'):
+                kwargs.update({'data': self.request.POST})
+                
+            forms[key] = klass(**kwargs)
+
+        return forms
+
+
+    def get_objects(self):
         """
         Get the only site in town
         """
         site, _ = Site.objects.get_or_create(pk=settings.SITE_ID)
         return site
+

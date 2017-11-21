@@ -9,7 +9,7 @@ class SiteSettings(models.Model):
     """
 
     # Prevent more than one setting object by associating it with the site
-    site = models.OneToOneField(Site,
+    site = models.ForeignKey(Site,
             blank=True,
             null=True)
 
