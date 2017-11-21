@@ -1,5 +1,6 @@
 from decimal import Decimal as D
 from django.conf import settings
+from duxdekes import models
 from oscar.apps.checkout.utils import CheckoutSessionData
 from oscar.apps.shipping import methods, scales 
 from oscar.core import prices
@@ -44,10 +45,11 @@ class DomesticShipping(methods.Base):
                 incl_tax=D(0))
 
         # Initialize a rate request object
-        rate_request = UPSRating(settings.UPS_ACCOUNT,
-                settings.UPS_PASSWORD,
-                settings.UPS_LICENSE_NUMBER,
-                settings.UPS_TESTING)
+        ups_settings = models.UPSSettings.get_settings()
+        rate_request = UPSRating(ups_settings.user,
+                ups_settings.password,
+                ups_settings.license,
+                ups_settings.testing)
         # TODO: Allow rating entire basket
         #scale = scales.Scale()
         #weight = scale.weigh_basket(basket)
@@ -74,6 +76,7 @@ class DomesticShipping(methods.Base):
 
         # TODO: Consolidate items into one box, if applicable?
         # TODO: More than one quantity of this item?
+        # TODO: Pull shipping information from Jeff's record
         rate = D(0)
         
         for item in basket.all_lines():
