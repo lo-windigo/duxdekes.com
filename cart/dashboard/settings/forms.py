@@ -52,9 +52,7 @@ class SquareSettingsForm(forms.ModelForm):
                 choices.append((location_id, location_desc))
 
         except ApiException as e:
-            # TODO: Something smart, instead of this.
-            #raise e
-            pass
+            choices.append((None, 'Problem accessing Square'))
 
         self.fields['location_id'].widget = forms.Select(choices=choices)
 
