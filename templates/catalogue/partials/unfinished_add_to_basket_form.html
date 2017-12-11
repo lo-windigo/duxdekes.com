@@ -1,4 +1,4 @@
-{% load unfinished_basket_tags %}
+{% load basket_tags %}
 {% load display_tags %}
 {% load i18n %}
 {% load purchase_info_tags %}
@@ -6,12 +6,22 @@
 {% purchase_info_for_product request product as session %}
 
 {% if session.availability.is_available_to_buy %}
-    {% unfinished_basket_form request product as basket_form %}
-    <form id="add_to_basket_form" action="{% url 'basket:add' pk=product.pk  %}" method="post" class="add-to-basket">
-        {% csrf_token %}
-        {% include "partials/form_fields.html" with form=basket_form %}
-        <button type="submit" class="btn btn-lg btn-primary btn-add-to-basket" value="{% trans "Add to basket" %}" data-loading-text="{% trans 'Adding...' %}">{% trans "Add to basket" %}</button>
-    </form>
+	<div class="table table-striped">
+	{% for material in product.children.all %}
+		{% basket_form request material 'multiple' as basket_form %}
+		{% purchase_info_for_product request material as material_session%}
+	{# % %#}
+		<h2>{{ material.title }}</h2>
+		<p class="price_color">
+			${{ material_session.price.excl_tax }}
+		</p>
+		<form action="{% url 'basket:add' pk=material.pk  %}" method="post" class="add-to-basket form-inline">
+			{% include "partials/unfinished_form_fields.html" with form=basket_form material=material %}
+			{% csrf_token %}
+			<button type="submit" class="btn btn-lg btn-primary btn-add-to-basket" value="{% trans "Add to basket" %}" data-loading-text="{% trans 'Adding...' %}">{% trans "Add to basket" %}</button>
+		</form>
+	</div>
+	{% endfor %}
     {% iffeature "wishlists" %}
         {% include "catalogue/partials/add_to_wishlist.html" %}
     {% endiffeature %}
