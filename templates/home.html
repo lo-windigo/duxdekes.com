@@ -26,12 +26,10 @@
 				{% endfor %}
 			</ul>
 			<h2>What's new</h2>
-			<div class="products">
-				<ol class="row">
+			<div class="products container-fluid">
+				<div class="row">
 					{% for product in parent_category.products %}
-					<li class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
 					{% render_product product %}
-					</li>
 					{% endfor %}
 				</ol>
 			</div>
