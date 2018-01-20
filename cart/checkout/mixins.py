@@ -30,7 +30,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # Debugging - allow for testing without pinging the Square API
         elif settings.DEBUG and nonce == 'TEST':
             source = Source(source_type=source_type,
-                            amount_debited=total.incl_tax,
+                            amount_allocated=total.incl_tax,
                             reference='Test entry')
 
             self.add_payment_source(source)
@@ -71,7 +71,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # request was a 'pre-auth', we set the 'amount_allocated' - if we had
         # performed an 'auth' request, then we would set 'amount_debited'.
         source = Source(source_type=source_type,
-                        amount_debited=total.incl_tax,
+                        amount_allocated=total.incl_tax,
                         reference=api_response.transaction.id)
 
         self.add_payment_source(source)
