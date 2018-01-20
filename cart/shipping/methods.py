@@ -1,6 +1,7 @@
 from decimal import Decimal as D
 from django.conf import settings
 from duxdekes import models
+from duxdekes.util import tax
 from oscar.apps.checkout.utils import CheckoutSessionData
 from oscar.apps.shipping import methods, scales 
 from oscar.core import prices
@@ -50,9 +51,6 @@ class DomesticShipping(methods.Base):
                 ups_settings.password,
                 ups_settings.license,
                 ups_settings.testing)
-        # TODO: Allow rating entire basket
-        #scale = scales.Scale()
-        #weight = scale.weigh_basket(basket)
  
         # Compile the address dictionary
         address = {
@@ -74,18 +72,18 @@ class DomesticShipping(methods.Base):
             except:
                 pass
 
-        # TODO: Consolidate items into one box, if applicable?
-        # TODO: More than one quantity of this item?
-        # TODO: Pull shipping information from Jeff's record
-        rate = D(0)
+        # Start with $1, to pay for shipping container
+        rate = D(1)
         
         for item in basket.all_lines():
             box = item.product.attr.box 
-            rate = rate + rate_request.get_rate(box.length, box.width, box.height,
+            item_rate = rate_request.get_rate(box.length, box.width, box.height,
                     item.product.attr.weight, address, settings.UPS_SHIPPER)
 
+            rate = rate + (item_rate * item.quantity)
+
         if self.shipping_addr and self.shipping_addr.state.upper() == 'NY':
-            rate_incl_tax = rate * D(1.07)
+            rate_incl_tax = rate + tax.calculate_sales_tax(rate) 
         else:
             rate_incl_tax = rate
 
@@ -95,16 +93,16 @@ class DomesticShipping(methods.Base):
             incl_tax=rate_incl_tax)
 
 
-class InternationalShipping(methods.Base):
-    code = 'USPS'
-    name = 'International'
-    description = 'US Postal Service priority shipping'
-
-    def calculate(self, basket):
-
-	# TODO: International? Gaaaaaaaah
-        # TODO: Also include tax for incl_tax value
-        return prices.Price(
-            currency=basket.currency,
-            excl_tax=D('10.00'))
+#class InternationalShipping(methods.Base):
+#    code = 'USPS'
+#    name = 'International'
+#    description = 'US Postal Service priority shipping'
+#
+#    def calculate(self, basket):
+#
+#	# TODO: International? Gaaaaaaaah
+#        # TODO: Also include tax for incl_tax value
+#        return prices.Price(
+#            currency=basket.currency,
+#            excl_tax=D('10.00'))
 
