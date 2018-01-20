@@ -18,5 +18,5 @@ class Repository(repository.Repository):
         else:
             # We need a return value before details have been entered, for
             # presenting the basket originally
-            return (methods.DomesticShipping(), methods.InternationalShipping())
+            return (methods.DomesticShipping())
 
