@@ -25,7 +25,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         nonce = kwargs.get('nonce', False)
 
         if not nonce:
-            raise PaymentError('Problem getting the card nonce value!')
+            raise PaymentError('No card nonce provided')
 
         # Debugging - allow for testing without pinging the Square API
         elif settings.DEBUG and nonce == 'TEST':
@@ -44,15 +44,19 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
             'currency': 'USD'
         }
 
+        # TODO: Pass billing address, email to provide square chargeback
+        # protectioN
         body = {
             'idempotency_key': str(order_number),
             'card_nonce': nonce,
-            'amount_money': amount
+            'amount_money': amount,
+            'delay_capture': True,
         }
 
         try:
             # Charge
-            api_response = api_instance.charge(square_settings.location_id, body)
+            api_response = api_instance.charge(square_settings.location_id,
+                    body, )
 
             # Save the response ID
             if not api_response.transaction:
