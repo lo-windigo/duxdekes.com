@@ -1,7 +1,11 @@
+import logging
 from django.conf import settings
 from duxdekes.models import SquareSettings
 from oscar.apps.checkout.views import PaymentDetailsView as OscarPaymentDetailsView
 from . import forms
+
+
+logger = logging.getLogger('cart.checkout.views')
 
 
 class PaymentDetailsView(OscarPaymentDetailsView):
@@ -31,10 +35,11 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         if square_form.is_valid():
             kwargs = self.build_submission()
 
-            kwargs['payment_kwargs']['nonce'] = square_form.nonce
+            kwargs['payment_kwargs']['nonce'] = square_form.cleaned_data['nonce']
             return self.submit(**kwargs)
         
-        # TODO: Create/set an error message?
+        logger.info('handle_place_order_submission() called without card nonce')
+        # TODO: set error, prompt user?
         return self.render_preview(request, square_form=square_form)
 
 
@@ -47,6 +52,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         if square_form.is_valid():
             return self.render_preview(request, square_form=square_form)
         
+        logger.info('handle_payment_details_submission() called without card nonce')
         # TODO: Create/set an error message?
         return self.render_payment_details(request, square_form=square_form)
 

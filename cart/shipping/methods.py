@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal as D
 from django.conf import settings
 from duxdekes import models
@@ -11,6 +12,7 @@ from ups_json.rating import UPSRating
 
 InvalidShippingEvent = get_class('order.exceptions', 'InvalidShippingEvent')
 Box = get_model('shipping', 'Box')
+logger = logging.getLogger(__name__)
 
 
 class DomesticShipping(methods.Base):
@@ -76,11 +78,17 @@ class DomesticShipping(methods.Base):
         rate = D(1)
         
         for item in basket.all_lines():
-            box = item.product.attr.box 
-            item_rate = rate_request.get_rate(box.length, box.width, box.height,
-                    item.product.attr.weight, address, settings.UPS_SHIPPER)
+            try:
+                box = item.product.attr.box 
+                item_rate = rate_request.get_rate(box.length, box.width, box.height,
+                        item.product.attr.weight, address, settings.UPS_SHIPPER)
 
-            rate = rate + (item_rate * item.quantity)
+                rate = rate + (item_rate * item.quantity)
+            except:
+                # Log the error
+                logger.warn('Could not rate item %s for shipping',
+                        item.product.upc)
+                
 
         if self.shipping_addr and self.shipping_addr.state.upper() == 'NY':
             rate_incl_tax = rate + tax.calculate_sales_tax(rate) 

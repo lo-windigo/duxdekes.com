@@ -72,7 +72,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # performed an 'auth' request, then we would set 'amount_debited'.
         source = Source(source_type=source_type,
                         amount_debited=total.incl_tax,
-                        reference=api_response.transaction.reference_id)
+                        reference=api_response.transaction.id)
 
         self.add_payment_source(source)
 
