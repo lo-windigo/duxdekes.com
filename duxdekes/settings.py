@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'cart.dashboard',
     'cart.dashboard.catalogue',
     #'cart.dashboard.shipping',
+    'cart.order',
     'cart.partner',
     'cart.shipping',
 ], )
