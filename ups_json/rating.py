@@ -3,6 +3,7 @@ from . import exception
 from .base import UPSBase
 from .util.dict import get_nested
 import json
+import statestyle
 
 
 class UPSRating(UPSBase):
@@ -55,6 +56,8 @@ class UPSRating(UPSBase):
             
         }
         """
+        raise NotImplemented
+
         rated_shipment = self.request_rate(length, width, height, weight,
                 ship_to, shipper, ship_from)
 
@@ -68,12 +71,38 @@ class UPSRating(UPSBase):
         return D()
 
 
+    def prepare_address(address):
+        """
+        Take an address object and apply data adjustments to allow it to conform
+        to the requirements of the UPS API
+        """
+
+        # Only use state postal abbreviations
+        try:
+            if address.get('country_code', '') == 'US':
+                state = statestyle.get(address['state_province'])
+                address['state_province'] = state.postal
+        except KeyError as e:
+            # Ignore exceptions if these fields aren't set
+            pass
+        #except ValueError as e:
+            # Ignore if the library cannot find a state
+            #pass
+
+        return address
+
+
     def request_rate(self, length, width, height, weight, ship_to, shipper,
                 ship_from=None):
         """
         Submit a rate request to the UPS shipping API, and return the resulting
         dictionary.
         """
+
+        shipper = self.prepare_address(shipper)
+        ship_to = self.prepare_address(ship_to)
+
+        # Process ship to, ship from, and shipper addresses as needed
         shipment = {
                 'ShipTo': {
                     'Name': ship_to.get('name', ''),
@@ -122,6 +151,7 @@ class UPSRating(UPSBase):
 
         # If an optional ship_from is specified, add it
         if ship_from:
+            ship_from = self.prepare_address(ship_from)
             shipment.update({
                 'ShipFrom': {
                     'Name': ship_from.get('name', ''),
