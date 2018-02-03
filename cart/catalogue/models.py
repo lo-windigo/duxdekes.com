@@ -1,10 +1,32 @@
-from oscar.apps.catalogue.models import *  # noqa
+from oscar.apps.catalogue.abstract_models import \
+        AbstractProductClass, AbstractProduct
+from oscar.apps.partner.models import StockRecord
 from oscar.core.loading import get_model
 from django.db import models
-from duxdekes.util import products
+from cart.catalogue.util import product_class, products
 
 #ProductAttribute = get_model('catalogue', 'ProductAttribute')
 #ProductClass = get_model('catalogue', 'ProductClass')
+
+
+class ProductClass(AbstractProductClass):
+    """
+    Override the product class save method to add required attributes
+    """
+
+    def save(self, *args, **kwargs):
+        """
+        Save the object as usual, and then call the utility function to add
+        required attributes to all product classes
+        """
+        super().save()
+
+        # Make sure ALL product classes have the right attributes
+        product_class.make_class_attributes()
+
+
+# Import the remaining Oscar models
+from oscar.apps.catalogue.models import *  # noqa
 StockRecord = get_model('partner', 'StockRecord')
 
 
@@ -54,7 +76,7 @@ class InstructionsProduct(Product):
             alone.structure = Product.CHILD
 
             alone_stock = StockRecord()
-            alone_stock.partner = products.get_partner()
+            alone_stock.partner = Products.get_partner()
         else:
             alone_stock = self.alone_stock
             alone = self.alone_stock.product
