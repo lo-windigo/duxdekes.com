@@ -1,4 +1,5 @@
 from django.conf import settings
+import logging
 from oscar.apps.checkout import mixins
 from oscar.apps.payment.models import SourceType, Source
 from oscar.apps.payment.exceptions import PaymentError, UnableToTakePayment
@@ -6,6 +7,9 @@ import squareconnect
 from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
 from duxdekes.models import SquareSettings
+
+
+logger = logging.getLogger('cart.checkout.mixins')
 
 
 class OrderPlacementMixin(mixins.OrderPlacementMixin):
@@ -63,9 +67,9 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
                 raise ApiException(', '.join(api_response.errors))
 
         except ApiException as e:
-            if settings.DEBUG:
-                print("Exception when calling TransactionApi->charge: {}".format(e))
-            raise PaymentError(str(e))
+            msg = "Exception when calling TransactionApi->charge: {}".format(e)
+            logger.info(msg)
+            raise PaymentError(msg) from ApiException
 
         # Request was successful - record the "payment source".  As this
         # request was a 'pre-auth', we set the 'amount_allocated' - if we had
