@@ -88,7 +88,7 @@ class ProductMixin():
             try:
                 self.cached_product_class = self.get_product_class()
             except:
-                raise Exception('No product class defined!')
+                raise NotImplemented('No product class defined!')
 
         return self.cached_product_class
 
