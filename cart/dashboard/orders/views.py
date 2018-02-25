@@ -43,8 +43,9 @@ class OrderDetailView(OscarOrderDetailView):
 
             try:
                 # Capture the payment, with the NEW and IMPROVED amount
-                handler.handle_payment_event(order, 'capture',
-                        finalize_form.cleaned_data.final_shipping)
+                amount = D(finalize_form.cleaned_data.final_shipping) +
+                    order.basket_total_incl_tax
+                handler.handle_payment_event(order, 'capture', amount)
 
                 # Set everything as shipped, and calculate the lines if needed
                 lines = [ line for line in order.lines.all() ]
