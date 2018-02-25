@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'cart.checkout',
     'cart.dashboard',
     'cart.dashboard.catalogue',
+    'cart.dashboard.orders',
     #'cart.dashboard.shipping',
     'cart.order',
     'cart.partner',
@@ -128,8 +129,9 @@ OSCAR_DEFAULT_CURRENCY = 'USD'
 OSCAR_INITIAL_ORDER_STATUS = 'Pending'
 OSCAR_INITIAL_LINE_STATUS = 'Pending'
 OSCAR_ORDER_STATUS_PIPELINE = {
-    'Pending': ('Being processed', 'Cancelled',),
-    'Being processed': ('Processed', 'Cancelled',),
+    'Pending': ('Processed', 'Refunded', 'Cancelled',),
+    'Processed': ('Refunded', 'Cancelled',),
+    'Refunded': (),
     'Cancelled': (),
 }
 OSCAR_HOMEPAGE = reverse_lazy('home')
