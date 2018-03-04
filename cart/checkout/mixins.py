@@ -51,7 +51,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # TODO: Pass billing address, email to provide square chargeback
         # protection
         body = {
-            'idempotency_key': str(order_number),
+            'idempotency_key': "{}_auth".format(order_number),
             'card_nonce': nonce,
             'amount_money': amount,
             'delay_capture': True,
