@@ -129,8 +129,9 @@ OSCAR_DEFAULT_CURRENCY = 'USD'
 OSCAR_INITIAL_ORDER_STATUS = 'Pending'
 OSCAR_INITIAL_LINE_STATUS = 'Pending'
 OSCAR_ORDER_STATUS_PIPELINE = {
-    'Pending': ('Processed', 'Refunded', 'Cancelled',),
+    'Pending': ('Needs Adjustment', 'Processed', 'Refunded', 'Cancelled',),
     'Processed': ('Refunded', 'Cancelled',),
+    'Needs Adjustment': ('Processed', 'Refunded', 'Cancelled',),
     'Refunded': (),
     'Cancelled': (),
 }
