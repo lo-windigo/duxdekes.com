@@ -32,20 +32,26 @@ def finalize_payment(order_number, reference, original_amount, new_amount):
                 square_settings.location_id,
                 reference)
 
-        # Save the response ID
-        if not api_response.transaction:
-            raise ApiException(', '.join(api_response.errors))
+        if hasattr(api_response, 'errors'):
+            if api_response.errors:
+                errors = ', '.join([err.detail for err in api_response.errors])
+                exception = ApiException(errors)
+            else:
+                exception = ApiException()
+
+            raise exception
 
     except ApiException as e:
         msg = "Problem finalizing the transaction: " + str(e)
         raise ChargeCaptureException(msg) from ApiException
 
-    charge_id = api_response.transaction.id
-
     # If we estimated the price perfectly, and do not have to refund the
     # difference break out
     if original_amount == new_amount:
         return
+
+    # Save the response ID
+    charge_id = api_response.transaction.id
 
     # Refund the customer for the difference in auth'd amount
     refund_amount = float(original_amount - new_amount)
@@ -57,8 +63,14 @@ def finalize_payment(order_number, reference, original_amount, new_amount):
                 square_settings.location_id,
                 reference)
 
-        if not api_response.transaction:
-            raise ApiException(', '.join(api_response.errors))
+        if hasattr(api_response, 'errors'):
+            if api_response.errors:
+                errors = ', '.join([err.detail for err in api_response.errors])
+                exception = ApiException(errors)
+            else:
+                exception = ApiException()
+
+            raise exception
 
         previous_tender = api_response.transaction.tenders[0].id
 
