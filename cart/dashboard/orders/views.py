@@ -1,3 +1,4 @@
+from decimal import Decimal as D
 from django.contrib import messages
 from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureException
 from oscar.apps.dashboard.orders.views import OrderDetailView as OscarOrderDetailView
@@ -45,7 +46,7 @@ class OrderDetailView(OscarOrderDetailView):
 
             try:
                 # Capture the payment, with the NEW and IMPROVED amount
-                amount = D(finalize_form.cleaned_data.final_shipping) + \
+                amount = D(finalize_form.cleaned_data['final_shipping']) + \
                     order.basket_total_incl_tax
 
                 handler.handle_payment_event(order, 'capture', amount)
@@ -55,7 +56,7 @@ class OrderDetailView(OscarOrderDetailView):
                 line_quantities = [ line.quantity for line in order.lines.all() ]
                 handler.handle_shipping_event(order, 'shipped', lines, line_quantities)
                 handler.handle_order_status_change(order, 'Processed',
-                        note_msg='Customer successfully charged'))
+                        note_msg='Customer successfully charged')
             except ChargeAdjustmentException as e:
                 msg = """
                 There was a problem adjusting the final charge to
@@ -65,7 +66,7 @@ class OrderDetailView(OscarOrderDetailView):
                 #TODO: Fix this snot.
                 messages.error(request, msg + str(e))
                 handler.handle_order_status_change(order, 'Needs Adjustment',
-                        note_msg=msg))
+                        note_msg=msg)
             except ChargeCaptureException as e:
                 msg = """
                 [Payment] There was a problem finalizing the payment: the payment gateway
@@ -86,4 +87,5 @@ class OrderDetailView(OscarOrderDetailView):
         else:
             messages.error(request, "[Form] The final amount you've typed in is not valid")
 
+        return self.reload_page()
 
