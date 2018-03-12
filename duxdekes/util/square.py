@@ -13,18 +13,12 @@ def get_api(token):
     return TransactionsApi()
 
 
-def finalize_payment(order_number, reference, original_amount, new_amount):
+def capture_payment(reference):
     """
-    Capture a payment authorized previously, and refund the difference
+    Capture a payment authorized previously
     """
     square_settings = SquareSettings.get_settings()
     api_instance = get_api(square_settings.access_token)
-
-    if original_amount < new_amount:
-        error = """
-        The original authorized cost is less than the cost with shipping
-        """
-        raise ChargeCaptureException(error)
 
     try:
         # Capture the previously authorized transaction
@@ -32,6 +26,7 @@ def finalize_payment(order_number, reference, original_amount, new_amount):
                 square_settings.location_id,
                 reference)
 
+        # Something went wrong with the API; time to deal with it
         if hasattr(api_response, 'errors'):
             if api_response.errors:
                 errors = ', '.join([err.detail for err in api_response.errors])
@@ -41,23 +36,23 @@ def finalize_payment(order_number, reference, original_amount, new_amount):
 
             raise exception
 
-    except ApiException as e:
-        msg = "Problem finalizing the transaction: " + str(e)
-        raise ChargeCaptureException(msg) from ApiException
+        # Return the transaction id
+        return api_response.transaction.id
 
-    # If we estimated the price perfectly, and do not have to refund the
-    # difference break out
-    if original_amount == new_amount:
-        return
+    except Exception as e:
+        raise ChargeCaptureException("Problem finalizing the transaction") from e
 
-    # Save the response ID
-    charge_id = api_response.transaction.id
 
-    # Refund the customer for the difference in auth'd amount
+def adjust_charge(order_number, reference, original_amount, new_amount):
+    """
+    Refund the difference between the final capture and the actual cost
+    """
+    square_settings = SquareSettings.get_settings()
+    api_instance = get_api(square_settings.access_token)
     refund_amount = float(original_amount - new_amount)
     refund_in_cents = int(100*refund_amount)
 
-    # Get the previous captured transactions' tender idtender id
+    # Get the previous captured transactions' tender id
     try:
         api_response = api_instance.retrieve_transaction(
                 square_settings.location_id,
@@ -75,10 +70,10 @@ def finalize_payment(order_number, reference, original_amount, new_amount):
         previous_tender = api_response.transaction.tenders[0].id
 
     except ApiException as e:
-        msg = "Problem retrieving the previous auth transaction: " + str(e)
-        raise ChargeCaptureException(msg) from ApiException
-    except IndexError:
-        raise ChargeCaptureException('Problem retrieving the tender id')
+        msg = "Problem retrieving the previous auth transaction"
+        raise ChargeCaptureException(msg) from e
+    except IndexError as e:
+        raise ChargeCaptureException('Problem retrieving the tender id') from e
 
     amount = {
         'amount': refund_in_cents,
@@ -98,5 +93,5 @@ def finalize_payment(order_number, reference, original_amount, new_amount):
     except ApiException as e:
         msg = "Problem adjusting the authorized cost by {}: {}"\
                 .format(refund_amount, e)
-        raise ChargeAdjustmentException(msg) from ApiException
+        raise ChargeAdjustmentException(msg) from e
 

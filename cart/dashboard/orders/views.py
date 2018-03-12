@@ -45,11 +45,19 @@ class OrderDetailView(OscarOrderDetailView):
         if finalize_form.is_valid():
 
             try:
-                # Capture the payment, with the NEW and IMPROVED amount
-                amount = D(finalize_form.cleaned_data['final_shipping']) + \
-                    order.basket_total_incl_tax
+                # Save the final shipping value, just in case something gets
+                # ruined
+                order.final_shipping = finalize_form.cleaned_data['final_shipping']
+                order.save()
 
+                # Calculate the new final amount
+                amount = D(order.final_shipping) + order.basket_total_incl_tax
+
+                # Capture the payment, with the NEW and IMPROVED amount
                 handler.handle_payment_event(order, 'capture', amount)
+
+                if amount != order.total_incl_tax:
+                    handler.handle_payment_event(order, 'adjust', amount)
 
                 # Set everything as shipped, and calculate the lines if needed
                 lines = [ line for line in order.lines.all() ]
@@ -69,7 +77,7 @@ class OrderDetailView(OscarOrderDetailView):
                         note_msg=msg)
             except ChargeCaptureException as e:
                 msg = """
-                [Payment] There was a problem finalizing the payment: the payment gateway
+                There was a problem finalizing the payment: the payment gateway
                 may be experiencing problems.
 
                 Please try again in a few minutes.
