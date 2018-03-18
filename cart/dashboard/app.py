@@ -53,6 +53,9 @@ class DashboardApplication(BaseDashboardApplication):
             url(r'^instructions/delete/(?P<pk>\d+)/$',
                 views.InstructionsDeleteView.as_view(),
                 name='catalogue-instructions-delete'),
+            url(r'^missing-weight/$',
+                views.MissingWeightView.as_view(),
+                name='missing-weight'),
             url(r'^shipping/', include('cart.dashboard.shipping.urls')),
             url(r'^settings/', include('cart.dashboard.settings.urls')),
         ]

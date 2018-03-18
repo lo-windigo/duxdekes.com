@@ -1,0 +1,47 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+{% load thumbnail %}
+{% load staticfiles %}
+{% load sorting_tags %}
+{% load render_table from django_tables2 %}
+
+{% block body_class %}{{ block.super }} catalogue{% endblock %}
+
+{% block title %}
+    Weight-less Products | {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li>
+            <a href="{% url 'dashboard:index' %}">{% trans "Dashboard" %}</a>
+        </li>
+        <li class="active">Weight-less Products</li>
+    </ul>
+{% endblock %}
+
+{% block header %}
+    <div class="page-header action">
+        <h1>Weight-less Products</h1>
+    </div>
+{% endblock header %}
+
+{% block dashboard_content %}
+    {% block create_product %}
+    {% endblock %}
+
+    {% block search_products %}
+    {% endblock %}
+
+    {% if products %}
+        {% block product_list %}
+            <form action="." method="post">
+                {% csrf_token %}
+                {% render_table products %}
+            </form>
+        {% endblock product_list %}
+    {% else %}
+        <p>{% trans "No products found." %}</p>
+    {% endif %}
+
+{% endblock dashboard_content %}

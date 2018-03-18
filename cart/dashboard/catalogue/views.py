@@ -12,9 +12,7 @@ from duxdekes.util import products
 
 # Dynamically get any oscar models/classes in use
 InstructionsProduct = get_model('catalogue', 'InstructionsProduct')
-ProductTable, CategoryTable \
-    = get_classes('dashboard.catalogue.tables',
-                  ('ProductTable', 'CategoryTable'))
+ProductTable = get_class('dashboard.catalogue.tables', 'ProductTable')
 ProductCategoryFormSet, ProductImageFormSet, ProductAttributesFormSet \
     = get_classes('dashboard.catalogue.forms',
         (
@@ -354,6 +352,26 @@ class InstructionsDeleteView(ProductDeleteView):
             msg = _("Deleted product '%s'") % self.object.title
             messages.success(self.request, msg)
             return reverse('dashboard:catalogue-instructions-list')
+
+
+
+class MissingWeightView(SingleTableView):
+    """
+    Display a list of all products missing their weight attribute
+    """
+    template_name = 'dashboard/catalogue/product_finished.html'
+    table_class = ProductTable
+    context_table_name = 'products'
+    object_list = [ product for product in Product.objects.all() if not product.attr.weight ]
+
+
+    def get_table(self, **kwargs):
+        """
+        Set the table caption by overriding the parent method
+        """
+        table = super().get_table(**kwargs)
+        table.caption = 'Products missing weights'
+        return table
 
 
 
