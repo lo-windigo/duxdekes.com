@@ -1,8 +1,12 @@
+import logging, sys
 from duxdekes.models import SquareSettings
 from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureException
 import squareconnect
 from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
+
+
+logger = logging.getLogger('duxdekes.util.square')
 
 
 def get_api(token):
@@ -40,7 +44,9 @@ def capture_payment(reference):
         return api_response.transaction.id
 
     except Exception as e:
-        raise ChargeCaptureException("Problem finalizing the transaction") from e
+        msg = "Problem finalizing the transaction"
+        logger.error(msg, exc_info=sys.exc_info())
+        raise ChargeCaptureException(msg) from e
 
 
 def adjust_charge(order_number, reference, original_amount, new_amount):
@@ -71,9 +77,12 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
 
     except ApiException as e:
         msg = "Problem retrieving the previous auth transaction"
+        logger.error(msg, exc_info=sys.exc_info())
         raise ChargeCaptureException(msg) from e
     except IndexError as e:
-        raise ChargeCaptureException('Problem retrieving the tender id') from e
+        msg = 'Problem retrieving the tender id'
+        logger.error(msg, exc_info=sys.exc_info())
+        raise ChargeCaptureException(msg) from e
 
     amount = {
         'amount': refund_in_cents,
@@ -93,5 +102,6 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
     except ApiException as e:
         msg = "Problem adjusting the authorized cost by {}: {}"\
                 .format(refund_amount, e)
+        logger.error(msg, exc_info=sys.exc_info())
         raise ChargeAdjustmentException(msg) from e
 
