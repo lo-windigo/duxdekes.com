@@ -1,4 +1,4 @@
-import logging
+import logging, sys
 from decimal import Decimal as D
 from django.conf import settings
 from duxdekes import models
@@ -12,6 +12,7 @@ from ups_json.rating import UPSRating
 
 InvalidShippingEvent = get_class('order.exceptions', 'InvalidShippingEvent')
 Box = get_model('shipping', 'Box')
+Product = get_model('catalogue', 'Product')
 logger = logging.getLogger(__name__)
 
 
@@ -78,6 +79,11 @@ class DomesticShipping(methods.Base):
         rate = D(1)
         
         for item in basket.all_lines():
+
+            # Make sure we are pulling the correct attributes for child products
+            if item.structure == Product.CHILD:
+                item = item.parent
+
             try:
                 box = item.product.attr.box 
                 item_rate = rate_request.get_rate(box.length, box.width, box.height,
