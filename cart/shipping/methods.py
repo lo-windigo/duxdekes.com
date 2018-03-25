@@ -81,19 +81,20 @@ class DomesticShipping(methods.Base):
         for item in basket.all_lines():
 
             # Make sure we are pulling the correct attributes for child products
-            if item.structure == Product.CHILD:
-                item = item.parent
+            if item.product.structure == Product.CHILD:
+                product = item.product.parent
+            else:
+                product = item.product
 
             try:
-                box = item.product.attr.box 
+                box = product.attr.box 
                 item_rate = rate_request.get_rate(box.length, box.width, box.height,
-                        item.product.attr.weight, address, settings.UPS_SHIPPER)
+                        product.attr.weight, address, settings.UPS_SHIPPER)
 
                 rate = rate + (item_rate * item.quantity)
             except:
                 # Log the error
-                logger.warn('Could not rate item %s for shipping',
-                        item.product.upc)
+                logger.warn('Could not rate item %s for shipping', product.upc)
                 
 
         if self.shipping_addr and self.shipping_addr.state.upper() == 'NY':
