@@ -4,7 +4,7 @@ from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureExceptio
 import squareconnect
 from squareconnect.rest import ApiException
 from squareconnect.apis.transactions_api import TransactionsApi
-
+from pprint import pprint
 
 logger = logging.getLogger('duxdekes.util.square')
 
@@ -31,17 +31,14 @@ def capture_payment(reference):
                 reference)
 
         # Something went wrong with the API; time to deal with it
-        if hasattr(api_response, 'errors'):
-            if api_response.errors:
-                errors = ', '.join([err.detail for err in api_response.errors])
-                exception = ApiException(errors)
-            else:
-                exception = ApiException()
+        if api_response.errors:
 
-            raise exception
+            errors = ', '.join([err.detail for err in api_response.errors])
 
-        # Return the transaction id
-        return api_response.transaction.id
+            raise ApiException(errors)
+
+        # No success value, code or anything
+        return
 
     except Exception as e:
         msg = "Problem finalizing the transaction"
