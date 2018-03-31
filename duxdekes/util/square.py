@@ -61,14 +61,9 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
                 square_settings.location_id,
                 reference)
 
-        if hasattr(api_response, 'errors'):
-            if api_response.errors:
-                errors = ', '.join([err.detail for err in api_response.errors])
-                exception = ApiException(errors)
-            else:
-                exception = ApiException()
-
-            raise exception
+        if api_response.errors is not None:
+            errors = ', '.join([err.detail for err in api_response.errors])
+            raise ApiException(errors)
 
         previous_tender = api_response.transaction.tenders[0].id
 
@@ -95,7 +90,10 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
 
     try:
         api_response = api_instance.create_refund(square_settings.location_id,
-            body)
+            reference, body)
+
+        return api_response.refund.transaction_id
+
     except ApiException as e:
         msg = "Problem adjusting the authorized cost by {}: {}"\
                 .format(refund_amount, e)
