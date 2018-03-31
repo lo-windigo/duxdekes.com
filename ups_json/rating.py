@@ -71,7 +71,7 @@ class UPSRating(UPSBase):
         return D()
 
 
-    def prepare_address(address):
+    def prepare_address(self, address):
         """
         Take an address object and apply data adjustments to allow it to conform
         to the requirements of the UPS API
