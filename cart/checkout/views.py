@@ -50,7 +50,8 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         square_form = forms.SquareNonceForm(request.POST)
 
         if square_form.is_valid():
-            return self.render_preview(request, square_form=square_form)
+            self.save_card_nonce(square_form.cleaned_data['nonce'])
+            return self.render_preview(request)
         
         logger.info('handle_payment_details_submission() called without card nonce')
         # TODO: Create/set an error message?

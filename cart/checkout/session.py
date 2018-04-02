@@ -1,9 +1,12 @@
-from oscar.apps.checkout import session
+from django.core.urlresolvers import reverse
+from oscar.apps.checkout import exceptions, session
 from . import tax
 
 
-#http://django-oscar.readthedocs.io/en/releases-1.1/howto/how_to_handle_us_taxes.html?highlight=DeferredTax
 class CheckoutSessionMixin(session.CheckoutSessionMixin):
+    """
+    Implement tax and payment-related functionality specific to our site
+    """
 
     def build_submission(self, **kwargs):
         submission = super(CheckoutSessionMixin, self).build_submission(
@@ -18,4 +21,20 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
                 shipping_charge=submission['shipping_charge'])
 
         return submission
+
+
+    def check_payment_data_is_captured(self, request):
+        """
+        Validate that we have a card nonce stored from Square
+        """
+
+        if not self.get_card_nonce():
+            msg = "We're sorry, we could not contact the payment gateway."
+            raise exceptions.FailedPreCondition(
+                    url=reverse('checkout:payment-details'),
+                    message=msg)
+
+        # Run parent function; currently doesn't do anything, but may be
+        # implemented in the future
+        super().check_payment_data_is_captured(request)
 

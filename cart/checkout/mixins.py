@@ -31,7 +31,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         source = Source(source_type=source_type,
                         amount_allocated=total.incl_tax)
         api_instance = TransactionsApi()
-        nonce = kwargs.get('nonce', False)
+        nonce = self.get_card_nonce()
 
         if not nonce:
             raise PaymentError('No card nonce provided')
@@ -79,4 +79,18 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # Also record payment event
         self.add_payment_event('auth', total.incl_tax,
                 reference=api_response.transaction.id)
+
+
+    def get_card_nonce(self):
+        """
+        Get the card payment nonce, and return an empty string if unset
+        """
+        self.checkout_session._get('payment', 'nonce', '')
+
+
+    def save_card_nonce(self, nonce):
+        """
+        Save the credit card payment nonce value to the session
+        """
+        self.checkout_session._set('payment', 'nonce', nonce)
 
