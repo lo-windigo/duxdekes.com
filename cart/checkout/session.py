@@ -17,5 +17,15 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
                 submission['basket'],
                 shipping_charge=submission['shipping_charge'])
 
+        # Add extra information for Square chargeback protection
+        # ( billing_address is already sent into the payment kwargs )
+        if submission['user'] and submission['user'].email:
+            email = submission['user'].email
+        elif submission['guest_email']:
+            email = submission['guest_email']
+        if email:
+            submission['payment_kwargs']['email'] = email
+        submission['payment_kwargs']['shipping_address'] = shipping_address
+
         return submission
 

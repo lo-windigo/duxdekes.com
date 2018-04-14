@@ -48,14 +48,35 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
             'currency': 'USD'
         }
 
-        # TODO: Pass billing address, email to provide square chargeback
-        # protection
+        # Start the request for authorization, including shipping address and
+        # user email (if provided)
         body = {
             'idempotency_key': "{}_auth".format(order_number),
             'card_nonce': nonce,
             'amount_money': amount,
             'delay_capture': True,
         }
+
+        # Add user information for chargeback protection
+        if hasattr(kwargs, 'email'):
+            body['buyer_email_address'] = kwargs['email']
+
+        for addr_type in 'shipping_address', 'billing_address':
+            if hasattr(kwargs, addr_type):
+                addr_object = kwargs[addr_type]
+                address = dict()
+
+                address['address_line_1'] = addr_object.line1
+                address['address_line_2'] = addr_object.line2
+                address['address_line_3'] = addr_object.line3
+                address['locality'] = addr_object.line4
+                address['administrative_district_level_1'] = addr_object.state
+                address['postal_code'] = addr_object.postcode
+                address['country'] = addr_object.country
+                address['first_name'] = addr_object.first_name
+                address['last_name'] = addr_object.last_name
+
+                body[addr_type] = address
 
         try:
             # Charge
