@@ -92,9 +92,11 @@ class DomesticShipping(methods.Base):
                         product.attr.weight, address, settings.UPS_SHIPPER)
 
                 rate = rate + (item_rate * item.quantity)
+
             except:
-                # Log the error
-                logger.warn('Could not rate item %s for shipping', product.upc)
+                # If the rate cannot be gathered, add in a very high estimate
+                logger.warn('Could not rate item %s for shipping - adding $20', product.upc)
+                rate = rate + (D(20) * item.quantity)
                 
 
         if self.shipping_addr and self.shipping_addr.state.upper() == 'NY':
@@ -106,18 +108,4 @@ class DomesticShipping(methods.Base):
             currency=basket.currency,
             excl_tax=rate,
             incl_tax=rate_incl_tax)
-
-
-#class InternationalShipping(methods.Base):
-#    code = 'USPS'
-#    name = 'International'
-#    description = 'US Postal Service priority shipping'
-#
-#    def calculate(self, basket):
-#
-#	# TODO: International? Gaaaaaaaah
-#        # TODO: Also include tax for incl_tax value
-#        return prices.Price(
-#            currency=basket.currency,
-#            excl_tax=D('10.00'))
 

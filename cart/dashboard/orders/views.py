@@ -98,7 +98,6 @@ class OrderDetailView(OscarOrderDetailView):
                 reflect the real shipping charge.
                 """
 
-                #TODO: Fix this snot.
                 messages.error(request, msg + str(e))
                 handler.handle_order_status_change(order, 'Needs Adjustment',
                         note_msg=msg)
