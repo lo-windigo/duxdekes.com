@@ -13,11 +13,16 @@
 			</a>
 			<h3>Payment via Square</h3>
 			<p>
-				<strong>Total</strong>: {{ order_total.incl_tax|currency }}
+				Payment of up to <strong>{{ order_total.incl_tax|currency }}</strong>
+				authorized.
+			</p>
+			<p>
+				The actual amount may be less, depending on final shipping
+				costs.
 			</p>
 		</div>
 	</div>
 {% endblock payment_method %}
 
-{% block hiddenforms %}{{ square_form }}{% endblock %}
+{% block hiddenforms %}{% endblock %}
 
