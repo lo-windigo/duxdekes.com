@@ -30,17 +30,13 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         """
         Handle Square payment form submission
         """
-        square_form = forms.SquareNonceForm(request.POST)
-
-        if square_form.is_valid():
-            kwargs = self.build_submission()
-
-            kwargs['payment_kwargs']['nonce'] = square_form.cleaned_data['nonce']
-            return self.submit(**kwargs)
+        if self.get_card_nonce():
+            return self.submit(**self.build_submission())
         
         logger.info('handle_place_order_submission() called without card nonce')
+
         # TODO: set error, prompt user?
-        return self.render_preview(request, square_form=square_form)
+        return self.render_preview(request)
 
 
     def handle_payment_details_submission(self, request):

@@ -19,6 +19,7 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
             # to Square (provides chargeback protection)
             submission['payment_kwargs']['shipping_address'] = submission['shipping_address']
 
+            # Apply taxes to the basket
             tax.apply_to(submission)
 
             # Recalculate order total to ensure we have a tax-inclusive total
@@ -38,6 +39,10 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         if email:
             submission['payment_kwargs']['email'] = email
 
+        # Send along the card nonce retrieved in previous steps
+        submission['payment_kwargs']['nonce'] = self.get_card_nonce()
+
+        # Return the submission data
         return submission
 
 
