@@ -104,7 +104,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         """
         Get the card payment nonce, and return an empty string if unset
         """
-        self.checkout_session._get('payment', 'nonce', '')
+        return self.checkout_session._get('payment', 'nonce', '')
 
 
     def save_card_nonce(self, nonce):
