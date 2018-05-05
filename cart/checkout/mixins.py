@@ -11,8 +11,6 @@ from duxdekes.models import SquareSettings
 
 
 logger = logging.getLogger('cart.checkout.mixins')
-CheckoutSessionData = get_class(
-    'checkout.utils', 'CheckoutSessionData')
 
 
 class OrderPlacementMixin(mixins.OrderPlacementMixin):
