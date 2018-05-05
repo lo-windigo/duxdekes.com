@@ -31,7 +31,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         source = Source(source_type=source_type,
                         amount_allocated=total.incl_tax)
         api_instance = TransactionsApi()
-        nonce = self.get_card_nonce()
+        nonce = getattr(kwargs, 'nonce', self.get_card_nonce())
 
         if not nonce:
             raise PaymentError('No card nonce provided')

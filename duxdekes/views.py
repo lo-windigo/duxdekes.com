@@ -72,16 +72,16 @@ class HomeView(TemplateView):
         
         for parent in Category.get_root_nodes():
 
-            child_categories = parent.get_children()
+            related_categories = parent.get_descendants_and_self()
 
             # Get the newest products from each category tree
             products = Product.objects.filter(
-                    categories__in=child_categories
+                    categories__in=related_categories
                     ).order_by('-date_updated')[:3]
 
             categories.append({
                 'category': parent,
-                'sub_categories': child_categories,
+                'sub_categories': parent.get_children(),
                 'products': products,
                 })
 

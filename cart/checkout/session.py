@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from oscar.apps.checkout import exceptions, session
-from . import tax
+from . import forms, tax
 
 
 class CheckoutSessionMixin(session.CheckoutSessionMixin):
@@ -9,7 +9,11 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
     """
 
     def build_submission(self, **kwargs):
+        """
+        Pull together all of the order data for a submission
+        """
         submission = super().build_submission(**kwargs)
+        square_form = forms.SquareNonceForm(self.request.POST)
 
         # If a shipping address is present, save it for the payment kwargs
         if hasattr(submission, 'shipping_address') and hasattr(submission,
@@ -39,8 +43,20 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         if email:
             submission['payment_kwargs']['email'] = email
 
-        # Send along the card nonce retrieved in previous steps
-        submission['payment_kwargs']['nonce'] = self.get_card_nonce()
+        try:
+            # Send along the card nonce retrieved in previous steps
+            # TODO: Remove all the form crap once session methods are working
+            nonce = self.get_card_nonce()
+
+            if not nonce:
+                if square_form.is_valid():
+                    nonce = square_form.cleaned_data['nonce']
+                else:
+                    raise Exception('Cannot retrieve card nonce')
+
+            submission['payment_kwargs']['nonce'] = nonce
+        except:
+            submission['payment_kwargs']['nonce'] = ''
 
         # Return the submission data
         return submission
@@ -51,11 +67,20 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         Validate that we have a card nonce stored from Square
         """
 
-        if not self.get_card_nonce():
-            msg = "We're sorry, we could not contact the payment gateway."
-            raise exceptions.FailedPreCondition(
-                    url=reverse('checkout:payment-details'),
-                    message=msg)
+        # TODO: This initial check might not be necessary
+        #if not self.get_card_nonce():
+        if True:
+
+            square_form = forms.SquareNonceForm(request.POST)
+
+            if square_form.is_valid():
+                self.save_card_nonce(square_form.cleaned_data['nonce'])
+
+            else:
+                msg = "We're sorry, we could not contact the payment gateway."
+                raise exceptions.FailedPreCondition(
+                        url=reverse('checkout:payment-details'),
+                        message=msg)
 
         # Run parent function; currently doesn't do anything, but may be
         # implemented in the future
