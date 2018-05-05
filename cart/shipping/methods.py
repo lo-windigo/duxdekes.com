@@ -3,7 +3,6 @@ from decimal import Decimal as D
 from django.conf import settings
 from duxdekes import models
 from duxdekes.util import tax
-from oscar.apps.checkout.utils import CheckoutSessionData
 from oscar.apps.shipping import methods, scales 
 from oscar.core import prices
 from oscar.core.loading import get_class, get_model
