@@ -56,11 +56,11 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         }
 
         # Add user information for chargeback protection
-        if hasattr(kwargs, 'email'):
+        if 'email' in kwargs:
             body['buyer_email_address'] = kwargs['email']
 
         for addr_type in 'shipping_address', 'billing_address':
-            if hasattr(kwargs, addr_type):
+            if addr_type in kwargs:
                 addr_object = kwargs[addr_type]
                 address = dict()
 
@@ -70,7 +70,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
                 address['locality'] = addr_object.line4
                 address['administrative_district_level_1'] = addr_object.state
                 address['postal_code'] = addr_object.postcode
-                address['country'] = addr_object.country
+                address['country'] = addr_object.country.iso_3166_1_a2
                 address['first_name'] = addr_object.first_name
                 address['last_name'] = addr_object.last_name
 

@@ -1,6 +1,10 @@
+import logging
 from django.core.urlresolvers import reverse
 from oscar.apps.checkout import exceptions, session
 from . import forms, tax
+
+
+logger = logging.getLogger('cart.checkout.session')
 
 
 class CheckoutSessionMixin(session.CheckoutSessionMixin):
@@ -15,9 +19,10 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         submission = super().build_submission(**kwargs)
         square_form = forms.SquareNonceForm(self.request.POST)
 
+        #logger.info('submission dict before custom work: %s', submission)
+
         # If a shipping address is present, save it for the payment kwargs
-        if hasattr(submission, 'shipping_address') and hasattr(submission,
-                'shipping_method'):
+        if submission['shipping_address'] and submission['shipping_method']:
 
             # Copy the shipping address object to the payment kwargs to provide
             # to Square (provides chargeback protection)
@@ -33,9 +38,9 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
 
         # Add user email to payment kwargs formation for Square chargeback protection
         # ( billing_address is already sent into the payment kwargs )
-        if hasattr(submission, 'user') and hasattr(submission['user'], email):
+        if 'user' in submission and hasattr(submission['user'], 'email'):
             email = submission['user'].email
-        elif hasattr(submission, 'guest_email'):
+        elif 'guest_email' in submission:
             email = submission['guest_email']
         else:
             email = False
@@ -58,6 +63,8 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         except:
             submission['payment_kwargs']['nonce'] = ''
 
+        #logger.info('submission dict after custom work: %s', submission)
+
         # Return the submission data
         return submission
 
@@ -67,9 +74,7 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         Validate that we have a card nonce stored from Square
         """
 
-        # TODO: This initial check might not be necessary
-        #if not self.get_card_nonce():
-        if True:
+        if not self.get_card_nonce():
 
             square_form = forms.SquareNonceForm(request.POST)
 
