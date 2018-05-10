@@ -1,4 +1,5 @@
 from decimal import Decimal as D
+import statestyle
 
 
 def calculate_tax(price, rate):
@@ -12,8 +13,14 @@ def apply_to(submission):
         'NY': D('0.07')
     }
     shipping_address = submission['shipping_address']
-    rate = STATE_TAX_RATES.get(
-        shipping_address.state, D('0.00'))
+
+    try:
+        state_object = statestyle.get(shipping_address.state)
+        state = state_object.postal
+        rate = STATE_TAX_RATES[state.upper()]
+    except:
+        rate = D('0.00')
+
     for line in submission['basket'].all_lines():
         line_tax = calculate_tax(
             line.line_price_excl_tax_incl_discounts, rate)
