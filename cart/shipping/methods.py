@@ -92,9 +92,10 @@ class DomesticShipping(methods.Base):
 
                 rate = rate + (item_rate * item.quantity)
 
-            except:
+            except Exception as e:
                 # If the rate cannot be gathered, add in a very high estimate
-                logger.warn('Could not rate item %s for shipping - adding $20', product.upc)
+                err = 'Could not rate "%s" for shipping; adding $20. Error: %s'
+                logger.warn(err, product.upc, e)
                 rate = rate + (D(20) * item.quantity)
                 
 
