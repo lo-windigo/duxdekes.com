@@ -19,6 +19,7 @@ DEBUG = True	# Should be False in production
 SECRET_KEY="""
 """
 TIME_ZONE = 'UTC'
+OSCAR_FROM_EMAIL = 'noreply@duxdekes.com'
 
 # Site administrators
 ADMINS = (
