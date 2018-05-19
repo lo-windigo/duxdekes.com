@@ -70,15 +70,12 @@ class UPSSettingsForm(forms.ModelForm):
     Allow editing the UPS Account & license numbers
     """
 
-    def get_initial(self):
-        """
-        Make sure the password field gets set
-        """
-
     class Meta:
         model = models.UPSSettings
         exclude = ['site']
         widgets = {
+                # Display the password in a password field, and include the
+                # previous value if present
                 'password': forms.PasswordInput(render_value=True),
                 }
 
