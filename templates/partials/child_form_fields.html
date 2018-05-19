@@ -14,10 +14,10 @@
     {% endfor %}
 {% endif %}
 			<p>
-				<label for="id_{{ material.slug }}_quantity" class="control-label required">
+				<label for="id_{{ child.slug }}_quantity" class="control-label required">
 					Quantity
 				</label>
-				<input class="form-control" id="id_{{ material.slug }}_quantity" min="1"
+				<input class="form-control" id="id_{{ child.slug }}_quantity" min="1"
 					{% if form.quantity.value %}
 					value="{{ form.quantity.value }}"
 					{% endif %}
