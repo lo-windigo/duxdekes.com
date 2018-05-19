@@ -91,3 +91,12 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         # implemented in the future
         super().check_payment_data_is_captured(request)
 
+
+    def get_context_data(self, **kwargs):
+        """
+        Send the templates a flag to show tax separately
+        """
+        ctx = super().get_context_data()
+        ctx['show_tax_separately'] = True
+        return ctx
+
