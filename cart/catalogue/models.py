@@ -76,7 +76,7 @@ class InstructionsProduct(Product):
             alone.structure = Product.CHILD
 
             alone_stock = StockRecord()
-            alone_stock.partner = Products.get_partner()
+            alone_stock.partner = products.get_partner()
         else:
             alone_stock = self.alone_stock
             alone = self.alone_stock.product
