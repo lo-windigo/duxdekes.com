@@ -46,11 +46,11 @@ def contact(request):
     else:
         form = ContactForm()
 
-    return render(request, 'duxdekes/page-contact.html', {'form': form})
+    return render(request, 'page-contact.html', {'form': form})
 
 
 class ContactSent(TemplateView):
-    template_name='duxdekes/page-contact-sent.html'
+    template_name='page-contact-sent.html'
 
 
 class HomeView(TemplateView):
