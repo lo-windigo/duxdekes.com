@@ -1,12 +1,25 @@
-{% extends "duxdekes/base.html" %}
-{% load static %}
+{% extends "layout.html" %}
 
-{% block "title" %}
+
+{% block title %}
 Contact Us
 {% endblock %}
 
-{% block "content" %}
+{% block content %}
 		<h1>Contact Dux' Dekes</h1>
+		<p>
+			From handcrafted duck decoys, to unfinished blanks you can paint
+			yourself, to decoys of swans, geese, loons, and cats, Dux' Dekes is
+			here to provide high-quality products and exceptional customer
+			service.  If you're interested in any of our products, or simply
+			have questions, please feel free to contact us below.
+		</p>
+		<p style="text-align: center">
+			<strong>Dux' Dekes Handcrafted Decoys</strong><br>
+			1356 North Road, Greenwich, NY 12834 U.S.A.<br>
+			Phone Orders: 800-553-4725 - Info/Fax: 518-692-7703
+		</p>
+		<h2>Email Dux' Dekes</h2>
 		<form method="post">
 			{% csrf_token %}
 			{% if form.non_field_errors|length %}
@@ -16,26 +29,29 @@ Contact Us
 				{% endfor %}
 			</ul>
 			{% endif %}
-			<p>
+			<p class="form-group">
 				{{ form.name.errors }}
 				<label for="id_name">
 					{{ form.name.label }}:<br>
 					{{ form.name }}
 				</label>
 			</p>
-			<p>
+			<p class="form-group">
 				{{ form.email.errors }}
 				<label for="id_email">
 					{{ form.email.label }}:<br>
 					{{ form.email }}
 				</label>
 			</p>
-			<p>
+			<p class="form-group">
 				{{ form.message.errors }}
 				<label for="id_message">
 					{{ form.message.label }}:<br>
 					{{ form.message }}
 				</label>
+			</p>
+			<p>
+				<input type="submit" value="Send Message">
 			</p>
 		</form>
 {% endblock %}
