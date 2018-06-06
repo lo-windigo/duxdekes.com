@@ -11,8 +11,8 @@ class UPSRating(UPSBase):
     Get a rate for a UPS package
     """    
     TESTING_URL = 'https://wwwcie.ups.com/rest/Rate'
-    #PRODUCTION_URL = 'https://onlinetools.ups.com/rest/Rate'
-    PRODUCTION_URL = 'https://atlas.fragdev.net'
+    PRODUCTION_URL = 'https://onlinetools.ups.com/rest/Rate'
+    #PRODUCTION_URL = 'https://atlas.fragdev.net'
 
  
     def get_rate(self, length, width, height, weight, ship_to, shipper, ship_from=None):
