@@ -24,10 +24,10 @@ def contact(request):
         if form.is_valid():
 
             message_template= """
-            Name: {name}
-            Email: {email}
-            Message:
-            {msg}
+Name: {name}
+Email: {email}
+Message:
+{msg}
             """
 
             message_body = message_template.format(
