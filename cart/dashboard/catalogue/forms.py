@@ -120,7 +120,8 @@ class InstructionsForm(ProductForm):
     """
     blank = forms.ModelChoiceField(label="Optional Blank",
             queryset=Product.objects.filter(
-                product_class=products.get_unfinished_class()),
+                product_class=products.get_unfinished_class()
+                ).order_by('title'),
             required=False,
             empty_label='No blank')
 
