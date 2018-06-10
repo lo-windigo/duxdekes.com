@@ -8,6 +8,16 @@ import statestyle
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
+# DEBUG LOGGING
+#import sys
+#ch = logging.StreamHandler(sys.stdout)
+#ch.setLevel(logging.DEBUG)
+#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#ch.setFormatter(formatter)
+#logger.addHandler(ch)
 
 
 class UPSRating(UPSBase):
@@ -19,13 +29,11 @@ class UPSRating(UPSBase):
     #PRODUCTION_URL = 'https://atlas.fragdev.net'
 
  
-    def __init__(self, account, password, license_number, testing=False,
-            negotiated=False):
+    def __init__(self, account, password, license_number, testing=False, negotiated=False):
         """
         Override the constructor to also accept a flag for negotiated rates
         """
-        super().__init__(self, *args, **kwargs)
-
+        super().__init__(account, password, license_number, testing)
         self.negotiated = negotiated
 
 
@@ -187,13 +195,6 @@ class UPSRating(UPSBase):
                     }
                 })
 
-        if self.negotiated:
-            shipment.update({
-                   'ShipmentRatingOptions': {
-                       'NegotiatedRatesIndicator': True, 
-                       },
-                   })
-
         request = {
                 'RequestOption': 'Rate',
     #                    'TransactionReference': {
@@ -213,6 +214,13 @@ class UPSRating(UPSBase):
                     },
                 'UPSSecurity': self.security_token,
                 }
+
+        if self.negotiated:
+            rate_request['RateRequest'].update({
+                   'ShipmentRatingOptions': {
+                       'NegotiatedRatesIndicator': True, 
+                       },
+                   })
 
         # Make the request to the UPS API
         rate_response = self.request(rate_request)
