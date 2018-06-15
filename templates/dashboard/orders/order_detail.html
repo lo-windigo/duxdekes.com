@@ -13,7 +13,7 @@
 				<th>Charge</th>
 			</tr>
 			<tr>
-				<td>{{ order.shipping_excl_tax|currency:order.currency }}</td>
+				<td>{{ order.shipping_incl_tax|currency:order.currency }}</td>
 				<td>{{ finalize_order_form.final_shipping }}</td>
 				<td><input value="finalize_order" name="order_action" type="hidden"><input type="submit" value="Charge"></td>
 			</tr>
