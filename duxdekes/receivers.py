@@ -9,17 +9,29 @@ from oscar.core.loading import get_class
 order_placed = get_class('order.signals', 'order_placed')
 
 
-@reciever(order_placed)
+@receiver(order_placed)
 def notify_jeff(sender, **kwargs):
+    send_order_notification(**kwargs)
 
+
+def send_order_notification(**kwargs):
+    """
+    Send a notification to Jeff about a new order
+    TODO: Can be generalized to pull emails from stock record owners
+    """
+
+    # order should ALWAYS be sent in
     if 'order' not in kwargs:
         return
     
     # Assemble the order details that need to be included in the email
     order = kwargs['order']
+    order_dashboard_url = 'http://{}{}'.format(
+            settings.DOMAIN,
+            reverse('dashboard:order-detail', kwargs={'number': order.number}))
     order_context = {
             'order': order,
-            'order_url': reverse('dashboard:order-detail', order.number),
+            'order_url': order_dashboard_url,
             }
     email_template = loader.get_template('duxdekes/email/order_placed.txt')
     email_body = email_template.render(order_context)
