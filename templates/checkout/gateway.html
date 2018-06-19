@@ -1,20 +1,8 @@
-{% extends "checkout/layout.html" %}
+{% extends "oscar/checkout/gateway.html" %}
 
 {% load i18n %}
-{% load widget_tweaks %}
-
-{% block title %}
-    {% trans "Checkout gateway" %} | {{ block.super }}
-{% endblock %}
-
-{% block checkout_nav %}
-    {% include 'checkout/nav.html' with step=0 %}
-{% endblock %}
-
-{% block checkout_title %}{% trans "Who are you?" %}{% endblock %}
 
 {% block content %}
-
     <form action="." method="post" class="form-stacked well">
         {% csrf_token %}
         {{ form.non_field_errors }}
@@ -31,7 +19,6 @@
 				{% endfor %}
 			</div>
         </div>
-    {% endblock %}
 
         <div class="form-group">
             <div class="row">
@@ -44,8 +31,3 @@
     </form>
 
 {% endblock content %}
-
-{% block onbodyload %}
-    {{ block.super }}
-    oscar.checkout.gateway.init();
-{% endblock %}
