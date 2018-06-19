@@ -1,0 +1,51 @@
+{% extends "checkout/layout.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% trans "Checkout gateway" %} | {{ block.super }}
+{% endblock %}
+
+{% block checkout_nav %}
+    {% include 'checkout/nav.html' with step=0 %}
+{% endblock %}
+
+{% block checkout_title %}{% trans "Who are you?" %}{% endblock %}
+
+{% block content %}
+
+    <form action="." method="post" class="form-stacked well">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group {% if form.username.errors %}has-error{% endif %}">
+			<label for="{{ form.username.auto_id }}" class="stacked col-sm-4 control-label required">
+				{{ form.username.label|safe }}
+			</label>
+			<div class="">
+				<input name="username" required id="{{ form.username.auto_id }}"
+					class="form-control" type="email">
+				{% for error in form.username.errors %}
+					<span class="error-block"><i class="icon-exclamation-sign"></i> {{ error }}</span>
+				{% endfor %}
+			</div>
+        </div>
+    {% endblock %}
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-3">
+					<input type="hidden" name="options" value="anonymous">
+                    <button type="submit" class="btn btn-lg btn-block btn-primary" data-loading-text="{% trans 'Continuing...' %}">{% trans "Continue" %}</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{% endblock content %}
+
+{% block onbodyload %}
+    {{ block.super }}
+    oscar.checkout.gateway.init();
+{% endblock %}
