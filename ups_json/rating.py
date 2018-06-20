@@ -1,9 +1,23 @@
+import logging
 from decimal import Decimal as D
 from . import exception
 from .base import UPSBase
 from .util.dict import get_nested
 import json
 import statestyle
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
+# DEBUG LOGGING
+import sys
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 
 class UPSRating(UPSBase):
@@ -15,6 +29,14 @@ class UPSRating(UPSBase):
     #PRODUCTION_URL = 'https://atlas.fragdev.net'
 
  
+    def __init__(self, account, password, license_number, testing=False, negotiated=False):
+        """
+        Override the constructor to also accept a flag for negotiated rates
+        """
+        super().__init__(account, password, license_number, testing)
+        self.negotiated = negotiated
+
+
     def get_rate(self, length, width, height, weight, ship_to, shipper, ship_from=None):
         """
         Get a rate from the UPS shipping API for a single package.
@@ -173,15 +195,6 @@ class UPSRating(UPSBase):
                     }
                 })
 
-        # TODO: Allow this to be sent in
-        """
-        shipment.update({
-               'ShipmentRatingOptions': {
-                   'NegotiatedRatesIndicator': '',
-                   },
-               })
-        """
-
         request = {
                 'RequestOption': 'Rate',
     #                    'TransactionReference': {
@@ -202,8 +215,18 @@ class UPSRating(UPSBase):
                 'UPSSecurity': self.security_token,
                 }
 
+        if self.negotiated:
+            rate_request['RateRequest'].update({
+                   'ShipmentRatingOptions': {
+                       'NegotiatedRatesIndicator': True, 
+                       },
+                   })
+
         # Make the request to the UPS API
         rate_response = self.request(rate_request)
+
+        logger.info('UPS API response for box (%sx%sx%s) weighing %s: %s',
+                length, width, height, weight, rate_response)
 
         try:
             return rate_response['RateResponse']['RatedShipment']

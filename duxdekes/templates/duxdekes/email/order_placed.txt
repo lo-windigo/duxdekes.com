@@ -1,0 +1,23 @@
+{% load currency_filters %}A new order has been placed at duxdekes.com!
+
+
+Order Number {{ order.number }}
+========================================
+{{ order_url }}
+Date:         {{ order.date_placed }}
+Basket Total: {{ order.basket_total_excl_tax|currency:order.currency }}
+Tax:          {{ order.total_tax|currency:order.currency }}
+Shipping Est: {{ order.shipping_incl_tax|currency:order.currency }}
+
+
+Customer/Shipping Details
+========================================
+{% for field in order.shipping_address.active_address_fields %}  {{ field }}
+{% endfor %}
+
+
+Products Ordered
+========================================
+{% for line in order.lines.all %}- {{ line.title }} - Quantity: {{ line.quantity
+}} - Price: {{ line.line_price_incl_tax|currency:order.currency }}
+{% endfor %}
