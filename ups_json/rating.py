@@ -12,12 +12,12 @@ logger.setLevel(logging.INFO)
 
 
 # DEBUG LOGGING
-#import sys
-#ch = logging.StreamHandler(sys.stdout)
-#ch.setLevel(logging.DEBUG)
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#ch.setFormatter(formatter)
-#logger.addHandler(ch)
+import sys
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 
 class UPSRating(UPSBase):
