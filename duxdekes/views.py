@@ -1,6 +1,6 @@
 from .forms import ContactForm
 from django.shortcuts import redirect, render
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.conf import settings
 from django.views.generic import ListView, TemplateView
 from oscar.core.loading import get_model
@@ -23,6 +23,7 @@ def contact(request):
         # Send message if no problems were detected
         if form.is_valid():
 
+            web_message = EmailMessage()
             message_template= """
 Name: {name}
 Email: {email}
@@ -30,15 +31,16 @@ Message:
 {msg}
             """
 
-            message_body = message_template.format(
+            web_message.to = [ settings.CONTACT_RECIPIENTS ]
+            web_message.from_email = [ settings.CONTACT_SENDER ]
+            web_message.reply_to = [ form.cleaned_data['email'] ]
+            web_message.subject = settings.CONTACT_SUBJECT
+            web_message.body = message_template.format(
                     name=form.cleaned_data['name'],
                     email=form.cleaned_data['email'],
                     msg=form.cleaned_data['message'])
 
-            send_mail(settings.CONTACT_SUBJECT,
-                    message_body,
-                    settings.CONTACT_SENDER,
-                    settings.CONTACT_RECIPIENTS)
+            web_message.send()
 
             return redirect('contact_sent')
 
