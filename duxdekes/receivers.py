@@ -26,7 +26,7 @@ def send_order_notification(**kwargs):
     
     # Assemble the order details that need to be included in the email
     order = kwargs['order']
-    order_dashboard_url = 'http://{}{}'.format(
+    order_dashboard_url = 'https://{}{}'.format(
             settings.DOMAIN,
             reverse('dashboard:order-detail', kwargs={'number': order.number}))
     order_context = {

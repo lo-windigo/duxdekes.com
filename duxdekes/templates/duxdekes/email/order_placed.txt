@@ -19,6 +19,8 @@ Customer/Shipping Details
 Products Ordered
 ========================================
 {% for line in order.lines.all %}* {{ line.title }}
-  Quantity: {{ line.quantity }} - Price: {{ line.line_price_incl_tax|currency:order.currency }}
-            -            -            -
+  Quantity:   {{ line.quantity }}
+  SKU:        {{ line.partner_sku }}
+  Price:      {{ line.line_price_incl_tax|currency:order.currency }}
+      -            -            -
 {% endfor %}
