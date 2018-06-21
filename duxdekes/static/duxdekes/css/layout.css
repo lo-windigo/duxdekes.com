@@ -84,6 +84,10 @@ main.content,
 	margin-right: auto;
 }
 
+.contact-url {
+	display: none;
+}
+
 .copyright {
 	margin-top: 1em;
 }
