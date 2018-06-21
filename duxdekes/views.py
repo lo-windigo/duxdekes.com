@@ -31,8 +31,8 @@ Message:
 {msg}
             """
 
-            web_message.to = [ settings.CONTACT_RECIPIENTS ]
-            web_message.from_email = [ settings.CONTACT_SENDER ]
+            web_message.to = settings.CONTACT_RECIPIENTS
+            web_message.from_email = settings.CONTACT_SENDER
             web_message.reply_to = [ form.cleaned_data['email'] ]
             web_message.subject = settings.CONTACT_SUBJECT
             web_message.body = message_template.format(
