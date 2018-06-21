@@ -8,7 +8,7 @@ class ContactForm(forms.Form):
     """
     name = forms.CharField(max_length=100)
     email = forms.EmailField()
-    url = forms.CharField(required=True, label='Please ignore this field')
+    url = forms.CharField(required=False, label='Please ignore this field')
     message = forms.CharField(widget=forms.Textarea)
 
 
@@ -18,7 +18,7 @@ class ContactForm(forms.Form):
         """
 
         if len(self.data['url']) > 0:
-            return false
+            return False
 
         return super().is_valid()    
 
