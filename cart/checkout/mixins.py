@@ -49,7 +49,9 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # Start the request for authorization, including shipping address and
         # user email (if provided)
         body = {
-            'idempotency_key': "{}_auth".format(order_number),
+            'idempotency_key': "{}_{}_auth".format(
+                today.strftime('%Y%m%d'),
+                order_number),
             'card_nonce': nonce,
             'amount_money': amount,
             'delay_capture': True,

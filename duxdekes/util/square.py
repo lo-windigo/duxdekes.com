@@ -82,7 +82,9 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
     }
 
     body = {
-        'idempotency_key': "{}_adjust".format(order_number),
+        'idempotency_key': "{}_{}_adjust".format(
+            today.strftime('%Y%m%d'),
+            order_number),
         'tender_id': previous_tender,
         'amount_money': amount,
         'reason': 'Adjustment in shipping costs',
