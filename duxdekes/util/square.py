@@ -1,4 +1,4 @@
-import logging, sys
+import datetime, logging, sys
 from duxdekes.models import SquareSettings
 from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureException
 import squareconnect
@@ -54,6 +54,7 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
     api_instance = get_api(square_settings.access_token)
     refund_amount = float(original_amount - new_amount)
     refund_in_cents = int(100*refund_amount)
+    today = datetime.date.today()
 
     # Get the previous captured transactions' tender id
     try:

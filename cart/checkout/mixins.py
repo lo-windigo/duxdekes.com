@@ -1,3 +1,4 @@
+import datetime
 from django.conf import settings
 import logging
 from oscar.apps.checkout import mixins
@@ -30,6 +31,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
                         amount_allocated=total.incl_tax)
         api_instance = TransactionsApi()
         nonce = getattr(kwargs, 'nonce', self.get_card_nonce())
+        today = datetime.date.today()
 
         if not nonce:
             raise PaymentError('No card nonce provided')
