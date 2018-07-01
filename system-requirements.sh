@@ -12,8 +12,8 @@ fi
 
 # Debian Jessie
 read -r -d '' DEBIAN_PACKAGES <<-'PACKAGES'
-	libjpeg62-turbo-dev libopenjpeg-dev libfreetype6-dev libtiff5-dev
-	liblcms2-dev libwebp-dev python3-dev
+	libjpeg62-turbo-dev libfreetype6-dev libtiff5-dev build-essential
+	liblcms2-dev libwebp-dev python3-dev uwsgi uwsgi-plugin-python3
 PACKAGES
 
 # MySQL dependencies
