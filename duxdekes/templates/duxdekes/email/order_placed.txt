@@ -22,5 +22,4 @@ Products Ordered
   Quantity:   {{ line.quantity }}
   SKU:        {{ line.partner_sku }}
   Price:      {{ line.line_price_incl_tax|currency:order.currency }}
-      -            -            -
-{% endfor %}
+{% if not forloop.last %}      -            -            -{% endif %}{% endfor %}
