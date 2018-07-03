@@ -90,10 +90,3 @@ UPS_SHIPPER = {
 }
 UPS_TESTING = False
 
-
-####################
-# Signal Receivers #
-####################
-
-from duxdekes import receivers
-

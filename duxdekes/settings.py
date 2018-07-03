@@ -129,7 +129,7 @@ OSCAR_DEFAULT_CURRENCY = 'USD'
 OSCAR_INITIAL_ORDER_STATUS = 'Pending'
 OSCAR_INITIAL_LINE_STATUS = 'Pending'
 OSCAR_ORDER_STATUS_PIPELINE = {
-    'Pending': ('Needs Adjustment', 'Processed', 'Refunded', 'Cancelled',),
+    'Pending': ('Needs Adjustment', 'Processed', 'Cancelled',),
     'Processed': ('Refunded', 'Cancelled',),
     'Needs Adjustment': ('Processed', 'Refunded', 'Cancelled',),
     'Refunded': (),
@@ -341,8 +341,15 @@ TEMPLATES = [
 ]
 
 
-##
-## Sorl thumbnails
-##
+###################
+# Sorl thumbnails #
+###################
 THUMBNAIL_DEBUG = DEBUG
+
+
+####################
+# Signal Receivers #
+####################
+
+from duxdekes import receivers
 
