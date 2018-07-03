@@ -34,7 +34,7 @@ class OrderDetailView(OscarOrderDetailView):
         """
         kwargs = {}
 
-        if self.object and self.object.:
+        if self.object and self.object.final_basket_total:
             kwargs['initial'] = {
                 'final_basket_total': self.object.final_basket_total,
                 }
