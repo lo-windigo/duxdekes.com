@@ -4,7 +4,7 @@ from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureExceptio
 from oscar.apps.dashboard.orders.views import OrderDetailView as OscarOrderDetailView
 from oscar.apps.order.exceptions import InvalidShippingEvent, InvalidPaymentEvent
 from oscar.core.loading import get_class, get_model
-from .forms import FinalizeOrderForm
+from .forms import DiscountOrderForm, FinalizeOrderForm
 
 
 EventHandler = get_class('order.processing', 'EventHandler')
@@ -16,15 +16,33 @@ class OrderDetailView(OscarOrderDetailView):
     """
     Add a finalize order method to the OrderDetailView
     """
-    order_actions = OscarOrderDetailView.order_actions + ('finalize_order',)
+    order_actions = OscarOrderDetailView.order_actions + ('discount_order',
+            'finalize_order',)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
         # Forms
+        ctx['discount_order_form'] = self.get_discount_order_form()
         ctx['finalize_order_form'] = self.get_finalize_order_form()
 
         return ctx
+
+    def get_discount_order_form(self):
+        """
+        Get an instance of the "discount order" form
+        """
+        kwargs = {}
+
+        if self.object and self.object.:
+            kwargs['initial'] = {
+                'final_basket_total': self.object.final_basket_total,
+                }
+
+        if self.request.method == 'POST':
+            kwargs['data'] = self.request.POST
+
+        return DiscountOrderForm(**kwargs)
 
     def get_finalize_order_form(self):
         """
@@ -42,6 +60,34 @@ class OrderDetailView(OscarOrderDetailView):
 
         return FinalizeOrderForm(**kwargs)
 
+    def discount_order(self, request, order):
+        """
+        Discount an order's basket total by changing the total used
+        """
+        handler = EventHandler()
+        discount_form = self.get_discount_order_form()
+
+        if discount_form.is_valid():
+            try:
+                # Save the final basket total in the order object
+                discount_event_type, _ = PaymentEventType.objects.get_or_create(
+                        code='discount', defaults={'name': 'Discount Set'})
+                order.final_basket_total = \
+                        discount_form.cleaned_data['final_basket_total']
+                amount = order.shipping_incl_tax + order.final_basket_charge
+                handler.handle_payment_event(order, discount_event_type, amount)
+                order.save()
+
+                messages.success(request, 'Discount applied successfully')
+
+            except Exception as e:
+                messages.error(request, '[Discount] '+str(e))
+        else:
+            messages.error(request, "[Discount] The discount amount you've typed in is not valid")
+
+        return self.reload_page()
+
+
     def finalize_order(self, request, order):
         """
         Take a previously authorized order, and finalize the charge
@@ -58,7 +104,7 @@ class OrderDetailView(OscarOrderDetailView):
                 order.save()
 
                 # Calculate the new final amount
-                amount = D(order.final_shipping) + order.basket_total_incl_tax
+                amount = D(order.final_shipping) + order.final_basket_charge
 
                 # Capture the payment, with the NEW and IMPROVED amount
                 if order.status == 'Pending':
@@ -76,10 +122,6 @@ class OrderDetailView(OscarOrderDetailView):
                     adjust_event_type, _ = PaymentEventType.objects.get_or_create(
                             code='adjust', defaults={'name': 'Adjusted'})
                     handler.handle_payment_event(order, adjust_event_type, amount)
-
-                    # Do we really need this order status change?
-                    #handler.handle_order_status_change(order, 'Adjusted',
-                    #        note_msg='Customer refunded difference in shipping')
 
                 # Set everything as shipped, and calculate the lines if needed
                 lines = [ line for line in order.lines.all() ]
