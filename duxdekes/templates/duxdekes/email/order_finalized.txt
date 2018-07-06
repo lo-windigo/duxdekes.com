@@ -1,0 +1,16 @@
+{% load currency_filters %}Hello,
+
+Your order {{ order.number }} has been processed, and will be shipped soon.
+
+Final Totals
+========================================
+Basket total{% if order.basket_charge_override %} (Discounted){% endif %}: {{ order.final_basket_charge|currency:order.currency }}
+Shipping: {{ order.final_shipping_charge|currency:order.currency }}
+Order Total: {{ order.total_incl_tax|currency:order.currency }}
+
+{% if status_url %}
+You can view the full order at the below URL:
+{{ status_url }}
+{% endif %}
+
+- Dux' Dekes
