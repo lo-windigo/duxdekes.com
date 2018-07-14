@@ -40,7 +40,10 @@ class Order(AbstractOrder):
 
     @property
     def final_shipping_charge(self):
-
+        """
+        Return the final cost of shipping, if it's been supplied, or our UPS
+        estimate
+        """
         # If we have an override set on this order, return that value
         if self.shipping_charge_finalized:
             return self.final_shipping
@@ -48,5 +51,11 @@ class Order(AbstractOrder):
         # Default to the normal shipping total
         return self.shipping_incl_tax
 
+    @property
+    def final_order_total(self):
+        """
+        Return the final order total, with any manual adjustments added by Jeff
+        """
+        return self.final_basket_charge + self.final_shipping_charge
 
 from oscar.apps.order.models import *  # noqa isort:skip
