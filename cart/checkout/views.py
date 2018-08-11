@@ -39,9 +39,10 @@ class PaymentDetailsView(OscarPaymentDetailsView):
             return self.submit(**submission)
         
         logger.info('handle_place_order_submission() called without card nonce')
+        msg = ("There was a problem with our payment processor. Please try "
+            "again in a few minutes, and contact us if this problem persists.")
 
-        # TODO: set error, prompt user?
-        return self.render_preview(request)
+        return self.render_payment_details(request, error=msg)
 
 
     def handle_payment_details_submission(self, request):
@@ -55,8 +56,10 @@ class PaymentDetailsView(OscarPaymentDetailsView):
             return self.render_preview(request, square_form=square_form)
         
         logger.info('handle_payment_details_submission() called without card nonce')
-        # TODO: Create/set an error message?
-        return self.render_payment_details(request, square_form=square_form)
+        msg = ("There was a problem with our payment processor. Please try "
+            "again in a few minutes, and contact us if this problem persists.")
+
+        return self.render_payment_details(request, error=msg square_form=square_form)
 
 
 class ShippingAddressView(OscarShippingAddressView):
