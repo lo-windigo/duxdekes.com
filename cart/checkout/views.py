@@ -59,7 +59,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         msg = ("There was a problem with our payment processor. Please try "
             "again in a few minutes, and contact us if this problem persists.")
 
-        return self.render_payment_details(request, error=msg square_form=square_form)
+        return self.render_payment_details(request, error=msg, square_form=square_form)
 
 
 class ShippingAddressView(OscarShippingAddressView):
