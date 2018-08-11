@@ -115,14 +115,17 @@
 	<noscript>
 		<h1>Square requires Javascript</h1>
 		<p>
-			We apologize, but our payment processor requires Javascript is
+			We apologize, but our payment processor requires that Javascript is
 			enabled to use their service.
 		</p>
 	</noscript>
 	<h1>Pay with Square</h1>
+	<div id="errors" class="bg-danger text-danger">
+	</div>
+	<div id="messages" class="bg-warning text-warning">
+	</div>
 	<form id="form" action="{% url 'checkout:preview' %}" novalidate method="post">
 		{% csrf_token %}
-
 		<p>
 			<label for="sq-card-number">
 				Credit Card
