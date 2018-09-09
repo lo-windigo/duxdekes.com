@@ -12,7 +12,12 @@ class ShippingAddressForm(OscarShippingAddressForm):
         self.fields['phone_number'].required = True
 
     class Meta(OscarShippingAddressForm.Meta):
-        pass
+        fields = [
+            'title', 'first_name', 'last_name',
+            'line1', 'line2', 'line3', 'line4',
+            'postcode', 'country', 'state',
+            'phone_number', 'notes',
+        ]
 
 
 class SquareNonceForm(forms.Form):
