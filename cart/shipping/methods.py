@@ -32,30 +32,7 @@ class DomesticShipping(methods.Base):
         """
         Quickly init the default box, and save the shipping address
         """
-        if shipping_addr:
-            # Compile the address dictionary
-            address = {
-                    'name': '{} {}'.format(getattr(self.shipping_addr,
-                        'first_name', ''),
-                        getattr(self.shipping_addr, 'last_name', '')),
-                    'postal_code': self.shipping_addr.postcode,
-                    'city': self.shipping_addr.line4,
-                    'state_province': self.shipping_addr.state,
-                    'country_code': self.shipping_addr.country.code,
-                    'lines': [],
-                    }
-
-            # Append any address lines to the list
-            for i in range(1, 4):
-                try:
-                    address['lines'].append(getattr(self.shipping_addr,
-                        'line{}'.format(i)))
-                except:
-                    pass
-
-            self.shipping_addr = address
-
-        else:
+        if not shipping_addr:
             self.name = '{} (rated after address entered)'.format(self.name)
 
 
@@ -79,9 +56,29 @@ class DomesticShipping(methods.Base):
         # Start with $1, to pay for shipping container
         rate = D(1)
         
+        # Compile the address dictionary
+        address = {
+                'name': '{} {}'.format(getattr(self.shipping_addr,
+                    'first_name', ''),
+                    getattr(self.shipping_addr, 'last_name', '')),
+                'postal_code': self.shipping_addr.postcode,
+                'city': self.shipping_addr.line4,
+                'state_province': self.shipping_addr.state,
+                'country_code': self.shipping_addr.country.code,
+                'lines': [],
+                }
+
+        # Append any address lines to the list
+        for i in range(1, 4):
+            try:
+                address['lines'].append(getattr(self.shipping_addr,
+                    'line{}'.format(i)))
+            except:
+                pass
+
         # Rate the items in the basket
         for item in basket.all_lines():
-           rate += rate_item(item, ups)     
+           rate += rate_item(item, ups, address)     
 
         # Handle taxes
         rate_incl_tax = rate
@@ -94,7 +91,7 @@ class DomesticShipping(methods.Base):
             incl_tax=rate_incl_tax)
 
 
-def rate_item(product, ups):
+def rate_item(product, ups, address):
     """
     Rate a single item for shipping
     """
