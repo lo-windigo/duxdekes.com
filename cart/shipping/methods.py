@@ -40,7 +40,10 @@ class DomesticShipping(methods.Base):
         """
         Get a rate for this package from UPS
         """
-        if not self.shipping_addr or not basket.all_lines():
+        lines = basket.all_lines()
+
+        # If there is no address, or no lines in the basket
+        if not self.shipping_addr or not lines:
             return prices.Price(
                 currency=basket.currency,
                 excl_tax=D(0),
@@ -53,9 +56,6 @@ class DomesticShipping(methods.Base):
                 ups_settings.license,
                 ups_settings.testing)
  
-        # Start with $1, to pay for shipping container
-        rate = D(1)
-        
         # Compile the address dictionary
         address = {
                 'name': '{} {}'.format(getattr(self.shipping_addr,
@@ -76,11 +76,13 @@ class DomesticShipping(methods.Base):
             except:
                 pass
 
-        # Rate the items in the basket
-        for item in basket.all_lines():
+        # Rate all items in the basket. Add $1 to pay for shipping container
+        rate = D(1)
+        
+        for item in lines:
            rate += rate_item(item, ups, address) * item.quantity
 
-        # Handle taxes
+        # Calculate taxes
         rate_incl_tax = rate
         if self.shipping_addr and self.shipping_addr.state.upper() == 'NY':
             rate_incl_tax += tax.calculate_sales_tax(rate) 
