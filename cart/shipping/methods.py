@@ -96,18 +96,16 @@ def rate_item(product, ups, address):
     Rate a single item for shipping
     """
 
+    # Make sure we are pulling the correct attributes for child products
+    if product.structure == Product.CHILD:
+        product = product.parent
+
     # Before rating, make sure this item doesn't have free shipping
     try:
         if product.attr.free_shipping:
             return D(0)
     except:
         pass
-
-    # Make sure we are pulling the correct attributes for child products
-    if item.product.structure == Product.CHILD:
-        product = item.product.parent
-    else:
-        product = item.product
 
     # Try to get the package rate from UPS
     try:
