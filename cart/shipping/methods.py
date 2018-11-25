@@ -78,7 +78,7 @@ class DomesticShipping(methods.Base):
 
         # Rate the items in the basket
         for item in basket.all_lines():
-           rate += rate_item(item, ups, address)     
+           rate += rate_item(item, ups, address) * item.quantity
 
         # Handle taxes
         rate_incl_tax = rate
@@ -120,5 +120,5 @@ def rate_item(product, ups, address):
         # If the rate cannot be gathered, add in a very high estimate
         item_rate = D(20)
 
-    return item_rate * item.quantity
+    return item_rate
 
