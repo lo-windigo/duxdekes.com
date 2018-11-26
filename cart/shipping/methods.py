@@ -83,7 +83,7 @@ class DomesticShipping(methods.Base):
         rate = D(1)
         
         for item in lines:
-           rate += rate_item(item.product, ups, address) * item.quantity
+           rate += self.rate_item(item.product) * item.quantity
 
         # Calculate taxes
         rate_incl_tax = rate
