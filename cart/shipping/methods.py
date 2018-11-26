@@ -33,7 +33,9 @@ class DomesticShipping(methods.Base):
         Save the shipping address for use later, and set up the UPS rating
         objects and address
         """
-        if not shipping_addr:
+        if shipping_addr:
+            self.shipping_addr = shipping_addr
+        else:
             self.name = '{} (rated after address entered)'.format(self.name)
 
 
