@@ -34,39 +34,13 @@ class DomesticShipping(methods.Base):
         objects and address
         """
         if shipping_addr:
-            # Compile the address dictionary
-            self.ups_address = {
-                    'name': '{} {}'.format(getattr(self.shipping_addr,
-                        'first_name', ''),
-                        getattr(self.shipping_addr, 'last_name', '')),
-                    'postal_code': self.shipping_addr.postcode,
-                    'city': self.shipping_addr.line4,
-                    'state_province': self.shipping_addr.state,
-                    'country_code': self.shipping_addr.country.code,
-                    'lines': [],
-                }
-
-            # Append any address lines to the list
-            for i in range(1, 4):
-                try:
-                    address['lines'].append(getattr(self.shipping_addr,
-                        'line{}'.format(i)))
-                except:
-                    pass
-
-            # Initialize the UPS rating object
-            ups_settings = models.UPSSettings.get_settings()
-            self.ups_rating = UPSRating(ups_settings.user,
-                    ups_settings.password,
-                    ups_settings.license,
-                    ups_settings.testing)
         else:
             self.name = '{} (rated after address entered)'.format(self.name)
 
 
     def calculate(self, basket):
         """
-        Get a rate for this package from UPS
+        Get a shipping rate for this basket from UPS
         """
         lines = basket.all_lines()
 
@@ -77,6 +51,32 @@ class DomesticShipping(methods.Base):
                 excl_tax=D(0),
                 incl_tax=D(0))
 
+        # Compile the address dictionary
+        self.ups_address = {
+                'name': '{} {}'.format(getattr(self.shipping_addr,
+                    'first_name', ''),
+                    getattr(self.shipping_addr, 'last_name', '')),
+                'postal_code': self.shipping_addr.postcode,
+                'city': self.shipping_addr.line4,
+                'state_province': self.shipping_addr.state,
+                'country_code': self.shipping_addr.country.code,
+                'lines': [],
+            }
+
+        # Append any address lines to the list
+        for i in range(1, 4):
+            try:
+                self.ups_address['lines'].append(getattr(self.shipping_addr,
+                    'line{}'.format(i)))
+            except:
+                pass
+
+        # Initialize the UPS rating object
+        ups_settings = models.UPSSettings.get_settings()
+        self.ups_rating = UPSRating(ups_settings.user,
+                ups_settings.password,
+                ups_settings.license,
+                ups_settings.testing)
 
         # Add $1 to this basket's rate to cover shipping container
         rate = D(1)
