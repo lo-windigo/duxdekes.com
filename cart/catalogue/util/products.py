@@ -146,14 +146,9 @@ def save_finished(**kwargs):
 
     Product = get_model('catalogue', 'Product')
     StockRecord = get_model('partner', 'StockRecord')
-    updating = 'instance' in kwargs
 
-    if updating:
+    if 'instance' in kwargs:
         product = kwargs['instance']
-        stock, created = StockRecord.objects.get_or_create(product=product)
-
-        if created:
-            stock.partner = get_partner()
     else:
         product = Product()
         product.product_class = get_finished_class()
@@ -165,6 +160,11 @@ def save_finished(**kwargs):
     product.save()
 
     # Set stock record AFTER the object's been saved
+    stock,_ = StockRecord.objects.get_or_create(product=product,
+            defaults={
+                'partner': get_partner() 
+                })
+
     stock.product = product
     stock.partner_sku = kwargs['upc']
     stock.price_excl_tax = kwargs['price']
