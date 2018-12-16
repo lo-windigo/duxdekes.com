@@ -79,6 +79,42 @@ class ProductMixin():
         return context
 
 
+    def post(self, request, *args, **kwargs):
+        """
+        Override post method to save formsets
+        """
+
+        initial_response = super().post(request, *args, **kwargs)
+
+        # check for failure of initial form
+        if not isinstance(initial_response, HttpResponseRedirect):
+            return initial_response
+
+        # Process formsets
+        formsets = {}
+
+        for key, formset in self.formsets.items():
+            formsets[key] = formset(self.product_class,
+                   request.user,
+                   request.POST,
+                   request.FILES,
+                   instance=self.object)
+
+        if all([formset.is_valid() for formset in formsets.values()]):
+            for formset in formsets.values():
+                formset.save()
+
+            # All is well - return success!
+            messages.success(request,
+                    getattr(self, 'success_message',
+                        'Product successfully saved.'),
+                    extra_tags="safe noicon")
+            return initial_response
+
+        else:
+            return self.form_invalid(self.get_form())
+
+
     @property
     def product_class(self):
         """
@@ -120,6 +156,7 @@ class FinishedMixin(ProductMixin):
     """
     form_class = forms.FinishedForm
     success_url = reverse_lazy('dashboard:catalogue-finished-list')
+    success_message = 'Decoy successfully saved'
     template_name = 'dashboard/catalogue/product_finished_update.html'
 
 
@@ -157,8 +194,7 @@ class FinishedUpdateView(FinishedMixin, generic.UpdateView):
         try:
             stock = StockRecord.objects.get(product=self.object)
             initial['price'] = stock.price_excl_tax
-
-        except Exception as e:
+        except:
             pass
 
         # Get the pricing/sku details
@@ -173,41 +209,6 @@ class FinishedUpdateView(FinishedMixin, generic.UpdateView):
             return Product.objects.get(pk=self.kwargs.get('pk'))
 
         return None
-
-
-    def post(self, request, *args, **kwargs):
-        """
-        Override post method to save formsets
-        """
-
-        initial_response = super().post(request, *args, **kwargs)
-
-        # check for failure of initial form
-        if not isinstance(initial_response, HttpResponseRedirect):
-            return initial_response
-
-        # Process formsets
-        formsets = {}
-
-        for key, formset in self.formsets.items():
-            formsets[key] = formset(products.get_finished_class(),
-                   request.user,
-                   request.POST,
-                   request.FILES,
-                   instance=self.object)
-
-        if all([formset.is_valid() for formset in formsets.values()]):
-            for formset in formsets.values():
-                formset.save()
-
-            # All is well - return success!
-            messages.success(request,
-                    'Decoy successfully saved',
-                    extra_tags="safe noicon")
-            return initial_response
-
-        else:
-            return self.form_invalid(self.get_form())
 
 
 
@@ -259,6 +260,7 @@ class InstructionsMixin(ProductMixin):
     form_class = forms.InstructionsForm
     model = InstructionsProduct
     success_url = reverse_lazy('dashboard:catalogue-instructions-list')
+    success_message = 'Instructions successfully saved'
     template_name = 'dashboard/catalogue/product_instructions_update.html'
 
 
@@ -285,51 +287,12 @@ class InstructionsCreateView(InstructionsMixin, generic.CreateView):
     view_title = 'Add Instructions'
 
 
-#    def get_success_url(self):
-#        return self.success_url
-
-
 
 class InstructionsUpdateView(InstructionsMixin, generic.UpdateView):
     """
     Update an instruction product
     """
     view_title = 'Change Instructions'
-
-
-    def post(self, request, *args, **kwargs):
-        """
-        Override post method to save formsets
-        """
-
-        initial_response = super().post(request, *args, **kwargs)
-
-        # check for failure of initial form
-        if not isinstance(initial_response, HttpResponseRedirect):
-            return initial_response
-
-        # Process formsets
-        formsets = {}
-
-        for key, formset in self.formsets.items():
-            formsets[key] = formset(products.get_instructions_class(),
-                   request.user,
-                   request.POST,
-                   request.FILES,
-                   instance=self.object)
-
-        if all([formset.is_valid() for formset in formsets.values()]):
-            for formset in formsets.values():
-                formset.save()
-
-            # All is well - return success!
-            messages.success(request,
-                    'Instructions successfully saved',
-                    extra_tags="safe noicon")
-            return initial_response
-
-        else:
-            return self.form_invalid(self.get_form())
 
 
 
@@ -384,6 +347,7 @@ class UnfinishedMixin(ProductMixin):
     form_class = forms.UnfinishedForm
     #queryset = Product.objects.filter(product_class=products.get_unfinished_class())
     success_url = reverse_lazy('dashboard:catalogue-unfinished-list')
+    success_message = 'Blank successfully saved'
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
 
 
@@ -448,41 +412,6 @@ class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):
             return Product.objects.get(pk=self.kwargs.get('pk'))
 
         return None
-
-
-    def post(self, request, *args, **kwargs):
-        """
-        Override post method to save formsets
-        """
-
-        initial_response = super().post(request, *args, **kwargs)
-
-        # check for failure of initial form
-        if not isinstance(initial_response, HttpResponseRedirect):
-            return initial_response
-
-        # Process formsets
-        formsets = {}
-
-        for key, formset in self.formsets.items():
-            formsets[key] = formset(products.get_unfinished_class(),
-                   request.user,
-                   request.POST,
-                   request.FILES,
-                   instance=self.object)
-
-        if all([formset.is_valid() for formset in formsets.values()]):
-            for formset in formsets.values():
-                formset.save()
-
-            # All is well - return success!
-            messages.success(request,
-                    'Blank successfully saved',
-                    extra_tags="safe noicon")
-            return initial_response
-
-        else:
-            return self.form_invalid(self.get_form())
 
 
 
