@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 
-if [ "$USER" != "root" ]; then
-	echo "This script installs system dependencies, and requires root"
-	exit 9
-fi
-
-
 #########################
 # Requirements 
 #########################
 
-# Debian Jessie
+# Debian Squeeze/Buster
 read -r -d '' DEBIAN_PACKAGES <<-'PACKAGES'
 	libjpeg62-turbo-dev libfreetype6-dev libtiff5-dev build-essential
 	liblcms2-dev libwebp-dev python3-dev uwsgi uwsgi-plugin-python3
