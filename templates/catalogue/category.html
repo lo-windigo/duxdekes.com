@@ -29,9 +29,18 @@
 {% block content %}
     {% if category.description %}
         <div class="row">
-            {% if category.image %}
+			{# Manual fix; make the signature decoy image larger #}
+			{% if category.name == "Signature Decoy" %}
+                <p style="text-align: center;">
+					<img src="{{ category.image.url }}" alt="{{ category.name }}"
+						style="width: 400px; max-width: 100%; ">
+				</p>
+				<p>{{ category.description|safe }}</p>
+            {% elif category.image %}
 				<div class="col-sm-9"><p>{{ category.description|safe }}</p></div>
-                <div class="col-sm-3"><img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-responsive" /></div>
+                <div class="col-sm-3">
+					<img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-responsive"
+				></div>
             {% else %}
 				<p>{{ category.description|safe }}</p>
             {% endif %}
