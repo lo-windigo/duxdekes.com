@@ -1,16 +1,31 @@
 from decimal import Decimal as D
 from django.contrib import messages
+from django.views.generic.base import TemplateView
 from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureException
 from oscar.apps.dashboard.orders.views import OrderDetailView as OscarOrderDetailView
 from oscar.apps.order.exceptions import InvalidShippingEvent, InvalidPaymentEvent
 from oscar.core.loading import get_class, get_model
 from .forms import DiscountOrderForm, FinalizeOrderForm
+from .util import get_open_basket_sessions
 
 
 EventHandler = get_class('order.processing', 'EventHandler')
+Basket = get_model('basket', 'Basket')
 PaymentEventType = get_model('order', 'PaymentEventType')
 ShippingEventType = get_model('order', 'ShippingEventType')
 
+
+class OpenOrderView(TemplateView):
+    pass
+
+
+class OpenOrderView(TemplateView):
+    template_name = "something.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['open_baskets'] = get_open_basket_sessions()
+        return context
 
 class OrderDetailView(OscarOrderDetailView):
     """
