@@ -8,7 +8,8 @@ Date:         {{ order.date_placed }}
 Basket Total: {{ order.basket_total_excl_tax|currency:order.currency }}
 Tax:          {{ order.total_tax|currency:order.currency }}
 Shipping Est: {{ order.shipping_incl_tax|currency:order.currency }}
-
+Notes:
+{{ order.shipping_address.notes|default:"" }}
 
 Customer/Shipping Details
 ========================================
