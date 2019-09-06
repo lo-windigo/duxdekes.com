@@ -1,0 +1,71 @@
+{% extends 'dashboard/layout.html' %}
+{% load i18n %}
+{% load currency_filters %}
+{% load lookup %}
+{% load sorting_tags %}
+
+
+{% block dashboard_content %}
+
+	{% if orders %}
+		<table class="table table-striped table-bordered table-hover">
+			<caption>
+				<h3 class="pull-left"><i class="icon-shopping-cart icon-large"></i>
+					{% if search_filters %}
+					{% trans "Order Search Results" %}
+					{% else %}
+					{% trans "All Orders" %}
+					{% endif %}
+				</h3>
+				<div class="pull-right">
+					<div class="form-inline">
+						<label>{% trans "Download selected orders as a CSV" %}</label>
+						<button type="submit" class="btn btn-primary" name="action" value="download_selected_orders" data-loading-text="{% trans 'Submitting...' %}">{% trans "Download" %}</button>
+					</div>
+				</div>
+			</caption>
+
+			<thead>
+				<tr>
+					{% for header in report_headings %}
+					<th scope="col">{{ header }}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			{% for order in orders %}
+				<tr>
+					{% for header in report_headings %}
+					{% if header in currency_headings %}
+					<td>{{ order|lookup:header|currency:default_currency }}</td>
+					{% else %}
+					<td>{{ order|lookup:header }}</td>
+					{% endif %}
+					{% endfor %}
+				</tr>
+			{% endfor %}
+				<tr>
+					<th class="text-right" scope="row" colspan="4">Aggregate average shipping per item</th>
+					<td>{{ aggregate_average|currency:default_currency }}</td>
+				</tr>
+			</tbody>
+		</table>
+	{% else %}
+		<table class="table table-striped table-bordered">
+			<caption><i class="icon-shopping-cart icon-large"></i>
+				{% trans "Shipping details" %}
+			</caption>
+			<tr><td>{% trans "No orders found." %}</td></tr>
+		</table>
+	{% endif %}
+
+{% endblock dashboard_content %}
+
+{% block onbodyload %}
+	{{ block.super }}
+	oscar.dashboard.orders.initTable();
+	oscar.dashboard.search.init();
+	{% if form.errors %}
+	$('#SearchModal').modal('show');
+	{% endif %}
+{% endblock onbodyload %}

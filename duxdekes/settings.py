@@ -352,4 +352,3 @@ THUMBNAIL_DEBUG = DEBUG
 ####################
 
 from duxdekes import receivers
-
