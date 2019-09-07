@@ -204,6 +204,10 @@ OSCAR_DASHBOARD_NAVIGATION = [
                 'url_name': 'dashboard:order-stats',
             },
             {
+                'label': _('Shipping Cost Report'),
+                'url_name': 'dashboard:order-history',
+            },
+            {
                 'label': _('Box Sizes'),
                 'url_name': 'dashboard:shipping:box-list',
             },
