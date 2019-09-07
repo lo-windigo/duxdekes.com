@@ -24,7 +24,6 @@
 					</div>
 				</div>
 			</caption>
-
 			<thead>
 				<tr>
 					{% for header in report_headings %}
@@ -33,7 +32,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% for order in orders %}
+				{% for order in orders %}
 				<tr>
 					{% for header in report_headings %}
 					{% if header in currency_headings %}
@@ -43,12 +42,14 @@
 					{% endif %}
 					{% endfor %}
 				</tr>
-			{% endfor %}
-				<tr>
-					<th class="text-right" scope="row" colspan="4">Aggregate average shipping per item</th>
+				{% endfor %}
+			</tbody>
+			<tfoot>
+				<tr class="table-info">
+					<th class="text-right" scope="row" colspan="4">Average shipping per item across orders</th>
 					<td>{{ aggregate_average|currency:default_currency }}</td>
 				</tr>
-			</tbody>
+			</tfoot>
 		</table>
 	{% else %}
 		<table class="table table-striped table-bordered">

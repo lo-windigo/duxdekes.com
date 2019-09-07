@@ -5,8 +5,8 @@ Shipping report data
 """
 ORDER_ID = 'Order ID'
 NUM_ITEMS = '# of items'
-SHIPPING_EST = 'Shipping (est)'
-SHIPPING_ACT = 'Shipping (actual)'
+SHIPPING_EST = 'Total Shipping (est)'
+SHIPPING_ACT = 'Total Shipping (actual)'
 AVG_SHIPPING_PER_ITEM = 'Average shipping per item'
 
 CURRENCY_HEADINGS = (SHIPPING_EST, SHIPPING_ACT, AVG_SHIPPING_PER_ITEM)
@@ -21,10 +21,10 @@ def get_orders(date_range=False):
     :param date_range:
     :return:
     """
-    if date_range:
-        return Order.objects.filter('order_date')
+    # if date_range:
+    #     return Order.objects.filter('order_date')
 
-    return Order.objects.all()
+    return Order.objects.exclude(final_shipping=0)
 
 
 def get_order_statistics(order):
