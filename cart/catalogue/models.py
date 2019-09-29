@@ -1,12 +1,9 @@
 from oscar.apps.catalogue.abstract_models import \
         AbstractProductClass, AbstractProduct
-from oscar.apps.partner.models import StockRecord
 from oscar.core.loading import get_model
 from django.db import models
-from cart.catalogue.util import product_class, products
-
-#ProductAttribute = get_model('catalogue', 'ProductAttribute')
-#ProductClass = get_model('catalogue', 'ProductClass')
+from .managers import ActiveProductManager
+from .util import product_class, products
 
 
 class ProductClass(AbstractProductClass):
@@ -23,6 +20,16 @@ class ProductClass(AbstractProductClass):
 
         # Make sure ALL product classes have the right attributes
         product_class.make_class_attributes()
+
+
+class Product(AbstractProduct):
+    """
+    Add an "active" flag to the product class
+    """
+    is_active = models.BooleanField(default=True)
+
+    objects = models.Manager()
+    active = ActiveProductManager()
 
 
 # Import the remaining Oscar models
