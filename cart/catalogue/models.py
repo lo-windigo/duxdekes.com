@@ -2,7 +2,6 @@ from oscar.apps.catalogue.abstract_models import \
         AbstractProductClass, AbstractProduct
 from oscar.core.loading import get_model
 from django.db import models
-from .managers import ActiveProductManager
 from .util import product_class, products
 
 
@@ -27,9 +26,6 @@ class Product(AbstractProduct):
     Add an "active" flag to the product class
     """
     is_active = models.BooleanField(default=True)
-
-    objects = models.Manager()
-    active = ActiveProductManager()
 
 
 # Import the remaining Oscar models
