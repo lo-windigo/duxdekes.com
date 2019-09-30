@@ -38,7 +38,7 @@ class ProductForm(OscarProductForm):
 
     class Meta:
         model = Product
-        fields = PRIMARY_MODEL_FIELDS
+        fields = PRIMARY_MODEL_FIELDS + ('is_active',)
 
 
 
