@@ -61,7 +61,6 @@ class HomeView(TemplateView):
     selection of the newest products.
     """
     context_object_name = 'categories'
-    #queryset = Category.get_root_nodes()
     template_name = 'home.html'
 
     def get_context_data(self, **kwargs):
@@ -77,7 +76,7 @@ class HomeView(TemplateView):
             related_categories = parent.get_descendants_and_self()
 
             # Get the newest products from each category tree
-            products = Product.objects.filter(
+            products = Product.browsable.filter(
                     categories__in=related_categories
                     ).order_by('-date_updated')[:3]
 
