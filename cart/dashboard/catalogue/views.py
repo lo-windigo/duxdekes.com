@@ -1,10 +1,9 @@
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.utils.translation import ugettext_lazy as _
-from django_tables2 import SingleTableMixin, SingleTableView
+from django_tables2 import SingleTableView
 from oscar.core.loading import get_class, get_classes, get_model
 from . import forms, tables
 from duxdekes.util import products
@@ -28,15 +27,13 @@ ProductClass = get_model('catalogue', 'ProductClass')
 StockRecord = get_model('partner', 'StockRecord')
 
 
-class ProductMixin():
+class ProductMixin:
     """
     A basic mixin used for all of our custom products
     """
     cached_product_class = False
     category_formset = ProductCategoryFormSet
     image_formset = ProductImageFormSet
-    #product_attributes_formset = ProductAttributesFormSet
-
 
     def __init__(self, *args, **kwargs):
         """
@@ -45,12 +42,10 @@ class ProductMixin():
         super().__init__(*args, **kwargs)
 
         self.formsets = {
-            #'product_attributes_formset': self.product_attributes_formset,
             'category_formset': self.category_formset,
             'image_formset': self.image_formset,
         }
         self.queryset = Product.objects.filter(product_class=self.get_product_class())
-
 
     def get_context_data(self, *args, **kwargs):
         """
@@ -70,14 +65,13 @@ class ProductMixin():
         for ctx_name, formset_class in self.formsets.items():
             if ctx_name not in context:
                 context[ctx_name] = formset_class(self.product_class,
-                    self.request.user,
-                    instance=instance)
+                                                  self.request.user,
+                                                  instance=instance)
 
         if not 'product_class' in context:
             context['product_class'] = self.product_class
 
         return context
-
 
     def post(self, request, *args, **kwargs):
         """
@@ -95,10 +89,10 @@ class ProductMixin():
 
         for key, formset in self.formsets.items():
             formsets[key] = formset(self.product_class,
-                   request.user,
-                   request.POST,
-                   request.FILES,
-                   instance=self.object)
+                                    request.user,
+                                    request.POST,
+                                    request.FILES,
+                                    instance=self.object)
 
         if all([formset.is_valid() for formset in formsets.values()]):
             for formset in formsets.values():
@@ -106,14 +100,13 @@ class ProductMixin():
 
             # All is well - return success!
             messages.success(request,
-                    getattr(self, 'success_message',
-                        'Product successfully saved.'),
-                    extra_tags="safe noicon")
+                             getattr(self, 'success_message',
+                                     'Product successfully saved.'),
+                             extra_tags="safe noicon")
             return initial_response
 
         else:
             return self.form_invalid(self.get_form())
-
 
     @property
     def product_class(self):
@@ -129,7 +122,6 @@ class ProductMixin():
         return self.cached_product_class
 
 
-
 class FinishedListView(SingleTableView):
     """
     Display a list of Finished Decoys
@@ -137,8 +129,7 @@ class FinishedListView(SingleTableView):
     template_name = 'dashboard/catalogue/product_finished.html'
     table_class = tables.FinishedTable
     context_table_name = 'products'
-    queryset = Product.browsable.filter(product_class=products.get_finished_class())
-
+    queryset = Product.objects.filter(product_class=products.get_finished_class())
 
     def get_table(self, **kwargs):
         """
@@ -147,7 +138,6 @@ class FinishedListView(SingleTableView):
         table = super().get_table(**kwargs)
         table.caption = 'Finished Decoys'
         return table
-
 
 
 class FinishedMixin(ProductMixin):
@@ -159,13 +149,11 @@ class FinishedMixin(ProductMixin):
     success_message = 'Decoy successfully saved'
     template_name = 'dashboard/catalogue/product_finished_update.html'
 
-
     def get_product_class(self):
         """
         Return the product class associated with this type of product
         """
         return products.get_finished_class()
-
 
 
 class FinishedCreateView(FinishedMixin, generic.CreateView):
@@ -175,13 +163,11 @@ class FinishedCreateView(FinishedMixin, generic.CreateView):
     view_title = 'Add Finished Decoy'
 
 
-
 class FinishedUpdateView(FinishedMixin, generic.UpdateView):
     """
     Update an finished decoy
     """
     view_title = 'Change Finished Decoy'
-
 
     def get_initial(self):
         """
@@ -200,7 +186,6 @@ class FinishedUpdateView(FinishedMixin, generic.UpdateView):
         # Get the pricing/sku details
         return initial
 
-
     def get_object(self):
         """
         Populate the existing object if one has been sent in
@@ -211,14 +196,12 @@ class FinishedUpdateView(FinishedMixin, generic.UpdateView):
         return None
 
 
-
 class FinishedDeleteView(ProductDeleteView):
     """
     Override the get_success_url method of the generic ProductDeleteView to send us
     back to the finished decoy section
     """
     view_title = 'Remove Finished Decoy'
-
 
     def get_success_url(self):
         """
@@ -263,7 +246,6 @@ class InstructionsMixin(ProductMixin):
     success_message = 'Instructions successfully saved'
     template_name = 'dashboard/catalogue/product_instructions_update.html'
 
-
     def __init__(self, *args, **kwargs):
         """
         We don't need no stinkin' queryset
@@ -271,13 +253,11 @@ class InstructionsMixin(ProductMixin):
         super().__init__(*args, **kwargs)
         del self.queryset
 
-
     def get_product_class(self):
         """
         Return the product class associated with this type of product
         """
         return products.get_instructions_class()
-
 
 
 class InstructionsCreateView(InstructionsMixin, generic.CreateView):
@@ -287,13 +267,11 @@ class InstructionsCreateView(InstructionsMixin, generic.CreateView):
     view_title = 'Add Instructions'
 
 
-
 class InstructionsUpdateView(InstructionsMixin, generic.UpdateView):
     """
     Update an instruction product
     """
     view_title = 'Change Instructions'
-
 
 
 class InstructionsDeleteView(ProductDeleteView):
@@ -325,10 +303,9 @@ class UnfinishedListView(SingleTableView):
     Dashboard view that lists existing finished decoys
     """
     context_table_name = 'products'
-    queryset = Product.browsable.filter(product_class=products.get_unfinished_class())
+    queryset = Product.objects.filter(product_class=products.get_unfinished_class())
     table_class = tables.UnfinishedTable
     template_name = 'dashboard/catalogue/product_unfinished.html'
-
 
     def get_table(self, **kwargs):
         """
@@ -339,13 +316,11 @@ class UnfinishedListView(SingleTableView):
         return table
 
 
-
 class UnfinishedMixin(ProductMixin):
     """
     Contain common functionality for create and update views
     """
     form_class = forms.UnfinishedForm
-    #queryset = Product.objects.filter(product_class=products.get_unfinished_class())
     success_url = reverse_lazy('dashboard:catalogue-unfinished-list')
     success_message = 'Blank successfully saved'
     template_name = 'dashboard/catalogue/product_unfinished_update.html'
@@ -358,13 +333,11 @@ class UnfinishedMixin(ProductMixin):
         return products.get_unfinished_class()
 
 
-
 class UnfinishedCreateView(UnfinishedMixin, generic.CreateView):
     """
     Create an unfinished blank
     """
     view_title = 'Add Unfinished Blank'
-
 
 
 class UnfinishedUpdateView(UnfinishedMixin, generic.UpdateView):

@@ -1,26 +1,27 @@
 from cart.catalogue.util import products
 from cart.shipping.models import Box
 from django import forms
-from oscar.core.loading import get_class, get_model
+from oscar.core.loading import get_model
 from oscar.apps.dashboard.catalogue.forms import ProductForm as OscarProductForm
 
 InstructionsProduct = get_model('catalogue', 'InstructionsProduct')
 Product = get_model('catalogue', 'Product')
 ProductClass = get_model('catalogue', 'ProductClass')
 
-PRIMARY_MODEL_FIELDS=('title', 'upc')
+PRIMARY_MODEL_FIELDS = ('title', 'upc')
 
 
 def _attr_box_entity_field(attribute):
     return forms.ModelChoiceField(label=attribute.name,
-            queryset=Box.objects.all(),
-            required=attribute.required)
+                                  queryset=Box.objects.all(),
+                                  required=attribute.required)
 
 
 class ProductForm(OscarProductForm):
     """
     A generic product form, containing common fields
     """
+
     def __init__(self, *args, **kwargs):
         """
         Override the default "required" attribute of the form fields
@@ -41,23 +42,20 @@ class ProductForm(OscarProductForm):
         fields = PRIMARY_MODEL_FIELDS + ('is_active',)
 
 
-
 class FinishedForm(ProductForm):
     """
     A form specifically tailored to creating a finished decoy
     """
     price = forms.DecimalField(label="Price",
-            min_value=0,
-            decimal_places=2,
-            max_digits=12)
-
+                               min_value=0,
+                               decimal_places=2,
+                               max_digits=12)
 
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):
         super().__init__(products.get_finished_class(), *args, **kwargs)
 
-
-    def save(self):
+    def save(self, commit=True):
         """
         Create/update a product object based on form data
         """
@@ -77,29 +75,27 @@ class UnfinishedForm(ProductForm):
     A form specifically tailored to creating an Unfinished Blank product
     """
     pine_price = forms.DecimalField(label="Pine Price",
-            min_value=0,
-            decimal_places=2,
-            max_digits=12,
-            required=False)
+                                    min_value=0,
+                                    decimal_places=2,
+                                    max_digits=12,
+                                    required=False)
     tupelo_price = forms.DecimalField(label="Tupelo Price",
-            min_value=0,
-            decimal_places=2,
-            max_digits=12,
-            required=False)
+                                      min_value=0,
+                                      decimal_places=2,
+                                      max_digits=12,
+                                      required=False)
     feet_price = forms.DecimalField(label="Optional Feet Price",
-            min_value=0,
-            decimal_places=2,
-            max_digits=12,
-            required=False)
-
+                                    min_value=0,
+                                    decimal_places=2,
+                                    max_digits=12,
+                                    required=False)
 
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):
         super().__init__(products.get_unfinished_class(), *args, **kwargs)
         self.instance.structure = Product.PARENT
 
-
-    def save(self):
+    def save(self, commit=True):
         """
         Create/update a product object based on form data
         """
@@ -119,12 +115,11 @@ class InstructionsForm(ProductForm):
     A form specifically tailored to creating Instructions product
     """
     blank = forms.ModelChoiceField(label="Optional Blank",
-            queryset=Product.objects.filter(
-                product_class=products.get_unfinished_class()
-                ).order_by('title'),
-            required=False,
-            empty_label='No blank')
-
+                                   queryset=Product.objects.filter(
+                                       product_class=products.get_unfinished_class()
+                                   ).order_by('title'),
+                                   required=False,
+                                   empty_label='No blank')
 
     # Make the product_class field NOT REQUIRED, FOR THE LOVE OF GOD
     def __init__(self, *args, **kwargs):
@@ -132,22 +127,7 @@ class InstructionsForm(ProductForm):
         super().__init__(klass, *args, **kwargs)
         self.instance.product_class = klass
 
-
-    def save(self, **kwargs):
-        """
-        Override the form to add the extra product attributes
-        """
-        product = super().save(**kwargs)
-
-        # Add attributes, and save product
-        #product.attr.box = self.cleaned_data['attr_box'] 
-        #product.attr.weight = self.cleaned_data['attr_weight'] 
-        product.save()
-
-        return product
-
-
     class Meta:
         model = InstructionsProduct
-        fields = ['title', 'sku', 'price', 'price_with_blank', 'blank']
+        fields = ['title', 'sku', 'price', 'is_active', 'price_with_blank', 'blank']
 
