@@ -1,9 +1,9 @@
 import datetime, logging, sys
 from duxdekes.models import SquareSettings
 from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureException
-import squareconnect
-from squareconnect.rest import ApiException
-from squareconnect.apis.transactions_api import TransactionsApi
+from square.client import Client
+from squareup.rest import ApiException
+from squareup.apis.transactions_api import TransactionsApi
 from pprint import pprint
 
 logger = logging.getLogger('duxdekes.util.square')

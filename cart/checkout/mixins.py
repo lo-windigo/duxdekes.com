@@ -5,9 +5,8 @@ from oscar.apps.checkout import mixins
 from oscar.apps.payment.models import SourceType, Source
 from oscar.apps.payment.exceptions import PaymentError, UnableToTakePayment
 from oscar.core.loading import get_class
-import squareconnect
-from squareconnect.rest import ApiException
-from squareconnect.apis.transactions_api import TransactionsApi
+from square import client
+from square.rest import ApiException
 from duxdekes.models import SquareSettings
 
 
@@ -24,20 +23,19 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         Try to process the payment using the Square REST API
         """
         square_settings = SquareSettings.get_settings()
-        squareconnect.configuration.access_token = \
-            square_settings.access_token
+        squareClient = client.Client({"access_token": square_settings.access_token})
+            
         source_type, __ = SourceType.objects.get_or_create(name='Square')
         source = Source(source_type=source_type,
                         amount_allocated=total.incl_tax)
-        api_instance = TransactionsApi()
-        nonce = getattr(kwargs, 'nonce', self.get_card_nonce())
+        token = getattr(kwargs, 'token', self.get_card_token())
         today = datetime.date.today()
 
-        if not nonce:
-            raise PaymentError('No card nonce provided')
+        if not token:
+            raise PaymentError('No payment token provided')
 
         # Debugging - allow for testing without pinging the Square API
-        elif settings.DEBUG and nonce == 'TEST':
+        elif settings.DEBUG and token == 'TEST':
             self.add_payment_source(source)
             self.add_payment_event('auth', total.incl_tax, reference='Test entry')
             return
@@ -54,9 +52,9 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
             'idempotency_key': "{}_{}_auth".format(
                 today.strftime('%Y%m%d'),
                 order_number),
-            'card_nonce': nonce,
+            'source_id': token,
             'amount_money': amount,
-            'delay_capture': True,
+            'autocomplete': False,
         }
 
         # Add user information for chargeback protection
@@ -82,8 +80,8 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
 
         try:
             # Charge
-            api_response = api_instance.charge(square_settings.location_id,
-                    body)
+            # TODO: Check method signature
+            api_response = squareClient.payments.create_payment(square_settings.location_id, body)
 
             # Save the response ID
             if not api_response.transaction:
@@ -100,20 +98,19 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         self.add_payment_source(source)
 
         # Also record payment event
-        self.add_payment_event('auth', total.incl_tax,
-                reference=api_response.transaction.id)
+        self.add_payment_event('auth', total.incl_tax, reference=api_response.transaction.id)
 
 
-    def get_card_nonce(self):
+    def get_card_token(self):
         """
-        Get the card payment nonce, and return an empty string if unset
+        Get the card payment token, and return an empty string if unset
         """
-        return self.checkout_session._get('payment', 'nonce', '')
+        return self.checkout_session._get('payment', 'token', '')
 
 
-    def save_card_nonce(self, nonce):
+    def save_card_token(self, token):
         """
-        Save the credit card payment nonce value to the session
+        Save the credit card payment token value to the session
         """
-        self.checkout_session._set('payment', 'nonce', nonce)
+        self.checkout_session._set('payment', 'token', token)
 

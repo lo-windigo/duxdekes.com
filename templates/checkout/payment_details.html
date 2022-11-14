@@ -2,91 +2,127 @@
 {% load i18n %}
 
 {% block extrahead %}
-<script type="text/javascript"
-		src="https://js.squareup.com/v2/paymentform"></script> 
-<script>
-    var sqPaymentForm = new SqPaymentForm({
-      // Replace this value with your application's ID (available from the merchant dashboard).
-      // If you're just testing things out, replace this with your _Sandbox_ application ID,
-      // which is also available there.
-	  applicationId: '{{ square_app }}',
-      inputClass: 'sq-input',
-      cardNumber: {
-        elementId: 'sq-card-number',
-        placeholder: "0000 0000 0000 0000"
-      },
-      cvv: {
-        elementId: 'sq-cvv',
-        placeholder: 'CVV'
-      },
-      expirationDate: {
-        elementId: 'sq-expiration-date',
-        placeholder: 'MM/YY'
-      },
-      postalCode: {
-        elementId: 'sq-postal-code',
-        placeholder: 'Postal Code'
-      },
-      inputStyles: [
-        // Because this object provides no value for mediaMaxWidth or mediaMinWidth,
-        // these styles apply for screens of all sizes, unless overridden by another
-        // input style below.
-        {
-          fontSize: '14px',
-          padding: '3px'
-        },
-        // These styles are applied to inputs ONLY when the screen width is 400px
-        // or smaller. Note that because it doesn't specify a value for padding,
-        // the padding value in the previous object is preserved.
-        {
-          mediaMaxWidth: '400px',
-          fontSize: '18px',
+    <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    <script>
+      const appId = '{{ square_app }}';
+      const locationId = '{{ location_id }}';
+
+      async function initializeCard(payments) {
+        const card = await payments.card();
+        await card.attach('#card-container');
+
+        return card;
+      }
+
+      async function createPayment(token) {
+        const body = JSON.stringify({
+          locationId,
+          sourceId: token,
+        });
+
+        const paymentResponse = await fetch('{% url 'checkout:preview' %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body,
+        });
+
+        if (paymentResponse.ok) {
+          return paymentResponse.json();
         }
-      ],
-      callbacks: {
-        cardNonceResponseReceived: function(errors, nonce, cardData) {
-          if (errors) {
-            var errorDiv = document.getElementById('errors');
-            errorDiv.innerHTML = "";
-            errors.forEach(function(error) {
-              var p = document.createElement('p');
-              p.innerHTML = error.message;
-              errorDiv.appendChild(p);
-            });
-          } else {
-            // This alert is for debugging purposes only.
-		    if (console) {
-              console.log('Nonce received! ' + nonce + ' ' + JSON.stringify(cardData));
-			}
-            // Assign the value of the nonce to a hidden form element
-            var nonceField = document.getElementById('id_nonce');
-            nonceField.value = nonce;
-            // Submit the form
-            document.getElementById('form').submit();
+
+        const errorBody = await paymentResponse.text();
+        throw new Error(errorBody);
+      }
+
+      async function tokenize(paymentMethod) {
+        const tokenResult = await paymentMethod.tokenize();
+        if (tokenResult.status === 'OK') {
+          return tokenResult.token;
+        } else {
+          let errorMessage = `Tokenization failed with status: ${tokenResult.status}`;
+          if (tokenResult.errors) {
+            errorMessage += ` and errors: ${JSON.stringify(
+              tokenResult.errors
+            )}`;
           }
-        },
-        unsupportedBrowserDetected: function() {
-			// Alert the buyer that their browser is not supported
-			err = document.getElementById('messages');
-			err.innerHTML = '\
-	<div class="alert alert-danger  fade in" role="alert">\
-        <button type="button" class="close" data-dismiss="alert"\
-			aria-label="Close"><span aria-hidden="true">×</span></button>\
-        <div class="alertinner wicon">\
-			We are sorry, but our payment processor does not support your\
-			browser. Please <a href="/contact/">contact us</a> to arrange a \
-			different payment method.\
-			<i class="icon-exclamation-sign"></i>\
-        </div>\
-    </div>';
+
+          throw new Error(errorMessage);
         }
       }
-    });
-    function submitButtonClick(event) {
-      event.preventDefault();
-      sqPaymentForm.requestCardNonce();
-    }
-  </script>
+
+      // status is either SUCCESS or FAILURE;
+      function displayPaymentResults(status) {
+        const statusContainer = document.getElementById(
+          'payment-status-container'
+        );
+        if (status === 'SUCCESS') {
+          statusContainer.classList.remove('is-failure');
+          statusContainer.classList.add('is-success');
+        } else {
+          statusContainer.classList.remove('is-success');
+          statusContainer.classList.add('is-failure');
+        }
+
+        statusContainer.style.visibility = 'visible';
+      }
+
+      document.addEventListener('DOMContentLoaded', async function () {
+        if (!window.Square) {
+          throw new Error('Square.js failed to load properly');
+        }
+
+        let payments;
+        try {
+          payments = window.Square.payments(appId, locationId);
+        } catch {
+          const statusContainer = document.getElementById(
+            'payment-status-container'
+          );
+          statusContainer.className = 'missing-credentials';
+          statusContainer.style.visibility = 'visible';
+          return;
+        }
+
+        let card;
+        try {
+          card = await initializeCard(payments);
+        } catch (e) {
+          console.error('Initializing Card failed', e);
+          return;
+        }
+
+        async function handlePaymentMethodSubmission(event, paymentMethod) {
+          event.preventDefault();
+
+          try {
+            // disable the submit button as we await tokenization and make a payment request.
+            cardButton.disabled = true;
+            const token = await tokenize(paymentMethod);
+            // Override the default, REST-y payment stuff to submit through Oscar
+            //const paymentResults = await createPayment(token);
+            //displayPaymentResults('SUCCESS');
+
+            console.debug('Payment Success', paymentResults);
+            
+            const tokenField = document.getElementById('id_token');
+            tokenField.value = token;
+            // Submit the form
+            document.getElementById('form').submit();
+          } catch (e) {
+            cardButton.disabled = false;
+            displayPaymentResults('FAILURE');
+            console.error(e.message);
+          }
+        }
+
+        const cardButton = document.getElementById('card-button');
+        cardButton.addEventListener('click', async function (event) {
+          await handlePaymentMethodSubmission(event, card);
+        });
+      });
+    </script>
 {% endblock %}
 
 {% block extrastyles %}
@@ -120,54 +156,28 @@
 		</p>
 	</noscript>
 	<h1>Pay with Square</h1>
-	<div id="errors" class="bg-danger text-danger">
-	</div>
-	<div id="messages" class="bg-warning text-warning">
-	</div>
-	<form id="form" action="{% url 'checkout:preview' %}" novalidate method="post">
-		{% csrf_token %}
-		<p>
-			<label for="sq-card-number">
-				Credit Card
-			</label>
-			<div id="sq-card-number"></div>
-		</p>
-		<p>
-			<label for="sq-cvv">
-				CVV
-			</label>
-			<div id="sq-cvv"></div>
-		</p>
-		<p>
-			<label for="sq-expiration-date">
-				Expiration Date
-			</label>
-			<div id="sq-expiration-date"></div>
-		</p>
-		<p>
-			<label for="sq-postal-code">
-				Postal Code (of card billing address)
-			</label>
-			<div id="sq-postal-code"></div>
-		</p>
-		<div class="form-group clearfix">
-			<div class="row">
-				<div class="col-sm-3 col-sm-offset-9">
-					<button type="submit" onclick="submitButtonClick(event)" id="card-nonce-submit"
-						class="btn btn-primary btn-lg btn-block" data-loading-text="{% trans 'Submitting...' %}">
-						{% trans "Place order" %}</button>
-				</div>
+	<form id="payment-form" action="{% url 'checkout:preview' %}" novalidate method="post">
+      <div id="card-container"></div>
+      <button id="card-button" type="button">Submit payment details</button>
+	  {% comment %}
+		When submitting sensitive data on the payment details page (eg a bankcard)
+		we don't want to save the data and so we pass the bound form to the preview
+		template and render it in a hidden div.  Then the payment information will
+		get re-submitted when the user confirms the order.
+	  {% endcomment %}
+	  {% csrf_token %}
+	  <div style="display: none;">
+		{{ square_form }}
+	  </div>
+	  <div class="form-group clearfix">
+		<div class="row">
+			<div class="col-sm-3 col-sm-offset-9">
+				<button type="submit" onclick="submitButtonClick(event)" id="card-token-submit"
+				class="btn btn-primary btn-lg btn-block" data-loading-text="{% trans 'Submitting...' %}">
+				{% trans "Place order" %}</button>
 			</div>
 		</div>
-		{% comment %}
-			When submitting sensitive data on the payment details page (eg a bankcard)
-			we don't want to save the data and so we pass the bound form to the preview
-			template and render it in a hidden div.  Then the payment information will
-			get re-submitted when the user confirms the order.
-		{% endcomment %}
-		<div style="display: none;">
-			{{ square_form }}
-		</div>
-	</form>
+	  </div>
+    </form>
 {% endblock payment_details_content %}
 

@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib.sites.models import Site
 from duxdekes import models
-import squareconnect
-from squareconnect.apis.locations_api import LocationsApi
-from squareconnect.rest import ApiException
+import squareup
+from squareup.apis.locations_api import LocationsApi
+from squareup.rest import ApiException
 
 
 class SettingsForm(forms.ModelForm):
@@ -31,7 +31,7 @@ class SquareSettingsForm(forms.ModelForm):
         if not access_token:
             return
 
-        squareconnect.configuration.access_token = access_token
+        squareup.configuration.access_token = access_token
 
         try:
             api_instance = LocationsApi()

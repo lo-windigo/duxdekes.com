@@ -17,7 +17,7 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
         Pull together all of the order data for a submission
         """
         submission = super().build_submission(**kwargs)
-        square_form = forms.SquareNonceForm(self.request.POST)
+        square_form = forms.SquareTokenForm(self.request.POST)
 
         #logger.info('submission dict before custom work: %s', submission)
 
@@ -49,19 +49,19 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
             submission['payment_kwargs']['email'] = email
 
         try:
-            # Send along the card nonce retrieved in previous steps
+            # Send along the card token retrieved in previous steps
             # TODO: Remove all the form crap once session methods are working
-            nonce = self.get_card_nonce()
+            token = self.get_card_token()
 
-            if not nonce:
+            if not token:
                 if square_form.is_valid():
-                    nonce = square_form.cleaned_data['nonce']
+                    token = square_form.cleaned_data['token']
                 else:
-                    raise Exception('Cannot retrieve card nonce')
+                    raise Exception('Cannot retrieve payment token')
 
-            submission['payment_kwargs']['nonce'] = nonce
+            submission['payment_kwargs']['token'] = token
         except:
-            submission['payment_kwargs']['nonce'] = ''
+            submission['payment_kwargs']['token'] = ''
 
         #logger.info('submission dict after custom work: %s', submission)
 
@@ -71,15 +71,15 @@ class CheckoutSessionMixin(session.CheckoutSessionMixin):
 
     def check_payment_data_is_captured(self, request):
         """
-        Validate that we have a card nonce stored from Square
+        Validate that we have a card token stored from Square
         """
 
-        if not self.get_card_nonce():
+        if not self.get_card_token():
 
-            square_form = forms.SquareNonceForm(request.POST)
+            square_form = forms.SquareTokenForm(request.POST)
 
             if square_form.is_valid():
-                self.save_card_nonce(square_form.cleaned_data['nonce'])
+                self.save_card_token(square_form.cleaned_data['token'])
 
             else:
                 msg = "We're sorry, we could not contact the payment gateway."

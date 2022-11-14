@@ -20,9 +20,9 @@ class ShippingAddressForm(OscarShippingAddressForm):
         ]
 
 
-class SquareNonceForm(forms.Form):
+class SquareTokenForm(forms.Form):
     """
-    A form used to submit the Squareconnect nonce value
+    A form used to submit the Square token value
     """
-    nonce = forms.CharField(max_length=300, widget=forms.HiddenInput)
+    token = forms.CharField(max_length=300, widget=forms.HiddenInput)
 

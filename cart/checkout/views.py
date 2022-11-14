@@ -19,14 +19,15 @@ class PaymentDetailsView(OscarPaymentDetailsView):
 
     def get_context_data(self, **kwargs):
         """
-        Provide the square nonce form in context
+        Provide the square token form in context
         """
         ctx = super().get_context_data(**kwargs)
         square_settings = SquareSettings.get_settings()
 
-        ctx['square_form'] = kwargs.get('square_form', forms.SquareNonceForm())
+        ctx['square_form'] = kwargs.get('square_form', forms.SquareTokenForm())
         ctx['square_app'] = square_settings.application_id
-
+        ctx['location_id'] = square_settings.location_id
+        
         return ctx
 
 
@@ -35,10 +36,10 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         Handle Square payment form submission
         """
         submission = self.build_submission()
-        if submission['payment_kwargs']['nonce']:
+        if submission['payment_kwargs']['token']:
             return self.submit(**submission)
         
-        logger.info('handle_place_order_submission() called without card nonce')
+        logger.info('handle_place_order_submission() called without card token')
         msg = ("There was a problem with our payment processor. Please try "
             "again in a few minutes, and contact us if this problem persists.")
 
@@ -49,13 +50,13 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         """
         Handle Square payment form submission
         """
-        square_form = forms.SquareNonceForm(request.POST)
+        square_form = forms.SquareTokenForm(request.POST)
 
         if square_form.is_valid():
-            self.save_card_nonce(square_form.cleaned_data['nonce'])
+            self.save_card_token(square_form.cleaned_data['token'])
             return self.render_preview(request, square_form=square_form)
         
-        logger.info('handle_payment_details_submission() called without card nonce')
+        logger.info('handle_payment_details_submission() called without card token')
         msg = ("There was a problem with our payment processor. Please try "
             "again in a few minutes, and contact us if this problem persists.")
 

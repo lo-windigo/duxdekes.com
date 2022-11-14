@@ -5,5 +5,5 @@ sorl-thumbnail
 pycountry
 django-compressor
 django-widget-tweaks
-squareconnect==2.3.*
+squareup
 latimes-statestyle
