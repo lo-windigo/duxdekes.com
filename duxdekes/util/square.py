@@ -2,40 +2,35 @@ import datetime, logging, sys
 from duxdekes.models import SquareSettings
 from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureException
 from square.client import Client
-from squareup.rest import ApiException
-from squareup.apis.transactions_api import TransactionsApi
 from pprint import pprint
 
 logger = logging.getLogger('duxdekes.util.square')
 
 
-def get_api(token):
+def get_client():
     """
-    Get an instance of the Square API, set up the access token
+    Get an instance of the Square Client, set up the access token
     """
-    squareconnect.configuration.access_token = token
-    return TransactionsApi()
+    square_settings = SquareSettings.get_settings()
+    return client.Client({"access_token": square_settings.access_token})
 
 
 def capture_payment(reference):
     """
     Capture a payment authorized previously
     """
-    square_settings = SquareSettings.get_settings()
-    api_instance = get_api(square_settings.access_token)
+    squareClient = self.get_client()
 
     try:
         # Capture the previously authorized transaction
-        api_response = api_instance.capture_transaction(
-                square_settings.location_id,
-                reference)
+        api_response = squareClient.payments.complete_payment(reference)
 
         # Something went wrong with the API; time to deal with it
         if api_response.errors:
 
             errors = ', '.join([err.detail for err in api_response.errors])
 
-            raise ApiException(errors)
+            raise Exception(errors)
 
         # No success value, code or anything
         return
@@ -50,25 +45,23 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
     """
     Refund the difference between the final capture and the actual cost
     """
-    square_settings = SquareSettings.get_settings()
-    api_instance = get_api(square_settings.access_token)
+    squareClient = self.get_client()
     refund_amount = float(original_amount - new_amount)
     refund_in_cents = int(100*refund_amount)
     today = datetime.date.today()
 
     # Get the previous captured transactions' tender id
     try:
-        api_response = api_instance.retrieve_transaction(
-                square_settings.location_id,
-                reference)
+        api_response = squareClient.payments.get_payment(reference)
 
         if api_response.errors is not None:
             errors = ', '.join([err.detail for err in api_response.errors])
-            raise ApiException(errors)
+            # TODO: New exception to trigger first "except"
+            raise Exception(errors)
 
         previous_tender = api_response.transaction.tenders[0].id
 
-    except ApiException as e:
+    except APIException as e:
         msg = "Problem retrieving the previous auth transaction"
         logger.error(msg, exc_info=sys.exc_info())
         raise ChargeCaptureException(msg) from e

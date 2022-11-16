@@ -1,9 +1,7 @@
 from django import forms
 from django.contrib.sites.models import Site
 from duxdekes import models
-import squareup
-from squareup.apis.locations_api import LocationsApi
-from squareup.rest import ApiException
+from duxdekes.util import square
 
 
 class SettingsForm(forms.ModelForm):
@@ -31,11 +29,13 @@ class SquareSettingsForm(forms.ModelForm):
         if not access_token:
             return
 
-        squareup.configuration.access_token = access_token
+        client = square.get_client()
+        
+        if not client:
+            return
 
         try:
-            api_instance = LocationsApi()
-            response = api_instance.list_locations()
+            response = client.locations.list_locations()
 
             for location in response.locations:
                 location_id = getattr(location, 'id', False)
@@ -51,7 +51,7 @@ class SquareSettingsForm(forms.ModelForm):
 
                 choices.append((location_id, location_desc))
 
-        except ApiException as e:
+        except Exception as e:
             choices.append((None, 'Problem accessing Square'))
 
         self.fields['location_id'].widget = forms.Select(choices=choices)

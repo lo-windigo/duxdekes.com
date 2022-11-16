@@ -5,9 +5,7 @@ from oscar.apps.checkout import mixins
 from oscar.apps.payment.models import SourceType, Source
 from oscar.apps.payment.exceptions import PaymentError, UnableToTakePayment
 from oscar.core.loading import get_class
-from square import client
-from square.rest import ApiException
-from duxdekes.models import SquareSettings
+from duxdekes.util import square
 
 
 logger = logging.getLogger('cart.checkout.mixins')
@@ -22,8 +20,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         """
         Try to process the payment using the Square REST API
         """
-        square_settings = SquareSettings.get_settings()
-        squareClient = client.Client({"access_token": square_settings.access_token})
+        squareClient = square.get_client()
             
         source_type, __ = SourceType.objects.get_or_create(name='Square')
         source = Source(source_type=source_type,
@@ -85,12 +82,12 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
 
             # Save the response ID
             if not api_response.transaction:
-                raise ApiException(', '.join(api_response.errors))
+                raise Exception(', '.join(api_response.errors))
 
-        except ApiException as e:
+        except Exception as e:
             msg = "Exception when calling TransactionApi->charge: {}".format(e)
             logger.info(msg)
-            raise PaymentError(msg) from ApiException
+            raise PaymentError(msg) from Exception
 
         # Request was successful - record the "payment source".  As this
         # request was a 'pre-auth', we set the 'amount_allocated' - if we had
