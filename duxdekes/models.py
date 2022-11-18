@@ -56,7 +56,7 @@ class SquareSettings(SiteSettings):
     Account details and settings for the Square payment API
     """
     access_token = models.CharField('Access Token',
-            max_length=50,
+            max_length=100,
             blank=True,
             null=True)
     application_id = models.CharField('Application ID',

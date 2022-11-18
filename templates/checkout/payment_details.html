@@ -20,7 +20,7 @@
           sourceId: token,
         });
 
-        const paymentResponse = await fetch('{% url 'checkout:preview' %}', {
+        const paymentResponse = await fetch('/payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -69,14 +69,17 @@
       }
 
       document.addEventListener('DOMContentLoaded', async function () {
+		  console.log('Onload event started');
         if (!window.Square) {
           throw new Error('Square.js failed to load properly');
         }
+		  console.log('Started payments setup');
 
         let payments;
         try {
           payments = window.Square.payments(appId, locationId);
         } catch {
+			console.log('Missing credentials');
           const statusContainer = document.getElementById(
             'payment-status-container'
           );
@@ -85,6 +88,7 @@
           return;
         }
 
+		  console.log('Payments created');
         let card;
         try {
           card = await initializeCard(payments);
@@ -93,6 +97,7 @@
           return;
         }
 
+		  console.log('Card initialized');
         async function handlePaymentMethodSubmission(event, paymentMethod) {
           event.preventDefault();
 
@@ -117,10 +122,13 @@
           }
         }
 
+		  console.log('handlePaymentMethodSubmission defined');
         const cardButton = document.getElementById('card-button');
         cardButton.addEventListener('click', async function (event) {
           await handlePaymentMethodSubmission(event, card);
         });
+
+		  console.log('Onload event executed');
       });
     </script>
 {% endblock %}
@@ -148,37 +156,38 @@
 {% endblock %}
 
 {% block payment_details_content %}
-	<noscript>
-		<h1>Square requires Javascript</h1>
-		<p>
-			We apologize, but our payment processor requires that Javascript is
-			enabled to use their service.
-		</p>
-	</noscript>
-	<h1>Pay with Square</h1>
-	<form id="payment-form" action="{% url 'checkout:preview' %}" novalidate method="post">
-      <div id="card-container"></div>
-      <button id="card-button" type="button">Submit payment details</button>
-	  {% comment %}
-		When submitting sensitive data on the payment details page (eg a bankcard)
-		we don't want to save the data and so we pass the bound form to the preview
-		template and render it in a hidden div.  Then the payment information will
-		get re-submitted when the user confirms the order.
-	  {% endcomment %}
-	  {% csrf_token %}
-	  <div style="display: none;">
-		{{ square_form }}
-	  </div>
-	  <div class="form-group clearfix">
-		<div class="row">
-			<div class="col-sm-3 col-sm-offset-9">
-				<button type="submit" onclick="submitButtonClick(event)" id="card-token-submit"
-				class="btn btn-primary btn-lg btn-block" data-loading-text="{% trans 'Submitting...' %}">
-				{% trans "Place order" %}</button>
+	<div class="container-fluid">
+		<noscript>
+			<h1>Square requires Javascript</h1>
+			<p>
+				We apologize, but our payment processor requires that Javascript is
+				enabled to use their service.
+			</p>
+		</noscript>
+		<h1>Pay with Square</h1>
+		<form id="payment-form" action="{% url 'checkout:preview' %}" novalidate method="post">
+		  <div id="card-container"></div>
+		  {% comment %}
+			When submitting sensitive data on the payment details page (eg a bankcard)
+			we don't want to save the data and so we pass the bound form to the preview
+			template and render it in a hidden div.  Then the payment information will
+			get re-submitted when the user confirms the order.
+		  {% endcomment %}
+		  {% csrf_token %}
+		  <div style="display: none;">
+			{{ square_form }}
+		  </div>
+		  <div class="form-group clearfix">
+			<div class="row">
+				<div class="col-sm-3 col-sm-offset-9">
+					<button type="submit" onclick="submitButtonClick(event)" id="card-token-submit"
+					class="btn btn-primary btn-lg btn-block" data-loading-text="{% trans 'Submitting...' %}">
+					{% trans "Place order" %}</button>
+				</div>
 			</div>
-		</div>
-	  </div>
-    </form>
-    <div id="payment-status-container"></div>
+		  </div>
+		</form>
+		<div id="payment-status-container"></div>
+	</div>
 {% endblock payment_details_content %}
 

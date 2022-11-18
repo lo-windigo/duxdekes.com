@@ -1,6 +1,6 @@
 django-oscar==1.5.*
 pillow
-psycopg2-binary
+Psycopg2==2.8.6
 sorl-thumbnail
 pycountry
 django-compressor

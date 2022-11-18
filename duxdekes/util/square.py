@@ -9,10 +9,18 @@ logger = logging.getLogger('duxdekes.util.square')
 
 def get_client():
     """
-    Get an instance of the Square Client, set up the access token
+    Get an instance of the Square Client, set up the access token and
+    environment
     """
     square_settings = SquareSettings.get_settings()
-    return client.Client({"access_token": square_settings.access_token})
+
+    if square_settings.application_id[:7] == 'sandbox':
+        environment = 'sandbox'
+    else:
+        environment = 'production'
+
+    return Client(access_token=square_settings.access_token,
+            environment=environment)
 
 
 def capture_payment(reference):
