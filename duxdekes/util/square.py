@@ -5,6 +5,7 @@ from square.client import Client
 from pprint import pprint
 
 logger = logging.getLogger('duxdekes.util.square')
+square_settings = SquareSettings.get_settings()
 
 
 def get_client():
@@ -12,16 +13,19 @@ def get_client():
     Get an instance of the Square Client, set up the access token and
     environment
     """
-    square_settings = SquareSettings.get_settings()
-
     if square_settings.application_id[:7] == 'sandbox':
         environment = 'sandbox'
     else:
         environment = 'production'
 
     return Client(access_token=square_settings.access_token,
-            environment=environment)
+            environment=environment, square_version='2022-11-16')
 
+def get_location():
+    """
+    Return the current location ID
+    """
+    return square_settings.location_id
 
 def capture_payment(reference):
     """
@@ -34,7 +38,7 @@ def capture_payment(reference):
         api_response = squareClient.payments.complete_payment(reference)
 
         # Something went wrong with the API; time to deal with it
-        if api_response.errors:
+        if api_response.is_error():
 
             errors = ', '.join([err.detail for err in api_response.errors])
 
@@ -93,6 +97,7 @@ def adjust_charge(order_number, reference, original_amount, new_amount):
     }
 
     try:
+        # TODO: Update for new square clients
         api_response = api_instance.create_refund(square_settings.location_id,
             reference, body)
 

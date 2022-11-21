@@ -69,17 +69,14 @@
       }
 
       document.addEventListener('DOMContentLoaded', async function () {
-		  console.log('Onload event started');
         if (!window.Square) {
           throw new Error('Square.js failed to load properly');
         }
-		  console.log('Started payments setup');
 
         let payments;
         try {
           payments = window.Square.payments(appId, locationId);
         } catch {
-			console.log('Missing credentials');
           const statusContainer = document.getElementById(
             'payment-status-container'
           );
@@ -88,7 +85,6 @@
           return;
         }
 
-		  console.log('Payments created');
         let card;
         try {
           card = await initializeCard(payments);
@@ -97,7 +93,6 @@
           return;
         }
 
-		  console.log('Card initialized');
         async function handlePaymentMethodSubmission(event, paymentMethod) {
           event.preventDefault();
 
@@ -121,13 +116,11 @@
           }
         }
 
-		  console.log('handlePaymentMethodSubmission defined');
         const cardButton = document.getElementById('card-token-submit');
         cardButton.addEventListener('click', async function (event) {
           await handlePaymentMethodSubmission(event, card);
         });
 
-		  console.log('Onload event executed');
       });
     </script>
 {% endblock %}
