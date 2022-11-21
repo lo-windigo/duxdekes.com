@@ -105,16 +105,15 @@
             // disable the submit button as we await tokenization and make a payment request.
             cardButton.disabled = true;
             const token = await tokenize(paymentMethod);
-            // Override the default, REST-y payment stuff to submit through Oscar
-            //const paymentResults = await createPayment(token);
-            //displayPaymentResults('SUCCESS');
-
-            console.debug('Payment Success', paymentResults);
             
+			// Assign token to the hidden token field
             const tokenField = document.getElementById('id_token');
             tokenField.value = token;
-            // Submit the form
-            document.getElementById('form').submit();
+
+            console.log('Token set: ' + token);
+
+            // Submit the form to keep the Oscar process going
+            document.getElementById('payment-form').submit();
           } catch (e) {
             cardButton.disabled = false;
             displayPaymentResults('FAILURE');
@@ -123,7 +122,7 @@
         }
 
 		  console.log('handlePaymentMethodSubmission defined');
-        const cardButton = document.getElementById('card-button');
+        const cardButton = document.getElementById('card-token-submit');
         cardButton.addEventListener('click', async function (event) {
           await handlePaymentMethodSubmission(event, card);
         });
@@ -180,8 +179,8 @@
 		  <div class="form-group clearfix">
 			<div class="row">
 				<div class="col-sm-3 col-sm-offset-9">
-					<button type="submit" onclick="submitButtonClick(event)" id="card-token-submit"
-					class="btn btn-primary btn-lg btn-block" data-loading-text="{% trans 'Submitting...' %}">
+					<button id="card-token-submit" class="btn btn-primary btn-lg btn-block"
+						data-loading-text="{% trans 'Submitting...' %}">
 					{% trans "Place order" %}</button>
 				</div>
 			</div>
