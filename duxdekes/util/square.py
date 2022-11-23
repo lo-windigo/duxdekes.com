@@ -27,15 +27,16 @@ def get_location():
     """
     return square_settings.location_id
 
+
 def capture_payment(reference):
     """
     Capture a payment authorized previously
     """
-    squareClient = self.get_client()
+    client = self.get_client()
 
     try:
         # Capture the previously authorized transaction
-        api_response = squareClient.payments.complete_payment(reference)
+        api_response = client.payments.complete_payment(reference)
 
         # Something went wrong with the API; time to deal with it
         if api_response.is_error():
@@ -53,59 +54,52 @@ def capture_payment(reference):
         raise ChargeCaptureException(msg) from e
 
 
-def adjust_charge(order_number, reference, original_amount, new_amount):
+def adjust_charge(order_number, reference, new_amount):
     """
     Refund the difference between the final capture and the actual cost
     """
-    squareClient = self.get_client()
-    refund_amount = float(original_amount - new_amount)
-    refund_in_cents = int(100*refund_amount)
-    today = datetime.date.today()
+    client = self.get_client()
 
-    # Get the previous captured transactions' tender id
+    # Fetch payment details from Square
     try:
-        api_response = squareClient.payments.get_payment(reference)
+        payment_response = client.get_payment(reference)
 
-        if api_response.errors is not None:
-            errors = ', '.join([err.detail for err in api_response.errors])
-            # TODO: New exception to trigger first "except"
-            raise Exception(errors)
+        if payment_response.is_error():
+            errors = ', '.join([err.detail for err in payment_response.errors])
+            raise ApiException(errors)
 
-        previous_tender = api_response.transaction.tenders[0].id
+        payment = payment_response.body
 
-    except APIException as e:
-        msg = "Problem retrieving the previous auth transaction"
+    except ApiException as e:
+        msg = "Problem retrieving the previous paymnet: {}"\
+                .format(e)
         logger.error(msg, exc_info=sys.exc_info())
-        raise ChargeCaptureException(msg) from e
-    except IndexError as e:
-        msg = 'Problem retrieving the tender id'
-        logger.error(msg, exc_info=sys.exc_info())
-        raise ChargeCaptureException(msg) from e
-
-    amount = {
-        'amount': refund_in_cents,
-        'currency': 'USD'
-    }
-
-    body = {
-        'idempotency_key': "{}_{}_adjust".format(
-            today.strftime('%Y%m%d'),
-            order_number),
-        'tender_id': previous_tender,
-        'amount_money': amount,
-        'reason': 'Adjustment in shipping costs',
-    }
+        raise ChargeAdjustmentException(msg) from e
 
     try:
-        # TODO: Update for new square clients
-        api_response = api_instance.create_refund(square_settings.location_id,
-            reference, body)
+        payment['idempotency_key'] = generate_idempotency_key()
+        payment['amount_money'] = build_amount_payload(new_amount)
 
-        return api_response.refund.transaction_id
+        update_response = client.update_payment(reference, payment)
+
+        if update_response.is_error():
+            errors = ', '.join([err.detail for err in update_response.errors])
+            raise ApiException(errors)
 
     except ApiException as e:
         msg = "Problem adjusting the authorized cost by {}: {}"\
                 .format(refund_amount, e)
         logger.error(msg, exc_info=sys.exc_info())
         raise ChargeAdjustmentException(msg) from e
+
+
+def build_amount_payload(dollar_amount):
+    return {
+        'amount': int(100*float(dollar_amount)),
+        'currency': 'USD'
+    }
+    
+
+def generate_idempotency_key():
+    return str(uuid.uuid4())
 

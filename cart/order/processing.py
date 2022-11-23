@@ -45,8 +45,8 @@ class EventHandler(OscarEventHandler):
                 raise InvalidPaymentEvent(msg) from e
 
             try:
-                kwargs['reference'] = adjust_charge(order.number,
-                        cap_payment_reference, order.total_incl_tax, amount)
+                adjust_charge(order.number, cap_payment_reference, amount)
+                kwargs['reference'] = cap_payment_reference
             except Exception as e:
                 msg = 'Unable to adjust the charge'
                 raise InvalidPaymentEvent(msg) from e

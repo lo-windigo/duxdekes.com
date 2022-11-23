@@ -24,7 +24,6 @@ class SquareSettingsForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         access_token = getattr(self.instance, 'access_token', False)
-        choices = []
 
         if not access_token:
             return
@@ -34,10 +33,12 @@ class SquareSettingsForm(forms.ModelForm):
         if not client:
             return
 
+        choices = []
+
         try:
             response = client.locations.list_locations()
 
-            for location in response.locations:
+            for location in response.body['locations']:
                 location_id = getattr(location, 'id', False)
                 
                 # Skip a location that doesn't provide a valid ID
@@ -53,6 +54,9 @@ class SquareSettingsForm(forms.ModelForm):
 
         except Exception as e:
             choices.append((None, 'Problem accessing Square'))
+
+        if len(choices) <= 0:
+            choices.append((None, 'No locations available'))
 
         self.fields['location_id'].widget = forms.Select(choices=choices)
 

@@ -40,10 +40,7 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
         # TODO: Should be migrated to square module.
         # Method signature: create_payment(token, total, additional_details (<= kwargs? prepared dict?) )
         # Set the total amount to charge, in US Cents
-        amount = {
-            'amount': int(100*float(total.incl_tax)),
-            'currency': 'USD'
-        }
+        amount = square.build_amount_payload(total.incl_tax)
 
         # Start the request for authorization, including shipping address and
         # user email (if provided)
