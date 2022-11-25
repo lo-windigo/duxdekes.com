@@ -110,20 +110,22 @@ class OrderDetailView(OscarOrderDetailView):
 
                 # Capture the payment, with the NEW and IMPROVED amount
                 if order.status == 'Pending':
+
+                    # Adjust the total to reflect differences in the shipping costs
+                    if amount != order.total_incl_tax:
+                        adjust_event_type, _ = PaymentEventType.objects.get_or_create(
+                            code='adjust', defaults={'name': 'Adjusted'})
+                        handler.handle_payment_event(order, adjust_event_type, amount)
+                        handler.handle_order_status_change(order, 'Order Total Adjusted',
+                                note_msg='Shipping/order total adjusted')
+
+                        order.save()
+
                     capture_event_type, _ = PaymentEventType.objects.get_or_create(
                         code='capture', defaults={'name': 'Captured'})
-                    handler.handle_payment_event(order, capture_event_type, order.total_incl_tax)
-                    handler.handle_order_status_change(order, 'Needs Adjustment',
-                                                       note_msg='Customer successfully charged')
-                    # Maybe this will allow us to see the capture event?
-                    order.save()
-
-                # Adjust the total with a refund to the customer to reflect
-                # differences in the shipping costs
-                if order.status == 'Needs Adjustment' and amount != order.total_incl_tax:
-                    adjust_event_type, _ = PaymentEventType.objects.get_or_create(
-                        code='adjust', defaults={'name': 'Adjusted'})
-                    handler.handle_payment_event(order, adjust_event_type, amount)
+                    handler.handle_payment_event(order, capture_event_type, amount)
+                    handler.handle_order_status_change(order, 'Charge Finalized',
+                            note_msg='Customer successfully charged')
 
                 # Set everything as shipped, and calculate the lines if needed
                 lines = [line for line in order.lines.all()]

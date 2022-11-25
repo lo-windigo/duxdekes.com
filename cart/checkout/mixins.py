@@ -1,7 +1,6 @@
 import datetime
 from django.conf import settings
 import logging
-import uuid
 from oscar.apps.checkout import mixins
 from oscar.apps.payment.models import SourceType, Source
 from oscar.apps.payment.exceptions import PaymentError, UnableToTakePayment
@@ -37,15 +36,15 @@ class OrderPlacementMixin(mixins.OrderPlacementMixin):
             self.add_payment_event('auth', total.incl_tax, reference='Test entry')
             return
 
-        # TODO: Should be migrated to square module.
         # Method signature: create_payment(token, total, additional_details (<= kwargs? prepared dict?) )
         # Set the total amount to charge, in US Cents
         amount = square.build_amount_payload(total.incl_tax)
 
+        # TODO: Should be migrated to square module.
         # Start the request for authorization, including shipping address and
         # user email (if provided)
         body = {
-            'idempotency_key': str(uuid.uuid4()),
+            'idempotency_key': square.generate_idempotency_key(),
             'source_id': token,
             'amount_money': amount,
             'autocomplete': False,

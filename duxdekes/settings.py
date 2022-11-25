@@ -129,11 +129,13 @@ OSCAR_DEFAULT_CURRENCY = 'USD'
 OSCAR_INITIAL_ORDER_STATUS = 'Pending'
 OSCAR_INITIAL_LINE_STATUS = 'Pending'
 OSCAR_ORDER_STATUS_PIPELINE = {
-    'Pending': ('Needs Adjustment', 'Processed', 'Cancelled',),
+    'Pending': ('Order Total Adjusted', 'Processed', 'Cancelled',),
     'Processed': ('Refunded', 'Cancelled',),
-    'Needs Adjustment': ('Processed', 'Refunded', 'Cancelled',),
+    'Order Total Adjusted': ('Charge Finalized', 'Refunded', 'Cancelled',),
+    'Charge Finalized': ('Processed', 'Refunded', 'Cancelled',),
     'Refunded': (),
     'Cancelled': (),
+    'Needs Adjustment': (), # Legacy
 }
 OSCAR_HOMEPAGE = reverse_lazy('home')
 OSCAR_ALLOW_ANON_CHECKOUT = True

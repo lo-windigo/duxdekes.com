@@ -1,8 +1,8 @@
-import datetime, logging, sys
+import datetime, logging, sys, uuid
 from duxdekes.models import SquareSettings
 from duxdekes.exceptions import ChargeAdjustmentException, ChargeCaptureException
 from square.client import Client
-from pprint import pprint
+from square.exceptions.api_exception import APIException
 
 logger = logging.getLogger('duxdekes.util.square')
 square_settings = SquareSettings.get_settings()
@@ -32,11 +32,15 @@ def capture_payment(reference):
     """
     Capture a payment authorized previously
     """
-    client = self.get_client()
+    client = get_client()
 
     try:
+        # Create the request body, which specifies version token
+        payment = get_previous_payment(reference)
+        body = { 'version_token': payment['payment']['version_token'], }
+
         # Capture the previously authorized transaction
-        api_response = client.payments.complete_payment(reference)
+        api_response = client.payments.complete_payment(reference, body)
 
         # Something went wrong with the API; time to deal with it
         if api_response.is_error():
@@ -54,43 +58,44 @@ def capture_payment(reference):
         raise ChargeCaptureException(msg) from e
 
 
-def adjust_charge(order_number, reference, new_amount):
+def adjust_charge(reference, new_amount):
     """
     Refund the difference between the final capture and the actual cost
     """
-    client = self.get_client()
-
-    # Fetch payment details from Square
-    try:
-        payment_response = client.get_payment(reference)
-
-        if payment_response.is_error():
-            errors = ', '.join([err.detail for err in payment_response.errors])
-            raise ApiException(errors)
-
-        payment = payment_response.body
-
-    except ApiException as e:
-        msg = "Problem retrieving the previous paymnet: {}"\
-                .format(e)
-        logger.error(msg, exc_info=sys.exc_info())
-        raise ChargeAdjustmentException(msg) from e
+    client = get_client()
 
     try:
-        payment['idempotency_key'] = generate_idempotency_key()
-        payment['amount_money'] = build_amount_payload(new_amount)
+        body = {
+                'idempotency_key': generate_idempotency_key(),
+                'payment': {
+                    'amount_money': build_amount_payload(new_amount)
+                    }
+                }
 
-        update_response = client.update_payment(reference, payment)
+        update_response = client.payments.update_payment(reference, body)
 
         if update_response.is_error():
             errors = ', '.join([err.detail for err in update_response.errors])
-            raise ApiException(errors)
+            raise APIException(errors)
 
-    except ApiException as e:
-        msg = "Problem adjusting the authorized cost by {}: {}"\
-                .format(refund_amount, e)
+        return update_response.body['payment']
+
+    except APIException as e:
+        msg = "Problem adjusting the authorized cost to {}: {}"\
+                .format(new_amount, e)
         logger.error(msg, exc_info=sys.exc_info())
         raise ChargeAdjustmentException(msg) from e
+
+
+def get_previous_payment(payment_id):
+    client = get_client()
+    payment_response = client.payments.get_payment(payment_id)
+
+    if payment_response.is_error():
+        errors = ', '.join([err.detail for err in payment_response.errors])
+        raise APIException(errors)
+
+    return payment_response.body
 
 
 def build_amount_payload(dollar_amount):
