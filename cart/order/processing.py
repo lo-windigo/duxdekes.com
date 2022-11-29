@@ -45,8 +45,7 @@ class EventHandler(OscarEventHandler):
                 adjust_payment_event = order.payment_events.filter(
                         event_type__code='adjust').latest('date_created')
                 adjust_payment_reference = adjust_payment_event.reference
-                print('FAKE CAPTURE: {}'.format(adjust_payment_reference))
-                #capture_payment(adjust_payment_reference)
+                capture_payment(adjust_payment_reference)
                 kwargs['reference'] = adjust_payment_reference
             except Exception as e:
                 msg = 'Could not get the adjustment payment event'
