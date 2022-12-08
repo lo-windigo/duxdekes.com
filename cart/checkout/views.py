@@ -1,6 +1,7 @@
 import logging
 from django.conf import settings
 from duxdekes.models import SquareSettings
+from duxdekes.util.square import currently_sandboxed
 from oscar.apps.checkout.views import \
     PaymentDetailsView as OscarPaymentDetailsView, \
     ShippingAddressView as OscarShippingAddressView
@@ -27,6 +28,7 @@ class PaymentDetailsView(OscarPaymentDetailsView):
         ctx['square_form'] = kwargs.get('square_form', forms.SquareTokenForm())
         ctx['square_app'] = square_settings.application_id
         ctx['location_id'] = square_settings.location_id
+        ctx['sandboxed'] = currently_sandboxed()
         
         return ctx
 

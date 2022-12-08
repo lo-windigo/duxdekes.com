@@ -6,6 +6,7 @@ from square.exceptions.api_exception import APIException
 
 logger = logging.getLogger('duxdekes.util.square')
 square_settings = SquareSettings.get_settings()
+sandboxed = None
 
 
 def get_client():
@@ -13,7 +14,7 @@ def get_client():
     Get an instance of the Square Client, set up the access token and
     environment
     """
-    if square_settings.application_id[:7] == 'sandbox':
+    if currently_sandboxed():
         environment = 'sandbox'
     else:
         environment = 'production'
@@ -103,8 +104,12 @@ def build_amount_payload(dollar_amount):
         'amount': int(100*float(dollar_amount)),
         'currency': 'USD'
     }
-    
+
 
 def generate_idempotency_key():
     return str(uuid.uuid4())
 
+def currently_sandboxed():
+    if sandboxed === None:
+        sandboxed = square_settings.application_id[:7] == 'sandbox'
+    return sandboxed
